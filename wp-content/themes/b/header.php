@@ -46,15 +46,9 @@
                        <!-- Collect the nav links, forms, and other content for toggling -->
                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                            <p class="navbar-text"><?=get_bloginfo ( 'description' );?></p>
-                           <?php
-                           wp_nav_menu( array(
-                                   'menu'            => '',
-                                   'depth'             => 2,
-                                   'menu_class'        => 'nav navbar-nav navbar-right',
-                                   'fallback_cb'       => 'wp_bootstrap_navwalker::fallback',
-                                   'walker'            => new wp_bootstrap_navwalker())
-                           );
-                           ?>
+                           <ul class="nav navbar-nav navbar-right">
+                               <?php wp_list_pages('title_li=&sort_column=menu_order'); ?>
+                           </ul>
                        </div><!-- /.navbar-collapse -->
                    </div><!-- /.container-fluid -->
                </nav>

@@ -35,7 +35,7 @@ module.exports = function(grunt) {
                     'imports':'false'
                 },
                 files: {
-                    'base.css': 'base.css'
+                    'style.css': 'style.css'
                 }
             }
         },

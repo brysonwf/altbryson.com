@@ -3,7 +3,6 @@
  * @package WordPress
  * @subpackage Classic_Theme
  */
-require_once('wp_bootstrap_navwalker.php');
 
 add_action( 'init', 'my_add_excerpts_to_pages' );
 function my_add_excerpts_to_pages() {
