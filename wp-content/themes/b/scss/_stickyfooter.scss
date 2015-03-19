@@ -1,0 +1,21 @@
+//sticky footer
+
+html, body {
+    height: 100%;
+    max-width: 100%;
+}
+#wrapper {
+  min-height: 100%;
+  /* equal to footer height */
+  margin-bottom: -50px;
+}
+.wrapper:after {
+  content: "";
+  display: block;
+}
+footer, #wrapper:after {
+  /* .push must be the same height as footer */
+  height: 50px;
+}
+
+//end sticky footer
