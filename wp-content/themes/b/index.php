@@ -43,26 +43,13 @@ get_header(); ?>
                     <div class="post" id="post-<?php the_ID(); ?>">
 
                         <div class="page-header clearfix">
-                            <h3 class="pull-left"><?php echo get_the_title($top_parent_id); ?></h3>
+                            <h3 class="pull-left">
+                                <?php echo get_the_title($top_parent_id); ?>
+                            </h3>
                             <?php edit_post_link(__('edit'), '<div class="edit pull-right btn btn-default btn-xs">', '</div>'); ?>
                         </div>
 
                         <div class="post-bg" style=" <?php $hide_content_box = get_post_meta($post->ID, "hide_content_box", true); if ($hide_content_box){ echo 'display:none;'; } ?> ">
-
-                            <?php
-
-                            $alt_h2 = get_post_meta($post->ID, "alternate_title", true);
-                            if ($alt_h2 == ''){
-                                $alt_h2 = get_the_title($post->ID);
-                            }
-
-                            if ($alt_h2 != get_the_title($top_parent_id)){
-                                ?>
-                                <h1 class="orange-title <?php if ( in_category( 32, $_post) ) { echo 'newstitle'; } ?> "><a href="<?php the_permalink() ?>" rel="bookmark"><?=$alt_h2;?></a></h1>
-                                <?php
-                            }
-
-                            ?>
 
                             <div id="subpage-image">
                                 <?php the_post_thumbnail('full'); ?>
