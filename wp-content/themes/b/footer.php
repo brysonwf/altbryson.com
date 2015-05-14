@@ -12,6 +12,6 @@
         </div>
     </footer>
 	<?php wp_footer(); ?>
-    <script type="text/javascript" src="<?php bloginfo('url'); ?>../base.js"></script>
+    <script type="text/javascript" src="<?php bloginfo('stylesheet_directory'); ?>/base.js"></script>
 </body>
 </html>
