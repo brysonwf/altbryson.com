@@ -1,10 +1,10 @@
-var ui = function(){
+var ui = function(user){
     console.log('ui');
 
-    if (firebase.auth().currentUser != null){
+    if (user){
 
         //logged in
-
+        database_setUser(user);
         database_setLocation();
         button_logout();
         button_create_game();

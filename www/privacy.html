@@ -29,16 +29,26 @@
   <meta property="og:description" content="altbryson.com sandbox" />
   <meta property="og:image" content="https://altbryson.com/images/ogimage.png" />
   <meta name="theme-color" content="#f1e2ba" />
-  <link rel="stylesheet" type="text/css" href="/base.css?v20211018132720" />
+  <link rel="stylesheet" type="text/css" href="/base.css?v20211018143215" />
 </head>
 
 <body>
   
 <div id="sidebar">
-    <div class="btn-group" role="group" aria-label="Basic example">
-        <button class="btn btn-primary btn-new" data-toggle="modal" data-target="#modal_create_game">New Game</button>
-        <button class="button_login btn btn-primary hidden">Login</button>
-        <button class="button_logout btn btn-primary hidden">Logout</button>
+    <a class="button_login hidden">Login</a>
+    <div class="ddmenu dropdown pull-right hidden" >
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <span id="userimage"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li><a href="altbryson.com">Home</a></li>
+            <li><a href="/games/">games</a></li>
+            <li>
+                <a class="button_logout hidden">Logout</a>
+            </li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header"><span id="username"></span></li>
+        </ul>
     </div>
 </div>
 <div class="container">
@@ -127,8 +137,8 @@
 <script type="text/javascript" src="/firebase-analytics.js"></script>
 <script type="text/javascript" src="/firebase-firestore.js"></script>
 <script type="text/javascript" src="/moment-with-locales.min.js"></script>
-<script type="text/javascript" src="/lib.js?v20211018132720"></script>
-<script type="text/javascript" src="/app.js?v20211018132720"></script>
+<script type="text/javascript" src="/lib.js?v20211018143215"></script>
+<script type="text/javascript" src="/app.js?v20211018143215"></script>
 
 <script type="text/javascript">
   appManager.init();

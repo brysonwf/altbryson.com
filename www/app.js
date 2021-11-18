@@ -48,6 +48,7 @@ var button_create_game = function(){
     });
 }
 var button_login = function(){
+    console.log('button_login init');
     $(".button_login").removeClass('hidden').click(function () {
         $('#modalLogin').modal('show');
     });
@@ -110,6 +111,15 @@ var database_setLocation = function () {
 }
 var database_setUser = function (user) {
     console.log("database_setUser");
+
+    var gravatarImage = getGravatar(user.email);
+    
+    $('#username').html(user.email);
+
+    $('#userimage').html('<img src="' + gravatarImage + '" />');
+
+    $('.ddmenu').removeClass('hidden');
+
     db.collection("users")
         .doc("" + firebase.auth().currentUser.uid)
         .set(
@@ -119,7 +129,7 @@ var database_setUser = function (user) {
                 photoUrl: user.photoURL,
                 emailVerified: user.emailVerified,
                 uid: user.uid,
-                gravatar: getGravatar(user.email),
+                gravatar: gravatarImage,
             },
             { merge: true }
         );
@@ -167,12 +177,8 @@ var firebase_init = function() {
 var firebase_onAuthStateChanged = function () {
   // console.log('firebaseManager.onAuthStateChanged init')
   firebase.auth().onAuthStateChanged(function (user) {
-    if (user) {
-      database_setUser(user);
-    } else {
-    }
     router();
-    ui();
+    ui(user);user
   });
 };
 
@@ -790,13 +796,13 @@ var router = function(){
     }
   }
 }
-var ui = function(){
+var ui = function(user){
     console.log('ui');
 
-    if (firebase.auth().currentUser != null){
+    if (user){
 
         //logged in
-
+        database_setUser(user);
         database_setLocation();
         button_logout();
         button_create_game();

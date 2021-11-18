@@ -1,5 +1,14 @@
 var database_setUser = function (user) {
     console.log("database_setUser");
+
+    var gravatarImage = getGravatar(user.email);
+    
+    $('#username').html(user.email);
+
+    $('#userimage').html('<img src="' + gravatarImage + '" />');
+
+    $('.ddmenu').removeClass('hidden');
+
     db.collection("users")
         .doc("" + firebase.auth().currentUser.uid)
         .set(
@@ -9,7 +18,7 @@ var database_setUser = function (user) {
                 photoUrl: user.photoURL,
                 emailVerified: user.emailVerified,
                 uid: user.uid,
-                gravatar: getGravatar(user.email),
+                gravatar: gravatarImage,
             },
             { merge: true }
         );

@@ -1,8 +1,17 @@
 <div id="sidebar">
-    {{!-- {{> users }} --}}
-    <div class="btn-group" role="group" aria-label="Basic example">
-        <button class="btn btn-primary btn-new" data-toggle="modal" data-target="#modal_create_game">New Game</button>
-        <button class="button_login btn btn-primary hidden">Login</button>
-        <button class="button_logout btn btn-primary hidden">Logout</button>
+    <a class="button_login hidden">Login</a>
+    <div class="ddmenu dropdown pull-right hidden" >
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <span id="userimage"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li><a href="altbryson.com">Home</a></li>
+            <li><a href="/games/">games</a></li>
+            <li>
+                <a class="button_logout hidden">Logout</a>
+            </li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header"><span id="username"></span></li>
+        </ul>
     </div>
 </div>
