@@ -56,7 +56,7 @@ var button_signout = function(){
 }
 var database_loadGame = function () {
     console.log("init database_loadGame for : " + gameId);
-    document.title = "minigolf.altbryson.com/g/" + decodeURI(gameId);
+    document.title = "altbryson.com/g/" + decodeURI(gameId);
     var docRef = db.collection("games").doc("" + gameId);
     docRef
         .get()
@@ -134,11 +134,16 @@ var database_setUser = function (user) {
 var firebase_init = function() {
   // console.log('firebaseManager init')
 
+  
   //config and init firebase
   firebase.initializeApp({
-    apiKey: "AIzaSyB4qEo5GG4AtSeXFrZDyqBX38BVsRregzU",
-    authDomain: "minigolf.altbryson.com",
-    projectId: "minigolf-altbryson"
+    apiKey: "AIzaSyBHgeDd8PHNCp1l8KFEx62ufMXOV9BE9jQ",
+    authDomain: "altbryson-b17a8.firebaseapp.com",
+    databaseURL: "https://altbryson-b17a8.firebaseio.com",
+    projectId: "altbryson-b17a8",
+    storageBucket: "altbryson-b17a8.appspot.com",
+    messagingSenderId: "475959615157",
+    appId: "1:475959615157:web:33646f3233edefb35e68fc"
   });
 
   //setup db
@@ -151,8 +156,7 @@ var firebase_init = function() {
     signInSuccessUrl: "/",
     signInOptions: [
       // Leave the lines as is for the providers you want to offer your users.
-      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-      firebase.auth.EmailAuthProvider.PROVIDER_ID
+      firebase.auth.GoogleAuthProvider.PROVIDER_ID
     ],
     // Terms of service url.
     tosUrl: "/tos/",

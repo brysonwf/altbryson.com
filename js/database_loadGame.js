@@ -1,6 +1,6 @@
 var database_loadGame = function () {
     console.log("init database_loadGame for : " + gameId);
-    document.title = "minigolf.altbryson.com/g/" + decodeURI(gameId);
+    document.title = "altbryson.com/g/" + decodeURI(gameId);
     var docRef = db.collection("games").doc("" + gameId);
     docRef
         .get()

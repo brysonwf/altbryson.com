@@ -18,7 +18,7 @@ const d = new Date();
 
 gulp.task("version", function(cb) {
   fs.writeFile(
-    "../minigolf.altbryson/html_partials/version.hbs",
+    "../altbryson/html_partials/version.hbs",
     "v" +
       d.getFullYear() +
       d.getMonth() +
