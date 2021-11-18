@@ -5,7 +5,7 @@ var database_loadGamesList = function(){
         var html = '';
         querySnapshot.forEach(function(doc) {
             html += '<div class="div_game">';
-            html += '<a class="btn btn-default btn-lg btn-join" href="/g/' + doc.data().name + '">';
+            html += '<a class="btn btn-default btn-lg btn-join" href="/g/' + doc.data().type + '/' + doc.data().name + '">';
             html += doc.data().name;
             html += '</a>';
             html += '</div>';

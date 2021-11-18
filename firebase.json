@@ -56,12 +56,16 @@
         "destination": "/help.html"
       },
       {
-        "source": "/list",
-        "destination": "/list.html"
+        "source": "/games",
+        "destination": "/list_games.html"
       },
       {
-        "source": "/g/**",
-        "destination": "/game.html"
+        "source": "/g/minigolf/**",
+        "destination": "/game_minigolf.html"
+      },
+      {
+        "source": "/g/tictactoe**",
+        "destination": "/game_tictactoe.html"
       },
       {
         "source": "*",

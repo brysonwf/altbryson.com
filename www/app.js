@@ -59,9 +59,26 @@ var button_logout = function(){
         location.reload();
     });
 }
-var database_loadGame = function () {
-    console.log("init database_loadGame for : " + gameId);
-    document.title = "altbryson.com/g/" + decodeURI(gameId);
+var database_loadGamesList = function(){
+    console.log("database_loadGamesList");
+
+    db.collection("games").onSnapshot(function(querySnapshot) {
+        var html = '';
+        querySnapshot.forEach(function(doc) {
+            html += '<div class="div_game">';
+            html += '<a class="btn btn-default btn-lg btn-join" href="/g/' + doc.data().type + '/' + doc.data().name + '">';
+            html += doc.data().name;
+            html += '</a>';
+            html += '</div>';
+        });
+        $('#loadGamesHere').html(html);
+    });
+
+
+}
+var database_loadMinigolf = function () {
+    console.log("init database_loadMinigolf for : " + gameId);
+    document.title = "altbryson.com/g/minigolf" + decodeURI(gameId);
     var docRef = db.collection("games").doc("" + gameId);
     docRef
         .get()
@@ -92,22 +109,38 @@ var database_loadGame = function () {
             console.log("Error getting document:", error);
         });
 }
-var database_loadGamesList = function(){
-    console.log("database_loadGamesList");
-
-    db.collection("games").onSnapshot(function(querySnapshot) {
-        var html = '';
-        querySnapshot.forEach(function(doc) {
-            html += '<div class="div_game">';
-            html += '<a class="btn btn-default btn-lg btn-join" href="/g/' + doc.data().name + '">';
-            html += doc.data().name;
-            html += '</a>';
-            html += '</div>';
+var database_loadTictactoe = function () {
+    console.log("init database_loadTictactoe for : " + gameId);
+    document.title = "altbryson.com/g/tictactoe" + decodeURI(gameId);
+    var docRef = db.collection("games").doc("" + gameId);
+    docRef
+        .get()
+        .then(function (doc) {
+            if (doc.exists) {
+                console.log("game exists");
+                minigolf();
+            } else {
+                console.log("else game does not exist");
+                // doc.data() will be undefined in this case
+                var toISOString = new Date().toISOString();
+                docRef
+                .set({
+                    name: "" + gameId,
+                    dateCreated: toISOString,
+                    dateUpdated: toISOString,
+                    uid: firebase.auth().currentUser.uid,
+                    viewers: [],
+                    writers: [],
+                    budgetItems: 0,
+                    budgetLines: 0,
+                }).then(function () {
+                    console.log("Adding a new game for " + firebase.auth().currentUser.uid);
+                    minigolf();
+                });
+            }
+        }).catch(function (error) {
+            console.log("Error getting document:", error);
         });
-        $('#loadGamesHere').html(html);
-    });
-
-
 }
 var database_setLocation = function () {
     console.log("database_setLocation");
@@ -661,13 +694,15 @@ var minigolf = function(){
 }
 var router = function(){
   console.log("router");
-  if (path[1] == "") {
+  if (path[1] == "games") {
     database_loadGamesList();
   } else {
-    if (path[2] != "") {
-      if (path[1] == "g") {
-        gameId = path[2];
-        database_loadGame();
+    if (path[3] != "") {
+      gameId = path[3];
+      if (path[2] == "minigolf") {
+        database_loadMinigolf();
+      }else if (path[2] == "tictactoe") {
+        database_loadTictactoe();
       }
     }
   }

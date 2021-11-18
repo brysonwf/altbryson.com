@@ -1,6 +1,6 @@
-var database_loadGame = function () {
-    console.log("init database_loadGame for : " + gameId);
-    document.title = "altbryson.com/g/" + decodeURI(gameId);
+var database_loadTictactoe = function () {
+    console.log("init database_loadTictactoe for : " + gameId);
+    document.title = "altbryson.com/g/tictactoe" + decodeURI(gameId);
     var docRef = db.collection("games").doc("" + gameId);
     docRef
         .get()
