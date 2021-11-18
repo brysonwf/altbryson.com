@@ -47,9 +47,14 @@ var button_create_game = function(){
         window.location = "/g/" + location;
     });
 }
-var button_signout = function(){
-    $(".button_signout").click(function () {
-        console.log('button_signout');
+var button_login = function(){
+    $(".button_login").click(function () {
+        $('#modalLogin').modal('show');
+    });
+}
+var button_logout = function(){
+    $(".button_logout").click(function () {
+        console.log('button_logout');
         firebase_signOut();
         location.reload();
     });
@@ -671,9 +676,8 @@ var ui = function(){
     console.log('ui');
     if (firebase.auth().currentUser != null){
         database_setLocation();
-        button_signout();
+        button_logout();
         button_create_game();
     }else{
-      $('#modalLogin').modal('show');
     }
 }

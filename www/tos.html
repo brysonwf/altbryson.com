@@ -29,12 +29,18 @@
   <meta property="og:description" content="altbryson.com sandbox" />
   <meta property="og:image" content="https://altbryson.com/images/ogimage.png" />
   <meta name="theme-color" content="#f1e2ba" />
-  <link rel="stylesheet" type="text/css" href="/base.css?v20211018105832" />
+  <link rel="stylesheet" type="text/css" href="/base.css?v20211018113235" />
 </head>
 
 <body>
   
-
+<div id="sidebar">
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <button class="btn btn-primary btn-new" data-toggle="modal" data-target="#modal_create_game">New Game</button>
+        <button class="button_login btn btn-primary">Login</button>
+        <button class="button_logout btn btn-primary">Logout</button>
+    </div>
+</div>
 <div class="container">
   tos
 </div>
@@ -96,11 +102,13 @@
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <label for="exampleInputFile">URL</label>
+            <label>URL</label>
             <input name="name" type="text" class="form-control" id="form_create_game_name"
               placeholder="/g/[URL]" required>
           </div>
           <div class="form-group">
+            <label>Type</label>
+            <input name="type" type="text" class="form-control" id="form_create_game_type" placeholder="" required>
           </div>
         </div>
         <div class="modal-footer">
@@ -119,8 +127,8 @@
 <script type="text/javascript" src="/firebase-analytics.js"></script>
 <script type="text/javascript" src="/firebase-firestore.js"></script>
 <script type="text/javascript" src="/moment-with-locales.min.js"></script>
-<script type="text/javascript" src="/lib.js?v20211018105832"></script>
-<script type="text/javascript" src="/app.js?v20211018105832"></script>
+<script type="text/javascript" src="/lib.js?v20211018113235"></script>
+<script type="text/javascript" src="/app.js?v20211018113235"></script>
 
 <script type="text/javascript">
   appManager.init();
