@@ -48,12 +48,12 @@ var button_create_game = function(){
     });
 }
 var button_login = function(){
-    $(".button_login").click(function () {
+    $(".button_login").removeClass('hidden').click(function () {
         $('#modalLogin').modal('show');
     });
 }
 var button_logout = function(){
-    $(".button_logout").click(function () {
+    $(".button_logout").removeClass('hidden').click(function () {
         console.log('button_logout');
         firebase_signOut();
         location.reload();
@@ -674,10 +674,19 @@ var router = function(){
 }
 var ui = function(){
     console.log('ui');
+
     if (firebase.auth().currentUser != null){
+
+        //logged in
+
         database_setLocation();
         button_logout();
         button_create_game();
+
     }else{
+
+        //not logged in
+        button_login();
+
     }
 }
