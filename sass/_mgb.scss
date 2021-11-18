@@ -1,0 +1,57 @@
+#mgb_container{
+    position: fixed;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+    height:100%;
+    width:100%;
+    z-index: 1;
+}
+#mgb{
+    height: 568px;
+    width: 320px;
+    margin: 0 auto;
+    position: relative;
+}
+#mgb_map{
+    background-color: #fff;
+    background: radial-gradient(circle at 100% 50%,transparent 20%,rgba(255,255,255,.01) 21%,rgba(255,255,255,.01) 34%,transparent 35%,transparent),radial-gradient(circle at 0 50%,transparent 20%,rgba(255,255,255,.01) 21%,rgba(255,255,255,.01) 34%,transparent 35%,transparent) 0 -50px;    
+    background-color: #2a5422;
+    background-size: 75px 100px;
+    position: absolute;
+    height: 568px;
+    width: 280px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+#mgb_ball{
+    height:5px;
+    width:5px;
+    border-radius: 100%;
+    float: left;
+    position: absolute;
+    top: 428px;
+    left: 160px;
+    background-color: #fff;
+    z-index: 21;
+}
+#mgb_barrier{
+    background-color:#000;
+    height:2px;
+    width:100px;
+    float: left;
+    left: 79px;
+    top: 198px;
+    position: absolute;
+}
+#mgb_hole{
+    background-color:#000;
+    height:10.795px;
+    width:10.795px;
+    border-radius: 100%;
+    top:100px;
+    left:100px;
+    float: left;
+    position: absolute;
+}

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#121212">
+  <meta name="theme-color" content="#121212">
+
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  <meta name="theme-color" content="#f1e2ba" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="
+        default-src *;
+        style-src * 'unsafe-inline';
+        script-src * 'unsafe-inline' 'unsafe-eval';
+        media-src *; img-src * data:;
+    " />
+  <title>
+    minigolf.altbryson.com view
+  </title>
+  <meta name="description" content="Personal budget forecast cash flow graph app. Share daily, monthly, or yearly
+data with interest, payments and overdrafts. Project future value indefinitely." />
+  <meta property="og:title" content="minigolf.altbryson.com view" />
+  <meta property="og:description" content="Personal budget forecast cash flow graph app. Share daily, monthly, or yearly
+data with interest, payments and overdrafts. Project future value indefinitely." />
+  <meta property="og:image" content="https://minigolf.altbryson.com/images/ogimage.png" />
+  <meta name="theme-color" content="#f1e2ba" />
+  <link rel="stylesheet" type="text/css" href="/base.css?v2020727162238" />
+  <link rel="alternate" href="android-app://com.altbryson.checkplease/https/checkplease.page.link" />
+  <link rel="alternate"
+    href="android-app://com.altbryson.checkplease/https/altbryson-check-please.firebaseapp.com/__/auth/callback" />
+</head>
+
+<body>
+
+<div class="container">
+  <div class="nav">
+    <h1 class="logo">
+      <a href="/">
+        <i class="fas fa-chart-line"></i>
+        <span class="t">
+          <span class="b">Budget</span><br />
+          Forecast
+        </span>
+      </a>
+    </h1>
+    <div class="btn-group pull-right btn-addCore2 btn-app-options">
+      <button title="Create a New Budget" type="button" class="btn btn-primary btn-modalBudgetList hidden"
+        data-toggle="modal" data-target="#modalBudgetList">
+        New
+      </button>
+      <button type="button" class="btn btn-primary btn-app-options-dropdown dropdown-toggle hidden"
+        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="caret"></span>
+        <span class="sr-only">Toggle Dropdown</span>
+      </button>
+      <ul id="mainmenu" class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+        <li><a href="/list">Budgets</a></li>
+        <li><a href="/list/shared">Shared</a></li>
+      </ul>
+    </div>
+    <a class="quickstart-sign-in hidden btn btn-primary pull-right btn-addCore2" data-toggle="modal"
+      data-target="#modalLogin">
+      Sign in
+    </a>
+  </div>
+</div>
+<div id="sectionApp">
+  <div class="container">
+    <div class="row">
+      <div class="bfMainBox alt">
+        <a class="buttonRequestAccess hidden btn btn-primary btn-xl"></a>
+        <div class="toolbar">
+          <button class="btn budget_favorite hidden pull-left" type="button">
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+          </button>
+          <button class="btn budget_settings button_expandgraph pull-left">
+            <i class="fas fa-expand-arrows-alt"></i>
+          </button>
+          <input id="budget_url" type="text" class="noAuth form-control btnCopyURL" readonly="readonly" value="Loading">
+        </div>
+        <div class="toolbar">
+          <button class="btn btn-primary button_share hidden" data-toggle="modal"
+            data-target="#modalBudgetShare">Share</button>
+          <div class="button_lastPossibleDate_span pull-right button_lastPossibleDate">
+          </div>
+        </div>
+        <div class="lastPossibleDate_container">
+          <div class="lastPossibleDate_position">
+            <input readonly="true" name="lastPossibleDate" type="text" class="hidden" id="lastPossibleDate">
+          </div>
+        </div>
+        <div class="chart-div-container">
+          <div class="chart-div">
+            <div id="graphdiv"><i class="fas fa-spinner fa-spin loadingIcon"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <a title="Add Budget Line" id="buttonModalLineFeatures" type="button" class="btn btn-primary btn-addCore"><i
+          class="fas fa-plus"></i></a>
+      <span class="countSpan lineCount pull-right"></span>
+    </div>
+    <div class="row">
+      <div id="loadLinesHere" class="list-group list-group-budgetItems bfMainBox">
+        <div class="list-group-item list-group-item-budgetItem editBudgetItem even odd">
+          <h5 class="list-group-item-heading noMargin">
+            <span class="budgetItemName">Loading...</span>
+          </h5>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <a title="Add Budget Item" id="budgetforecast_button_add_item" type="button" class="btn btn-primary btn-addCore">
+        <i class="fas fa-plus"></i>
+      </a>
+      <span class="countSpan runningCount pull-right"></span>
+    </div>
+    <div class="row">
+      <div id="budgetItems" class="list-group list-group-budgetItems bfMainBox">
+        <div class="list-group-item list-group-item-budgetItem editBudgetItem even odd">
+          <h5 class="list-group-item-heading noMargin">
+            <span class="budgetItemName">Loading...</span>
+            <span class="budgetItem_occurs"><span class="occursIn"></span><span class="occursInEnd"></span></span>
+          </h5>
+        </div>
+      </div>
+    </div>
+    <div id="button_databaseManager_deleteBudget_container" class="hidden">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-xs btn-danger pull-left"
+          id="button_databaseManager_deleteBudget_preask">Delete
+          Budget</button>
+        <button type="button" class="btn btn-xs btn-danger pull-right hidden"
+          id="button_databaseManager_deleteBudget">Confirm Delete?</button>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div id="app-description">
+    <p>
+      Personal budget forecast cash flow graph app. Share daily, monthly, or yearly
+      data with interest, payments and overdrafts. Project future value indefinitely.    </p>
+    <p>
+      <a class="text-muted" href="https://altbryson.com/" target="_blank"><i
+          class="far fa-copyright"></i>&nbsp;2020&nbsp;altbryson</a>&nbsp;|&nbsp;<a href="/help">Help</a><span
+        class="quickstart-sign-out hidden">&nbsp;|&nbsp;<a class="">Sign Out</a></span>
+    </p>
+  </div>
+</div>
+
+<!-- edit item popup -->
+<div id="sectionModalLogin">
+  <div class="modal fade" id="modalLogin" tabindex="-1" role="dialog" aria-labelledby="myLoginModalLabel"
+    data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn btn-link btn-xl pull-right" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true"><i class="fas fa-times fa-2x"></i></span></button>
+          <h4 class="modal-title">Login</h4>
+        </div>
+        <div class="modal-body">
+          <div id="firebaseui-auth-container" lang="en">
+            <div
+              class="firebaseui-container firebaseui-page-provider-sign-in firebaseui-id-page-provider-sign-in firebaseui-use-spinner">
+              <div class="firebaseui-card-content">
+                <form onsubmit="return false;">
+                  <ul class="firebaseui-idp-list">
+                    <li class="firebaseui-list-item"><button
+                        class="firebaseui-idp-button mdl-button mdl-js-button mdl-button--raised firebaseui-idp-google firebaseui-id-idp-button"
+                        data-provider-id="google.com" style="background-color:" data-upgraded=",MaterialButton"><span
+                          class="firebaseui-idp-icon-wrapper"><img class="firebaseui-idp-icon" alt=""
+                            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"></span><span
+                          class="firebaseui-idp-text firebaseui-idp-text-long">Sign in with Google</span><span
+                          class="firebaseui-idp-text firebaseui-idp-text-short">Google</span></button></li>
+                    <li class="firebaseui-list-item"><button
+                        class="firebaseui-idp-button mdl-button mdl-js-button mdl-button--raised firebaseui-idp-password firebaseui-id-idp-button"
+                        data-provider-id="password" style="background-color:" data-upgraded=",MaterialButton"><span
+                          class="firebaseui-idp-icon-wrapper"><img class="firebaseui-idp-icon" alt=""
+                            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/mail.svg"></span><span
+                          class="firebaseui-idp-text firebaseui-idp-text-long">Sign in with email</span><span
+                          class="firebaseui-idp-text firebaseui-idp-text-short">Email</span></button></li>
+                  </ul>
+                </form>
+              </div>
+              <div class="firebaseui-card-footer firebaseui-provider-sign-in-footer">
+                <p class="firebaseui-tos firebaseui-tospp-full-message">By continuing, you are indicating that you
+                  accept our <a href="javascript:void(0)" class="firebaseui-link firebaseui-tos-link"
+                    target="_blank">Terms of Service</a> and
+                  <a href="javascript:void(0)" class="firebaseui-link firebaseui-pp-link" target="_blank">Privacy
+                    Policy</a>.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- edit item popup -->
+<div id="sectionmodalBudgetList">
+  <div class="modal fade" id="modalBudgetList" tabindex="-1" role="dialog" aria-labelledby="myBudgetListModalLabel"
+    data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn btn-link btn-xl pull-right" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true"><i class="fas fa-times fa-2x"></i></span></button>
+          <h4 class="modal-title">Create a <span class="hideauth hidden">Public</span> Budget</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="exampleInputFile">URL</label>
+            <input name="name" type="text" class="form-control" id="form_newBudget_name"
+              placeholder="minigolf.altbryson.com/b/[URL]" required>
+          </div>
+          <div class="form-group">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+          <button id="form_newBudget_create" class="btn btn-primary" type="button">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- edit item popup -->
+<div id="sectionmodalBudgetShare">
+  <div class="modal fade" id="modalBudgetShare" tabindex="-1" role="dialog" aria-labelledby="myBudgetShareModalLabel"
+    data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn btn-link btn-xl pull-right" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true"><i class="fas fa-times fa-2x"></i></span></button>
+          <h4 class="modal-title">Share this Budget</h4>
+        </div>
+        <div class="modal-body">
+          <p>This page is functional but the user experiance is currently under construction.</p>
+          <p>Grant individual access by sending the link to your budget. Users can click the request access button.</p>
+        </div>
+        <ul class="list-group" id="loadFoundUsersHere">
+          <div class="list-group-item"><span class="list-group-item-name"></span>
+            Requests will load here for budget owners.
+          </div>
+        </ul>
+        <ul class="list-group" id="loadSharedUsersHere">
+          <div class="list-group-item">
+            Access granted will load here for budget owners.
+          </div>
+        </ul>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+          <div class="budget_publicprivate onoffswitch2 hidden">
+            <input type="checkbox" name="budget_publicprivate_checkbox" class="onoffswitch2-checkbox"
+              id="budget_publicprivate_checkbox">
+            <label class="onoffswitch2-label" for="budget_publicprivate_checkbox">
+              <span class="onoffswitch2-inner"></span>
+              <span class="onoffswitch2-switch"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- edit item popup -->
+<div id="sectionModalLineFeatures">
+  <div class="modal fade" id="modalLineFeatures" tabindex="-1" role="dialog" aria-labelledby="myLineFeaturesModalLabel"
+    data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form id="form_budgetLine">
+          <div class="modal-header">
+            <button type="button" class="btn btn-link btn-xl pull-right" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true"><i class="fas fa-times fa-2x"></i></span></button>
+            <div id="form_group_budgetLine_name" class="form-group ">
+              <div class="input-group">
+                <input name="name" type="text" class="form-control input-lg" id="form_budgetLine_name"
+                  placeholder="Line Name" required>
+                <span class="input-group-addon">line</span>
+                <input type="color" name="color" class="form-control input-lg" id="form_budgetLine_color"
+                  value="#00ff00" />
+              </div>
+            </div>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <select name="onlyAllow" class="form-control" id="form_budgetLine_onlyAllow">
+                <option value="Both">Normal Line</option>
+                <option value="Positive">Overdraft</option>
+                <option value="Negative">Debt</option>
+              </select>
+            </div>
+            <div id="form_budgetLine_overdraftFrom_group" class="form-group hidden">
+              <div class="input-group">
+                <span class="input-group-addon">from</span>
+                <select name="overdraftFrom" class="form-control select-budgetItem-lines"
+                  id="form_budgetLine_overdraftFrom" disabled="disabled">
+                </select>
+              </div>
+            </div>
+            <div id="form-group-interest" class="form-group">
+              <div class="input-group">
+                <input name="interest" type="number" class="form-control" id="form_budgetLine_interest"
+                  placeholder="0.00" step="0.01" disabled="disabled">
+                <span class="input-group-addon">% interest rate</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="input-group">
+                <span class="input-group-addon">Next Charge:</span>
+                <input name="interestDate" type="text" class="form-control datePicker" id="form_budgetLine_interestDate"
+                  disabled="disabled">
+              </div>
+            </div>
+            <div id="form_budgetLine_payment_well" class="well hidden">
+              <div class="form-group">
+                <div class="input-group">
+                  <span class="input-group-addon">Transfer</span>
+                  <input name="payment" type="number" class="form-control" id="form_budgetLine_payment"
+                    placeholder="0.00" step="0.01">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="input-group">
+                  <span class="input-group-addon">From</span>
+                  <select name="payFromLine" class="form-control select-budgetItem-lines"
+                    id="form_budgetLine_payFromLine"></select>
+                </div>
+              </div>
+              <div class="form-group margin-bottom-0">
+                <div class="input-group">
+                  <span class="input-group-addon">On</span>
+                  <input name="paymentDate" type="text" class="form-control datePicker"
+                    id="form_budgetLine_paymentDate">
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="modal-footer">
+          <button id="button-modalLineFeatures-close" type="button" class="btn btn-default pull-left modal-close"
+            data-dismiss="modal">Close</button>
+          <button id="buttonModalLineFeaturesSave" type="button" class="btn btn-primary">Save</button>
+        </div>
+        <div id="button_databaseManager_deleteBudgetLine_container">
+          <div class="modal-footer"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-xs btn-danger pull-left"
+              id="button_databaseManager_deleteBudgetLine_preask">Delete Graph Line</button>
+            <button type="button" class="btn btn-xs btn-danger pull-right hidden"
+              id="button_databaseManager_deleteBudgetLine">Are you sure?</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- edit item popup -->
+<div id="sectionModalEdit">
+  <div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="myEditModalLabel"
+    data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form id="form_budgetItem">
+          <div class="modal-header">
+            <button type="button" class="btn btn-link btn-xl pull-right" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true"><i class="fas fa-times fa-2x"></i></span></button>
+            <div class="form-group">
+              <input name="name" type="text" class="form-control input-lg" id="form_budgetItem_name"
+                placeholder="Ex: Cash/Debt/Payday/Rent" required>
+            </div>
+          </div>
+          <input name="id" type="text" class="form-control hidden" id="form_budgetItem_id" placeholder="Id">
+          <div class="modal-body">
+            <div id="form_budgetItem_line_input_group" class="hidden">
+              <div class="form-group">
+                <div class="input-group">
+                  <span class="input-group-addon primary">Line</span>
+                  <select name="line" class="form-control select-budgetItem-lines" id="form_budgetItem_line">
+                    <option value="New Line">New Line</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div id="input-group-plus-minus" class="input-group">
+                <div id="btn-group-isIncome" class="btn-group" data-toggle="buttons">
+                  <label id="label-input-group-addon-income" class="btn btn-default">
+                    <input type="radio" name="isIncome" value="income" id="input-group-addon-income"
+                      autocomplete="off"><i class="fas fa-plus"></i></i>
+                  </label>
+                  <label id="label-input-group-addon-expenditure" class="btn btn-default btn-danger active">
+                    <input type="radio" name="isIncome" value="expenditure" id="input-group-addon-expenditure"
+                      autocomplete="off"><i class="fas fa-minus"></i>
+                  </label>
+                </div>
+                <span id="input-group-addon-dollarsign" class="input-group-addon"></span>
+                <input name="amount" type="number" class="form-control" aria-label="Amount" id="form_budgetItem_amount"
+                  placeholder="0" value="0" step="0.001" required>
+              </div>
+            </div>
+            <div class="well hidden">
+              <p>Series calculations are currently under construction.</p>
+              <div class="form-group">
+                <label id="form_budgetItem_computed_label" for="form_budgetItem_computed">
+                  <input name="computed" type="checkbox" id="form_budgetItem_computed">
+                  This value is computed from a series.
+                </label>
+              </div>
+              <table>
+                <tr>
+                  <td>
+                    <input class="form-control" value="Budget Item Entry 1" />
+                  </td>
+                  <td style="width:100px;">
+                    <input class="form-control" value="$500" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input class="form-control" value="Budget Item Entry 1" />
+                  </td>
+                  <td>
+                    <input class="form-control" value="$500" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input class="form-control" value="Item" />
+                  </td>
+                  <td>
+                    <input class="form-control" value="$0" />
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <a class="btn btn-xs btn-primary" href="#">Add</a>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="form-group">
+              <div class="input-group">
+                <span class="input-group-addon primary">Start</span>
+                <input readonly="true" name="dateStart" type="text" class="form-control datePicker"
+                  id="form_budgetItem_dateStart" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <input name="repeat" id="form_budgetItem_repeat" type="checkbox" />
+              <label id="form_budgetItem_repeat_label" for="form_budgetItem_repeat">Repeat</label>
+            </div>
+            <div class="row form_budgetItem_repeatNumber_row">
+              <div class="col-xs-7 form-date-left">
+                <div class="form-group">
+                  <div class="input-group">
+                    <span class="input-group-addon"><label>Every</label></span>
+                    <input name="repeatNumber" id="form_budgetItem_repeatNumber" class="form-control" type="number"
+                      value="1" />
+                  </div>
+                </div>
+              </div>
+              <div class="col-xs-5 form-date-right">
+                <div class="form-group">
+                  <select name="repeatType" id="form_budgetItem_repeatType" class="form-control">
+                    <option value="days">days</option>
+                    <option value="weeks">weeks</option>
+                    <option value="months" selected>months</option>
+                    <option value="years">years</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="input-group">
+                <span class="input-group-addon"><input name="repeat" id="form_budgetItem_dateEndCheckbox"
+                    type="checkbox"> <label id="form_budgetItem_dateEndCheckBox_label"
+                    for="form_budgetItem_dateEndCheckbox">End</label></span>
+                <input readonly="true" name="dateEnd" type="text" class="form-control datePicker"
+                  id="form_budgetItem_dateEnd">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left modal-close" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="button_databaseManager_writeBudgetItem">Save</button>
+          </div>
+          <div id="button_databaseManager_deleteBudgetItem_container">
+            <div class="modal-footer"></div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-xs btn-danger pull-left"
+                id="button_databaseManager_deleteBudgetItem_preask">Delete Item</button>
+              <button type="button" class="btn btn-xs btn-danger pull-right hidden"
+                id="button_databaseManager_deleteBudgetItem">Confirm Delete</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- scripts -->
+  <link rel="stylesheet" type="text/css" href="/firebaseui.css" />
+  <script type="text/javascript" src="/cordova.js"></script>
+  <script type="text/javascript" src="/jquery.min.js"></script>
+  <script type="text/javascript" src="/firebase-app.js"></script>
+  <script type="text/javascript" src="/firebase-auth.js"></script>
+  <script type="text/javascript" src="/firebase-analytics.js"></script>
+  <script type="text/javascript" src="/firebase-firestore.js"></script>
+  <script type="text/javascript" src="/moment-with-locales.min.js"></script>
+  <script type="text/javascript" src="/lib.js?v2020727162238"></script>
+  <script type="text/javascript" src="/app.js?v2020727162238"></script>
+
+<script type="text/javascript">
+  appManager.init()
+</script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123362191-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-123362191-1');
+  </script>
+  <script data-ad-client="ca-pub-5652525245204201" async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</body>
+
+</html lang="en">

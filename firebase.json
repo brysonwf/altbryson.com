@@ -1,10 +1,72 @@
 {
   "hosting": {
-    "public": "/",
+    "public": "WWW",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/sitemap",
+        "destination": "/sitemap.xml"
+      },
+      {
+        "source": "/sitemap.xml",
+        "destination": "/sitemap.xml"
+      },
+      {
+        "source": "/robots",
+        "destination": "/robots.txt"
+      },
+      {
+        "source": "/robots.txt",
+        "destination": "/robots.txt"
+      },
+      {
+        "source": "/firebase-app.js.map",
+        "destination": "/firebase-app.js.map"
+      },
+      {
+        "source": "/firebase-auth.js.map",
+        "destination": "/firebase-auth.js.map"
+      },
+      {
+        "source": "/firebase-database.js.map",
+        "destination": "/firebase-database.js.map"
+      },
+      {
+        "source": "/firebase-firestore.js.map",
+        "destination": "/firebase-firestore.js.map"
+      },
+      {
+        "source": "/",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/tos",
+        "destination": "/tos.html"
+      },
+      {
+        "source": "/privacy",
+        "destination": "/privacy.html"
+      },
+      {
+        "source": "/help",
+        "destination": "/help.html"
+      },
+      {
+        "source": "/list",
+        "destination": "/list.html"
+      },
+      {
+        "source": "/g/**",
+        "destination": "/game.html"
+      },
+      {
+        "source": "*",
+        "destination": "/404.html"
+      }
     ]
   }
 }

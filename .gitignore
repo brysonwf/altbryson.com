@@ -1,4 +1,11 @@
-.firebase
-.history
+
+# Node
+npm-debug.log
+node_modules
+
+# Cordova
+platforms
+plugins
+
 .idea
-.sonarlint
+.history

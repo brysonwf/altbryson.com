@@ -1,0 +1,15 @@
+#debug{
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    z-index: 15;
+    background-color: #304c2b;
+    color: #fff;
+    padding: 10px;
+}
+#debug span{
+    width:100px; 
+    overflow: hidden;
+    display: inline-block;
+}

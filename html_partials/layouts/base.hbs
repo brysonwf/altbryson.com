@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#121212">
+  <meta name="theme-color" content="#121212">
+
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  <meta name="theme-color" content="#f1e2ba" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="
+        default-src *;
+        style-src * 'unsafe-inline';
+        script-src * 'unsafe-inline' 'unsafe-eval';
+        media-src *; img-src * data:;
+    " />
+  <title>
+    minigolf.altbryson.com {{#if title}}{{title}}{{/if}}
+  </title>
+  <meta name="description" content="{{> content_description }}" />
+  <meta property="og:title" content="minigolf.altbryson.com {{#if title}}{{title}}{{/if}}" />
+  <meta property="og:description" content="{{> content_description }}" />
+  <meta property="og:image" content="https://minigolf.altbryson.com/images/ogimage.png" />
+  <meta name="theme-color" content="#f1e2ba" />
+  <link rel="stylesheet" type="text/css" href="/base.css?{{> version }}" />
+  <link rel="alternate" href="android-app://com.altbryson.checkplease/https/checkplease.page.link" />
+  <link rel="alternate"
+    href="android-app://com.altbryson.checkplease/https/altbryson-check-please.firebaseapp.com/__/auth/callback" />
+</head>
+
+<body>
+  
+{{> sidebar }}
+
+{{#> sectionApp-block}}
+{{/sectionApp-block}}
+
+{{#> modal-block}}
+{{/modal-block}}
+
+{{> modal_login }}
+{{> modal_create_game }}
+
+<!-- scripts -->
+<link rel="stylesheet" type="text/css" href="/firebaseui.css" />
+{{!-- <script type="text/javascript" src="/cordova.js"></script> --}}
+<script type="text/javascript" src="/jquery.min.js"></script>
+<script type="text/javascript" src="/firebase-app.js"></script>
+<script type="text/javascript" src="/firebase-auth.js"></script>
+<script type="text/javascript" src="/firebase-analytics.js"></script>
+<script type="text/javascript" src="/firebase-firestore.js"></script>
+<script type="text/javascript" src="/moment-with-locales.min.js"></script>
+<script type="text/javascript" src="/lib.js?{{> version }}"></script>
+<script type="text/javascript" src="/app.js?{{> version }}"></script>
+
+<script type="text/javascript">
+  appManager.init();
+</script>
+
+{{#> scripts-block}}
+{{!-- Custom scripts per page can be added. --}}
+{{/scripts-block}}
+
+</body>
+
+</html lang="en">
