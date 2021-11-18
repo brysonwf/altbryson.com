@@ -1,7 +1,7 @@
 var ball_left = 0;
 var ball_top = 0;
 var ball = {};
-var minigolf = function(){
+var game_minigolf = function(){
     console.log('minigolf init');
     ball_left = $('#mgb_ball').css("left");
     ball_top = $('#mgb_ball').css("top");

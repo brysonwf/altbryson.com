@@ -64,7 +64,7 @@
         "destination": "/game_minigolf.html"
       },
       {
-        "source": "/g/tictactoe**",
+        "source": "/g/tictactoe/**",
         "destination": "/game_tictactoe.html"
       },
       {

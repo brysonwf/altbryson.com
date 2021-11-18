@@ -4,11 +4,9 @@ var router = function(){
     database_loadGamesList();
   } else {
     if (path[3] != "") {
-      gameId = path[3];
-      if (path[2] == "minigolf") {
-        database_loadMinigolf();
-      }else if (path[2] == "tictactoe") {
-        database_loadTictactoe();
+      if (path[1] == "g") {
+        gameId = path[2];
+        database_loadGame();
       }
     }
   }

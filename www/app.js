@@ -59,6 +59,27 @@ var button_logout = function(){
         location.reload();
     });
 }
+var database_loadGame = function () {
+    console.log("init database_loadGame for : " + gameId);
+    var docRef = db.collection("games").doc("" + gameId);
+    docRef
+        .get()
+        .then(function (doc) {
+            if (doc.exists) {
+                console.log("game exists");
+                document.title = "altbryson.com/g/" + doc.Id;
+                if (doc.data().type == "minigolf"){
+                    game_minigolf();
+                }else if (doc.data().type == 'tictactoe'){
+                    game_tictactoe();
+                }
+            } else {
+                console.log("else game does not exist");
+            }
+        }).catch(function (error) {
+            console.log("Error getting document:", error);
+        });
+}
 var database_loadGamesList = function(){
     console.log("database_loadGamesList");
 
@@ -75,72 +96,6 @@ var database_loadGamesList = function(){
     });
 
 
-}
-var database_loadMinigolf = function () {
-    console.log("init database_loadMinigolf for : " + gameId);
-    document.title = "altbryson.com/g/minigolf" + decodeURI(gameId);
-    var docRef = db.collection("games").doc("" + gameId);
-    docRef
-        .get()
-        .then(function (doc) {
-            if (doc.exists) {
-                console.log("game exists");
-                minigolf();
-            } else {
-                console.log("else game does not exist");
-                // doc.data() will be undefined in this case
-                var toISOString = new Date().toISOString();
-                docRef
-                .set({
-                    name: "" + gameId,
-                    dateCreated: toISOString,
-                    dateUpdated: toISOString,
-                    uid: firebase.auth().currentUser.uid,
-                    viewers: [],
-                    writers: [],
-                    budgetItems: 0,
-                    budgetLines: 0,
-                }).then(function () {
-                    console.log("Adding a new game for " + firebase.auth().currentUser.uid);
-                    minigolf();
-                });
-            }
-        }).catch(function (error) {
-            console.log("Error getting document:", error);
-        });
-}
-var database_loadTictactoe = function () {
-    console.log("init database_loadTictactoe for : " + gameId);
-    document.title = "altbryson.com/g/tictactoe" + decodeURI(gameId);
-    var docRef = db.collection("games").doc("" + gameId);
-    docRef
-        .get()
-        .then(function (doc) {
-            if (doc.exists) {
-                console.log("game exists");
-                minigolf();
-            } else {
-                console.log("else game does not exist");
-                // doc.data() will be undefined in this case
-                var toISOString = new Date().toISOString();
-                docRef
-                .set({
-                    name: "" + gameId,
-                    dateCreated: toISOString,
-                    dateUpdated: toISOString,
-                    uid: firebase.auth().currentUser.uid,
-                    viewers: [],
-                    writers: [],
-                    budgetItems: 0,
-                    budgetLines: 0,
-                }).then(function () {
-                    console.log("Adding a new game for " + firebase.auth().currentUser.uid);
-                    minigolf();
-                });
-            }
-        }).catch(function (error) {
-            console.log("Error getting document:", error);
-        });
 }
 var database_setLocation = function () {
     console.log("database_setLocation");
@@ -228,239 +183,10 @@ var firebase_signOut = function () {
     console.error('Sign Out Error', error)
   })
 }
-var getGravatar = function(email) {
-  var MD5 = function(s) {
-    function L(k, d) {
-      return (k << d) | (k >>> (32 - d));
-    }
-    function K(G, k) {
-      var I, d, F, H, x;
-      F = G & 2147483648;
-      H = k & 2147483648;
-      I = G & 1073741824;
-      d = k & 1073741824;
-      x = (G & 1073741823) + (k & 1073741823);
-      if (I & d) {
-        return x ^ 2147483648 ^ F ^ H;
-      }
-      if (I | d) {
-        if (x & 1073741824) {
-          return x ^ 3221225472 ^ F ^ H;
-        } else {
-          return x ^ 1073741824 ^ F ^ H;
-        }
-      } else {
-        return x ^ F ^ H;
-      }
-    }
-    function r(d, F, k) {
-      return (d & F) | (~d & k);
-    }
-    function q(d, F, k) {
-      return (d & k) | (F & ~k);
-    }
-    function p(d, F, k) {
-      return d ^ F ^ k;
-    }
-    function n(d, F, k) {
-      return F ^ (d | ~k);
-    }
-    function u(G, F, aa, Z, k, H, I) {
-      G = K(G, K(K(r(F, aa, Z), k), I));
-      return K(L(G, H), F);
-    }
-    function f(G, F, aa, Z, k, H, I) {
-      G = K(G, K(K(q(F, aa, Z), k), I));
-      return K(L(G, H), F);
-    }
-    function D(G, F, aa, Z, k, H, I) {
-      G = K(G, K(K(p(F, aa, Z), k), I));
-      return K(L(G, H), F);
-    }
-    function t(G, F, aa, Z, k, H, I) {
-      G = K(G, K(K(n(F, aa, Z), k), I));
-      return K(L(G, H), F);
-    }
-    function e(G) {
-      var Z;
-      var F = G.length;
-      var x = F + 8;
-      var k = (x - (x % 64)) / 64;
-      var I = (k + 1) * 16;
-      var aa = Array(I - 1);
-      var d = 0;
-      var H = 0;
-      while (H < F) {
-        Z = (H - (H % 4)) / 4;
-        d = (H % 4) * 8;
-        aa[Z] = aa[Z] | (G.charCodeAt(H) << d);
-        H++;
-      }
-      Z = (H - (H % 4)) / 4;
-      d = (H % 4) * 8;
-      aa[Z] = aa[Z] | (128 << d);
-      aa[I - 2] = F << 3;
-      aa[I - 1] = F >>> 29;
-      return aa;
-    }
-    function B(x) {
-      var k = "",
-        F = "",
-        G,
-        d;
-      for (d = 0; d <= 3; d++) {
-        G = (x >>> (d * 8)) & 255;
-        F = "0" + G.toString(16);
-        k = k + F.substr(F.length - 2, 2);
-      }
-      return k;
-    }
-    function J(k) {
-      k = k.replace(/rn/g, "n");
-      var d = "";
-      for (var F = 0; F < k.length; F++) {
-        var x = k.charCodeAt(F);
-        if (x < 128) {
-          d += String.fromCharCode(x);
-        } else {
-          if (x > 127 && x < 2048) {
-            d += String.fromCharCode((x >> 6) | 192);
-            d += String.fromCharCode((x & 63) | 128);
-          } else {
-            d += String.fromCharCode((x >> 12) | 224);
-            d += String.fromCharCode(((x >> 6) & 63) | 128);
-            d += String.fromCharCode((x & 63) | 128);
-          }
-        }
-      }
-      return d;
-    }
-    var C = Array();
-    var P, h, E, v, g, Y, X, W, V;
-    var S = 7,
-      Q = 12,
-      N = 17,
-      M = 22;
-    var A = 5,
-      z = 9,
-      y = 14,
-      w = 20;
-    var o = 4,
-      m = 11,
-      l = 16,
-      j = 23;
-    var U = 6,
-      T = 10,
-      R = 15,
-      O = 21;
-    s = J(s);
-    C = e(s);
-    Y = 1732584193;
-    X = 4023233417;
-    W = 2562383102;
-    V = 271733878;
-    for (P = 0; P < C.length; P += 16) {
-      h = Y;
-      E = X;
-      v = W;
-      g = V;
-      Y = u(Y, X, W, V, C[P + 0], S, 3614090360);
-      V = u(V, Y, X, W, C[P + 1], Q, 3905402710);
-      W = u(W, V, Y, X, C[P + 2], N, 606105819);
-      X = u(X, W, V, Y, C[P + 3], M, 3250441966);
-      Y = u(Y, X, W, V, C[P + 4], S, 4118548399);
-      V = u(V, Y, X, W, C[P + 5], Q, 1200080426);
-      W = u(W, V, Y, X, C[P + 6], N, 2821735955);
-      X = u(X, W, V, Y, C[P + 7], M, 4249261313);
-      Y = u(Y, X, W, V, C[P + 8], S, 1770035416);
-      V = u(V, Y, X, W, C[P + 9], Q, 2336552879);
-      W = u(W, V, Y, X, C[P + 10], N, 4294925233);
-      X = u(X, W, V, Y, C[P + 11], M, 2304563134);
-      Y = u(Y, X, W, V, C[P + 12], S, 1804603682);
-      V = u(V, Y, X, W, C[P + 13], Q, 4254626195);
-      W = u(W, V, Y, X, C[P + 14], N, 2792965006);
-      X = u(X, W, V, Y, C[P + 15], M, 1236535329);
-      Y = f(Y, X, W, V, C[P + 1], A, 4129170786);
-      V = f(V, Y, X, W, C[P + 6], z, 3225465664);
-      W = f(W, V, Y, X, C[P + 11], y, 643717713);
-      X = f(X, W, V, Y, C[P + 0], w, 3921069994);
-      Y = f(Y, X, W, V, C[P + 5], A, 3593408605);
-      V = f(V, Y, X, W, C[P + 10], z, 38016083);
-      W = f(W, V, Y, X, C[P + 15], y, 3634488961);
-      X = f(X, W, V, Y, C[P + 4], w, 3889429448);
-      Y = f(Y, X, W, V, C[P + 9], A, 568446438);
-      V = f(V, Y, X, W, C[P + 14], z, 3275163606);
-      W = f(W, V, Y, X, C[P + 3], y, 4107603335);
-      X = f(X, W, V, Y, C[P + 8], w, 1163531501);
-      Y = f(Y, X, W, V, C[P + 13], A, 2850285829);
-      V = f(V, Y, X, W, C[P + 2], z, 4243563512);
-      W = f(W, V, Y, X, C[P + 7], y, 1735328473);
-      X = f(X, W, V, Y, C[P + 12], w, 2368359562);
-      Y = D(Y, X, W, V, C[P + 5], o, 4294588738);
-      V = D(V, Y, X, W, C[P + 8], m, 2272392833);
-      W = D(W, V, Y, X, C[P + 11], l, 1839030562);
-      X = D(X, W, V, Y, C[P + 14], j, 4259657740);
-      Y = D(Y, X, W, V, C[P + 1], o, 2763975236);
-      V = D(V, Y, X, W, C[P + 4], m, 1272893353);
-      W = D(W, V, Y, X, C[P + 7], l, 4139469664);
-      X = D(X, W, V, Y, C[P + 10], j, 3200236656);
-      Y = D(Y, X, W, V, C[P + 13], o, 681279174);
-      V = D(V, Y, X, W, C[P + 0], m, 3936430074);
-      W = D(W, V, Y, X, C[P + 3], l, 3572445317);
-      X = D(X, W, V, Y, C[P + 6], j, 76029189);
-      Y = D(Y, X, W, V, C[P + 9], o, 3654602809);
-      V = D(V, Y, X, W, C[P + 12], m, 3873151461);
-      W = D(W, V, Y, X, C[P + 15], l, 530742520);
-      X = D(X, W, V, Y, C[P + 2], j, 3299628645);
-      Y = t(Y, X, W, V, C[P + 0], U, 4096336452);
-      V = t(V, Y, X, W, C[P + 7], T, 1126891415);
-      W = t(W, V, Y, X, C[P + 14], R, 2878612391);
-      X = t(X, W, V, Y, C[P + 5], O, 4237533241);
-      Y = t(Y, X, W, V, C[P + 12], U, 1700485571);
-      V = t(V, Y, X, W, C[P + 3], T, 2399980690);
-      W = t(W, V, Y, X, C[P + 10], R, 4293915773);
-      X = t(X, W, V, Y, C[P + 1], O, 2240044497);
-      Y = t(Y, X, W, V, C[P + 8], U, 1873313359);
-      V = t(V, Y, X, W, C[P + 15], T, 4264355552);
-      W = t(W, V, Y, X, C[P + 6], R, 2734768916);
-      X = t(X, W, V, Y, C[P + 13], O, 1309151649);
-      Y = t(Y, X, W, V, C[P + 4], U, 4149444226);
-      V = t(V, Y, X, W, C[P + 11], T, 3174756917);
-      W = t(W, V, Y, X, C[P + 2], R, 718787259);
-      X = t(X, W, V, Y, C[P + 9], O, 3951481745);
-      Y = K(Y, h);
-      X = K(X, E);
-      W = K(W, v);
-      V = K(V, g);
-    }
-    var i = B(Y) + B(X) + B(W) + B(V);
-    return i.toLowerCase();
-  };
-
-  var size = 80;
-
-  return "http://www.gravatar.com/avatar/" + MD5(email) + ".jpg?s=" + size;
-};
-
-var path = window.location.pathname.split("/");
-var is_colliding = function(div1, div2) {
-
-    var rect1 = {x: div1.position().left, y: div1.position().top, width: div1.width(), height: div1.height()}
-    var rect2 = {x: div2.position().left, y: div2.position().top, width: div2.width(), height: div2.height()}
-  
-    if (rect1.x < rect2.x + rect2.width &&
-      rect1.x + rect1.width > rect2.x &&
-      rect1.y < rect2.y + rect2.height &&
-      rect1.y + rect1.height > rect2.y) {
-        return true;
-   }
-  
-    return false;
-  }; 
 var ball_left = 0;
 var ball_top = 0;
 var ball = {};
-var minigolf = function(){
+var game_minigolf = function(){
     console.log('minigolf init');
     ball_left = $('#mgb_ball').css("left");
     ball_top = $('#mgb_ball').css("top");
@@ -692,17 +418,374 @@ var minigolf = function(){
 
     setup();
 }
+var game_tictactoe = function(){
+
+    console.log('game_tictactoe init');
+
+    const player = "O";
+    const computer = "X";
+    
+    let board_full = false;
+    let play_board = ["", "", "", "", "", "", "", "", ""];
+    
+    const board_container = document.querySelector(".play-area");
+    
+    const winner_statement = document.getElementById("winner");
+    
+    check_board_complete = () => {
+      let flag = true;
+      play_board.forEach(element => {
+        if (element != player && element != computer) {
+          flag = false;
+        }
+      });
+      board_full = flag;
+    };
+    
+    
+    const check_line = (a, b, c) => {
+      return (
+        play_board[a] == play_board[b] &&
+        play_board[b] == play_board[c] &&
+        (play_board[a] == player || play_board[a] == computer)
+      );
+    };
+    
+    const check_match = () => {
+      for (i = 0; i < 9; i += 3) {
+        if (check_line(i, i + 1, i + 2)) {
+          document.querySelector(`#block_${i}`).classList.add("win");
+          document.querySelector(`#block_${i + 1}`).classList.add("win");
+          document.querySelector(`#block_${i + 2}`).classList.add("win");
+          return play_board[i];
+        }
+      }
+      for (i = 0; i < 3; i++) {
+        if (check_line(i, i + 3, i + 6)) {
+          document.querySelector(`#block_${i}`).classList.add("win");
+          document.querySelector(`#block_${i + 3}`).classList.add("win");
+          document.querySelector(`#block_${i + 6}`).classList.add("win");
+          return play_board[i];
+        }
+      }
+      if (check_line(0, 4, 8)) {
+        document.querySelector("#block_0").classList.add("win");
+        document.querySelector("#block_4").classList.add("win");
+        document.querySelector("#block_8").classList.add("win");
+        return play_board[0];
+      }
+      if (check_line(2, 4, 6)) {
+        document.querySelector("#block_2").classList.add("win");
+        document.querySelector("#block_4").classList.add("win");
+        document.querySelector("#block_6").classList.add("win");
+        return play_board[2];
+      }
+      return "";
+    };
+    
+    const check_for_winner = () => {
+      let res = check_match()
+      if (res == player) {
+        winner.innerText = "Winner is player!!";
+        winner.classList.add("playerWin");
+        board_full = true
+      } else if (res == computer) {
+        winner.innerText = "Winner is computer";
+        winner.classList.add("computerWin");
+        board_full = true
+      } else if (board_full) {
+        winner.innerText = "Draw!";
+        winner.classList.add("draw");
+      }
+    };
+    
+    
+    const render_board = () => {
+      board_container.innerHTML = ""
+      play_board.forEach((e, i) => {
+        board_container.innerHTML += `<div id="block_${i}" class="block" onclick="addPlayerMove(${i})">${play_board[i]}</div>`
+        if (e == player || e == computer) {
+          document.querySelector(`#block_${i}`).classList.add("occupied");
+        }
+      });
+    };
+    
+    const game_loop = () => {
+      render_board();
+      check_board_complete();
+      check_for_winner();
+    }
+    
+    const addPlayerMove = e => {
+      if (!board_full && play_board[e] == "") {
+        play_board[e] = player;
+        game_loop();
+        addComputerMove();
+      }
+    };
+    
+    const addComputerMove = () => {
+      if (!board_full) {
+        do {
+          selected = Math.floor(Math.random() * 9);
+        } while (play_board[selected] != "");
+        play_board[selected] = computer;
+        game_loop();
+      }
+    };
+    
+    const reset_board = () => {
+      play_board = ["", "", "", "", "", "", "", "", ""];
+      board_full = false;
+      winner.classList.remove("playerWin");
+      winner.classList.remove("computerWin");
+      winner.classList.remove("draw");
+      winner.innerText = "";
+      render_board();
+    };
+    
+    //initial render
+    render_board();
+
+}
+var getGravatar = function(email) {
+  var MD5 = function(s) {
+    function L(k, d) {
+      return (k << d) | (k >>> (32 - d));
+    }
+    function K(G, k) {
+      var I, d, F, H, x;
+      F = G & 2147483648;
+      H = k & 2147483648;
+      I = G & 1073741824;
+      d = k & 1073741824;
+      x = (G & 1073741823) + (k & 1073741823);
+      if (I & d) {
+        return x ^ 2147483648 ^ F ^ H;
+      }
+      if (I | d) {
+        if (x & 1073741824) {
+          return x ^ 3221225472 ^ F ^ H;
+        } else {
+          return x ^ 1073741824 ^ F ^ H;
+        }
+      } else {
+        return x ^ F ^ H;
+      }
+    }
+    function r(d, F, k) {
+      return (d & F) | (~d & k);
+    }
+    function q(d, F, k) {
+      return (d & k) | (F & ~k);
+    }
+    function p(d, F, k) {
+      return d ^ F ^ k;
+    }
+    function n(d, F, k) {
+      return F ^ (d | ~k);
+    }
+    function u(G, F, aa, Z, k, H, I) {
+      G = K(G, K(K(r(F, aa, Z), k), I));
+      return K(L(G, H), F);
+    }
+    function f(G, F, aa, Z, k, H, I) {
+      G = K(G, K(K(q(F, aa, Z), k), I));
+      return K(L(G, H), F);
+    }
+    function D(G, F, aa, Z, k, H, I) {
+      G = K(G, K(K(p(F, aa, Z), k), I));
+      return K(L(G, H), F);
+    }
+    function t(G, F, aa, Z, k, H, I) {
+      G = K(G, K(K(n(F, aa, Z), k), I));
+      return K(L(G, H), F);
+    }
+    function e(G) {
+      var Z;
+      var F = G.length;
+      var x = F + 8;
+      var k = (x - (x % 64)) / 64;
+      var I = (k + 1) * 16;
+      var aa = Array(I - 1);
+      var d = 0;
+      var H = 0;
+      while (H < F) {
+        Z = (H - (H % 4)) / 4;
+        d = (H % 4) * 8;
+        aa[Z] = aa[Z] | (G.charCodeAt(H) << d);
+        H++;
+      }
+      Z = (H - (H % 4)) / 4;
+      d = (H % 4) * 8;
+      aa[Z] = aa[Z] | (128 << d);
+      aa[I - 2] = F << 3;
+      aa[I - 1] = F >>> 29;
+      return aa;
+    }
+    function B(x) {
+      var k = "",
+        F = "",
+        G,
+        d;
+      for (d = 0; d <= 3; d++) {
+        G = (x >>> (d * 8)) & 255;
+        F = "0" + G.toString(16);
+        k = k + F.substr(F.length - 2, 2);
+      }
+      return k;
+    }
+    function J(k) {
+      k = k.replace(/rn/g, "n");
+      var d = "";
+      for (var F = 0; F < k.length; F++) {
+        var x = k.charCodeAt(F);
+        if (x < 128) {
+          d += String.fromCharCode(x);
+        } else {
+          if (x > 127 && x < 2048) {
+            d += String.fromCharCode((x >> 6) | 192);
+            d += String.fromCharCode((x & 63) | 128);
+          } else {
+            d += String.fromCharCode((x >> 12) | 224);
+            d += String.fromCharCode(((x >> 6) & 63) | 128);
+            d += String.fromCharCode((x & 63) | 128);
+          }
+        }
+      }
+      return d;
+    }
+    var C = Array();
+    var P, h, E, v, g, Y, X, W, V;
+    var S = 7,
+      Q = 12,
+      N = 17,
+      M = 22;
+    var A = 5,
+      z = 9,
+      y = 14,
+      w = 20;
+    var o = 4,
+      m = 11,
+      l = 16,
+      j = 23;
+    var U = 6,
+      T = 10,
+      R = 15,
+      O = 21;
+    s = J(s);
+    C = e(s);
+    Y = 1732584193;
+    X = 4023233417;
+    W = 2562383102;
+    V = 271733878;
+    for (P = 0; P < C.length; P += 16) {
+      h = Y;
+      E = X;
+      v = W;
+      g = V;
+      Y = u(Y, X, W, V, C[P + 0], S, 3614090360);
+      V = u(V, Y, X, W, C[P + 1], Q, 3905402710);
+      W = u(W, V, Y, X, C[P + 2], N, 606105819);
+      X = u(X, W, V, Y, C[P + 3], M, 3250441966);
+      Y = u(Y, X, W, V, C[P + 4], S, 4118548399);
+      V = u(V, Y, X, W, C[P + 5], Q, 1200080426);
+      W = u(W, V, Y, X, C[P + 6], N, 2821735955);
+      X = u(X, W, V, Y, C[P + 7], M, 4249261313);
+      Y = u(Y, X, W, V, C[P + 8], S, 1770035416);
+      V = u(V, Y, X, W, C[P + 9], Q, 2336552879);
+      W = u(W, V, Y, X, C[P + 10], N, 4294925233);
+      X = u(X, W, V, Y, C[P + 11], M, 2304563134);
+      Y = u(Y, X, W, V, C[P + 12], S, 1804603682);
+      V = u(V, Y, X, W, C[P + 13], Q, 4254626195);
+      W = u(W, V, Y, X, C[P + 14], N, 2792965006);
+      X = u(X, W, V, Y, C[P + 15], M, 1236535329);
+      Y = f(Y, X, W, V, C[P + 1], A, 4129170786);
+      V = f(V, Y, X, W, C[P + 6], z, 3225465664);
+      W = f(W, V, Y, X, C[P + 11], y, 643717713);
+      X = f(X, W, V, Y, C[P + 0], w, 3921069994);
+      Y = f(Y, X, W, V, C[P + 5], A, 3593408605);
+      V = f(V, Y, X, W, C[P + 10], z, 38016083);
+      W = f(W, V, Y, X, C[P + 15], y, 3634488961);
+      X = f(X, W, V, Y, C[P + 4], w, 3889429448);
+      Y = f(Y, X, W, V, C[P + 9], A, 568446438);
+      V = f(V, Y, X, W, C[P + 14], z, 3275163606);
+      W = f(W, V, Y, X, C[P + 3], y, 4107603335);
+      X = f(X, W, V, Y, C[P + 8], w, 1163531501);
+      Y = f(Y, X, W, V, C[P + 13], A, 2850285829);
+      V = f(V, Y, X, W, C[P + 2], z, 4243563512);
+      W = f(W, V, Y, X, C[P + 7], y, 1735328473);
+      X = f(X, W, V, Y, C[P + 12], w, 2368359562);
+      Y = D(Y, X, W, V, C[P + 5], o, 4294588738);
+      V = D(V, Y, X, W, C[P + 8], m, 2272392833);
+      W = D(W, V, Y, X, C[P + 11], l, 1839030562);
+      X = D(X, W, V, Y, C[P + 14], j, 4259657740);
+      Y = D(Y, X, W, V, C[P + 1], o, 2763975236);
+      V = D(V, Y, X, W, C[P + 4], m, 1272893353);
+      W = D(W, V, Y, X, C[P + 7], l, 4139469664);
+      X = D(X, W, V, Y, C[P + 10], j, 3200236656);
+      Y = D(Y, X, W, V, C[P + 13], o, 681279174);
+      V = D(V, Y, X, W, C[P + 0], m, 3936430074);
+      W = D(W, V, Y, X, C[P + 3], l, 3572445317);
+      X = D(X, W, V, Y, C[P + 6], j, 76029189);
+      Y = D(Y, X, W, V, C[P + 9], o, 3654602809);
+      V = D(V, Y, X, W, C[P + 12], m, 3873151461);
+      W = D(W, V, Y, X, C[P + 15], l, 530742520);
+      X = D(X, W, V, Y, C[P + 2], j, 3299628645);
+      Y = t(Y, X, W, V, C[P + 0], U, 4096336452);
+      V = t(V, Y, X, W, C[P + 7], T, 1126891415);
+      W = t(W, V, Y, X, C[P + 14], R, 2878612391);
+      X = t(X, W, V, Y, C[P + 5], O, 4237533241);
+      Y = t(Y, X, W, V, C[P + 12], U, 1700485571);
+      V = t(V, Y, X, W, C[P + 3], T, 2399980690);
+      W = t(W, V, Y, X, C[P + 10], R, 4293915773);
+      X = t(X, W, V, Y, C[P + 1], O, 2240044497);
+      Y = t(Y, X, W, V, C[P + 8], U, 1873313359);
+      V = t(V, Y, X, W, C[P + 15], T, 4264355552);
+      W = t(W, V, Y, X, C[P + 6], R, 2734768916);
+      X = t(X, W, V, Y, C[P + 13], O, 1309151649);
+      Y = t(Y, X, W, V, C[P + 4], U, 4149444226);
+      V = t(V, Y, X, W, C[P + 11], T, 3174756917);
+      W = t(W, V, Y, X, C[P + 2], R, 718787259);
+      X = t(X, W, V, Y, C[P + 9], O, 3951481745);
+      Y = K(Y, h);
+      X = K(X, E);
+      W = K(W, v);
+      V = K(V, g);
+    }
+    var i = B(Y) + B(X) + B(W) + B(V);
+    return i.toLowerCase();
+  };
+
+  var size = 80;
+
+  return "http://www.gravatar.com/avatar/" + MD5(email) + ".jpg?s=" + size;
+};
+
+var path = window.location.pathname.split("/");
+var is_colliding = function(div1, div2) {
+
+    var rect1 = {x: div1.position().left, y: div1.position().top, width: div1.width(), height: div1.height()}
+    var rect2 = {x: div2.position().left, y: div2.position().top, width: div2.width(), height: div2.height()}
+  
+    if (rect1.x < rect2.x + rect2.width &&
+      rect1.x + rect1.width > rect2.x &&
+      rect1.y < rect2.y + rect2.height &&
+      rect1.y + rect1.height > rect2.y) {
+        return true;
+   }
+  
+    return false;
+  }; 
 var router = function(){
   console.log("router");
   if (path[1] == "games") {
     database_loadGamesList();
   } else {
     if (path[3] != "") {
-      gameId = path[3];
-      if (path[2] == "minigolf") {
-        database_loadMinigolf();
-      }else if (path[2] == "tictactoe") {
-        database_loadTictactoe();
+      if (path[1] == "g") {
+        gameId = path[2];
+        database_loadGame();
       }
     }
   }
