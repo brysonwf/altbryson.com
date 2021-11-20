@@ -1,12 +1,12 @@
   
-  .play-area {
+  .tictactoe-play-area {
     display: grid;
     width: 300px;
     height: 300px;
     grid-template-columns: auto auto auto;
   }
   
-  .block {
+  .tictactoe-block {
     display: flex;
     width: 100px;
     height: 100px;
@@ -18,20 +18,20 @@
     transition: background 0.2s ease-in-out;
   }
   
-  .block:hover {
+  .tictactoe-block:hover {
     cursor: pointer;
     background: #0ff30f;
   }
   
-  .occupied:hover {
+  .tictactoe-occupied:hover {
     background: #ff3a3a;
   }
   
-  .win {
+  .tictactoe-win {
     background: #0ff30f;
   }
   
-  .win:hover {
+  .tictactoe-win:hover {
     background: #0ff30f;
   }
   
@@ -59,30 +59,14 @@
     border-right: none;
   }
   
-  button {
-    outline: none;
-    border: 4px solid green;
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: bold;
-    background: none;
-    transition: all 0.2s ease-in-out;
-  }
-  
-  button:hover {
-    cursor: pointer;
-    background: green;
-    color: white;
-  }
-  
-  .playerWin {
+  .tictactoe-playerWin {
     color: green;
   }
   
-  .computerWin {
+  .tictactoe-computerWin {
     color: red;
   }
   
-  .draw {
+  .tictactoe-draw {
     color: orangered;
   }

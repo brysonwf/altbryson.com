@@ -434,9 +434,9 @@ var game_tictactoe = function(){
     let board_full = false;
     let play_board = ["", "", "", "", "", "", "", "", ""];
     
-    const board_container = document.querySelector(".play-area");
+    const board_container = document.querySelector(".tictactoe-play-area");
     
-    const winner_statement = document.getElementById("winner");
+    const winner_statement = document.getElementById("tictactoe-winner");
     
     check_board_complete = () => {
       let flag = true;
@@ -460,30 +460,30 @@ var game_tictactoe = function(){
     const check_match = () => {
       for (i = 0; i < 9; i += 3) {
         if (check_line(i, i + 1, i + 2)) {
-          document.querySelector(`#block_${i}`).classList.add("win");
-          document.querySelector(`#block_${i + 1}`).classList.add("win");
-          document.querySelector(`#block_${i + 2}`).classList.add("win");
+          document.querySelector(`#block_${i}`).classList.add("tictactoe-win");
+          document.querySelector(`#block_${i + 1}`).classList.add("tictactoe-win");
+          document.querySelector(`#block_${i + 2}`).classList.add("tictactoe-win");
           return play_board[i];
         }
       }
       for (i = 0; i < 3; i++) {
         if (check_line(i, i + 3, i + 6)) {
-          document.querySelector(`#block_${i}`).classList.add("win");
-          document.querySelector(`#block_${i + 3}`).classList.add("win");
-          document.querySelector(`#block_${i + 6}`).classList.add("win");
+          document.querySelector(`#block_${i}`).classList.add("tictactoe-win");
+          document.querySelector(`#block_${i + 3}`).classList.add("tictactoe-win");
+          document.querySelector(`#block_${i + 6}`).classList.add("tictactoe-win");
           return play_board[i];
         }
       }
       if (check_line(0, 4, 8)) {
-        document.querySelector("#block_0").classList.add("win");
-        document.querySelector("#block_4").classList.add("win");
-        document.querySelector("#block_8").classList.add("win");
+        document.querySelector("#block_0").classList.add("tictactoe-win");
+        document.querySelector("#block_4").classList.add("tictactoe-win");
+        document.querySelector("#block_8").classList.add("tictactoe-win");
         return play_board[0];
       }
       if (check_line(2, 4, 6)) {
-        document.querySelector("#block_2").classList.add("win");
-        document.querySelector("#block_4").classList.add("win");
-        document.querySelector("#block_6").classList.add("win");
+        document.querySelector("#block_2").classList.add("tictactoe-win");
+        document.querySelector("#block_4").classList.add("tictactoe-win");
+        document.querySelector("#block_6").classList.add("tictactoe-win");
         return play_board[2];
       }
       return "";
@@ -509,9 +509,9 @@ var game_tictactoe = function(){
     const render_board = () => {
       board_container.innerHTML = ""
       play_board.forEach((e, i) => {
-        board_container.innerHTML += `<div id="block_${i}" class="block" onclick="addPlayerMove(${i})">${play_board[i]}</div>`
+        board_container.innerHTML += `<div id="block_${i}" class="tictactoe-block" onclick="(new game_tictactoe()).addPlayerMove(${i})">${play_board[i]}</div>`
         if (e == player || e == computer) {
-          document.querySelector(`#block_${i}`).classList.add("occupied");
+          document.querySelector(`#block_${i}`).classList.add("tictactoe-occupied");
         }
       });
     };
@@ -543,15 +543,19 @@ var game_tictactoe = function(){
     const reset_board = () => {
       play_board = ["", "", "", "", "", "", "", "", ""];
       board_full = false;
-      winner.classList.remove("playerWin");
-      winner.classList.remove("computerWin");
-      winner.classList.remove("draw");
+      winner.classList.remove("tictactoe-playerWin");
+      winner.classList.remove("tictactoe-computerWin");
+      winner.classList.remove("tictactoe-draw");
       winner.innerText = "";
       render_board();
     };
     
     //initial render
     render_board();
+
+    return {
+      addPlayerMove: addPlayerMove
+    }
 
 }
 var getGravatar = function(email) {
