@@ -518,8 +518,12 @@ var game_tictactoe = function(){
         winner.classList.remove("hidden");
       }
     };
+
+    console.log("database_loadGamesList");
+
     
-    const render_board = () => {
+    const game_loop = () => {
+
       board_container.innerHTML = ""
       play_board.forEach((e, i) => {
         board_container.innerHTML += `<div id="block_${i}" class="tictactoe-block" data-move="${i}">${play_board[i]}</div>`;
@@ -534,13 +538,10 @@ var game_tictactoe = function(){
         playerOneMove(move);
       });
 
-    };
-    
-    const game_loop = () => {
-      render_board();
       check_board_complete();
       check_for_winner();
-    }
+
+    };
     
     const playerOneMove = e => {
       console.log('playerOneMove');
@@ -593,11 +594,16 @@ var game_tictactoe = function(){
       winner.classList.remove("tictactoe-computerWin");
       winner.classList.remove("tictactoe-draw");
       winner.innerText = "";
-      render_board();
+      game_loop();
     };
     
     //initial render
-    render_board();
+    db.collection("games/"+gameId+"/moves").onSnapshot(function(querySnapshot) {
+      querySnapshot.forEach(function(doc) {
+        play_board[doc.data().move] = doc.data().user
+      });
+      game_loop();
+    });
 }
 var getGravatar = function(email) {
   var MD5 = function(s) {
