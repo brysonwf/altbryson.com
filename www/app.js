@@ -36,15 +36,27 @@ var btn_hide = function(){
 }
 var button_create_game = function(){
     $("#button_create_game").click(function () {
-        var location = $("#form_create_game_name").val();
-        if (location == "" || location == null) {
-            if (firebase.auth().currentUser != null){
-                location = firebase.auth().currentUser.uid;
-            }else{
-                location = "blank";
-            }
-        }
-        window.location = "/g/" + location;
+        var type = $("#form_create_game_type").val();
+        var toISOString = new Date().toISOString();
+        db.collection("games").add({
+            type: type,
+            dateCreated: toISOString,
+            dateUpdated: toISOString,
+            uid: firebase.auth().currentUser.uid,
+            budgetItems: 0,
+            budgetLines: 0,
+            create: [],
+            read: [],
+            update: [],
+            delete: []
+        })
+        .then((docRef) => {
+            console.log("Document written with ID: ", docRef.id);
+            window.location = "/g/" + type + "/" + docRef.id;
+        })
+        .catch((error) => {
+            console.error("Error adding document: ", error);
+        });
     });
 }
 var button_login = function(){
@@ -88,8 +100,8 @@ var database_loadGamesList = function(){
         var html = '';
         querySnapshot.forEach(function(doc) {
             html += '<div class="div_game">';
-            html += '<a class="btn btn-default btn-lg btn-join" href="/g/' + doc.data().type + '/' + doc.data().name + '">';
-            html += doc.data().name;
+            html += '<a class="btn btn-default btn-lg btn-join" href="/g/' + doc.data().type + '/' + doc.id + '">';
+            html += doc.data().type + '/' + doc.id;
             html += '</a>';
             html += '</div>';
         });
@@ -448,7 +460,6 @@ var game_tictactoe = function(){
       board_full = flag;
     };
     
-    
     const check_line = (a, b, c) => {
       return (
         play_board[a] == play_board[b] &&
@@ -494,17 +505,19 @@ var game_tictactoe = function(){
       if (res == player) {
         winner.innerText = "Winner is player!!";
         winner.classList.add("playerWin");
+        winner.classList.remove("hidden");
         board_full = true
       } else if (res == computer) {
         winner.innerText = "Winner is computer";
         winner.classList.add("computerWin");
+        winner.classList.remove("hidden");
         board_full = true
       } else if (board_full) {
         winner.innerText = "Draw!";
         winner.classList.add("draw");
+        winner.classList.remove("hidden");
       }
     };
-    
     
     const render_board = () => {
       board_container.innerHTML = ""
@@ -550,6 +563,7 @@ var game_tictactoe = function(){
     const reset_board = () => {
       play_board = ["", "", "", "", "", "", "", "", ""];
       board_full = false;
+      winner.classList.add("hidden");
       winner.classList.remove("tictactoe-playerWin");
       winner.classList.remove("tictactoe-computerWin");
       winner.classList.remove("tictactoe-draw");
@@ -791,15 +805,16 @@ var is_colliding = function(div1, div2) {
   }; 
 var router = function(){
   console.log("router");
-  if (path[1] == "games") {
-    database_loadGamesList();
-  } else {
-    if (path[3] != "") {
-      if (path[1] == "g") {
-        gameId = path[2];
-        database_loadGame();
-      }
-    }
+  switch (path[1]) {
+    case "games":
+      database_loadGamesList();
+      break;
+    case "g":
+      gameId = path[3];
+      database_loadGame();
+      break;
+    default:
+      console.log("404 / home");
   }
 }
 var ui = function(user){

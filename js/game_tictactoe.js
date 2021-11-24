@@ -22,7 +22,6 @@ var game_tictactoe = function(){
       board_full = flag;
     };
     
-    
     const check_line = (a, b, c) => {
       return (
         play_board[a] == play_board[b] &&
@@ -68,17 +67,19 @@ var game_tictactoe = function(){
       if (res == player) {
         winner.innerText = "Winner is player!!";
         winner.classList.add("playerWin");
+        winner.classList.remove("hidden");
         board_full = true
       } else if (res == computer) {
         winner.innerText = "Winner is computer";
         winner.classList.add("computerWin");
+        winner.classList.remove("hidden");
         board_full = true
       } else if (board_full) {
         winner.innerText = "Draw!";
         winner.classList.add("draw");
+        winner.classList.remove("hidden");
       }
     };
-    
     
     const render_board = () => {
       board_container.innerHTML = ""
@@ -124,6 +125,7 @@ var game_tictactoe = function(){
     const reset_board = () => {
       play_board = ["", "", "", "", "", "", "", "", ""];
       board_full = false;
+      winner.classList.add("hidden");
       winner.classList.remove("tictactoe-playerWin");
       winner.classList.remove("tictactoe-computerWin");
       winner.classList.remove("tictactoe-draw");

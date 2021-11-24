@@ -1,13 +1,25 @@
 var button_create_game = function(){
     $("#button_create_game").click(function () {
-        var location = $("#form_create_game_name").val();
-        if (location == "" || location == null) {
-            if (firebase.auth().currentUser != null){
-                location = firebase.auth().currentUser.uid;
-            }else{
-                location = "blank";
-            }
-        }
-        window.location = "/g/" + location;
+        var type = $("#form_create_game_type").val();
+        var toISOString = new Date().toISOString();
+        db.collection("games").add({
+            type: type,
+            dateCreated: toISOString,
+            dateUpdated: toISOString,
+            uid: firebase.auth().currentUser.uid,
+            budgetItems: 0,
+            budgetLines: 0,
+            create: [],
+            read: [],
+            update: [],
+            delete: []
+        })
+        .then((docRef) => {
+            console.log("Document written with ID: ", docRef.id);
+            window.location = "/g/" + type + "/" + docRef.id;
+        })
+        .catch((error) => {
+            console.error("Error adding document: ", error);
+        });
     });
 }

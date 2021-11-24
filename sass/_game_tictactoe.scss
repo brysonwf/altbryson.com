@@ -1,8 +1,18 @@
-  
+.ticktactoe-container{
+  height: 100%;
+  width: 100%;
+  position: relative;
+    
+}
   .tictactoe-play-area {
     width: 100%;
     height: 100%;
-    grid-template-columns: auto auto auto;
+    max-width: 300px;
+    max-height: 300px;
+    top: 50%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
   
   .tictactoe-block {
@@ -72,11 +82,9 @@
 
   h2#tictactoe-winner {
     position: absolute;
-    top: 50%;
+    top: 10px;
     left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    background-color: green;
+    transform: translateX(-50%);
     padding: 20px;
     border-radius: 20px;
-    color: #fff;
 }

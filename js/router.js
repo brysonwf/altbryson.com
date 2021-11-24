@@ -1,13 +1,14 @@
 var router = function(){
   console.log("router");
-  if (path[1] == "games") {
-    database_loadGamesList();
-  } else {
-    if (path[3] != "") {
-      if (path[1] == "g") {
-        gameId = path[2];
-        database_loadGame();
-      }
-    }
+  switch (path[1]) {
+    case "games":
+      database_loadGamesList();
+      break;
+    case "g":
+      gameId = path[3];
+      database_loadGame();
+      break;
+    default:
+      console.log("404 / home");
   }
 }
