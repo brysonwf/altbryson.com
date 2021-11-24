@@ -531,7 +531,7 @@ var game_tictactoe = function(){
       $('.tictactoe-block').click(function(){
         console.log('click');
         var move = $(this).data( "move" );
-        addPlayerMove(move);
+        playerOneMove(move);
       });
 
     };
@@ -542,22 +542,47 @@ var game_tictactoe = function(){
       check_for_winner();
     }
     
-    const addPlayerMove = e => {
+    const playerOneMove = e => {
+      console.log('playerOneMove');
       if (!board_full && play_board[e] == "") {
         play_board[e] = player;
-        game_loop();
-        addComputerMove();
+        
+        db.collection("games/"+gameId+"/moves").doc('move_'+e).set({
+          move : e,
+          user : player
+        }).then((docRef) => {
+            console.log("Document written with ID: " + 'move_'+e);
+            game_loop();
+            playerTwoMove();
+        }).catch((error) => {
+            console.error("Error adding document: "+ error);
+        });
+
       }
     }
     
-    const addComputerMove = () => {
+    const playerTwoMove = () => {
+      console.log('playerOneMove');
+
       if (!board_full) {
+
         do {
           selected = Math.floor(Math.random() * 9);
         } while (play_board[selected] != "");
         play_board[selected] = computer;
-        game_loop();
+
+        db.collection("games/"+gameId+"/moves").doc('move_'+selected).set({
+          move : selected,
+          user : computer
+        }).then((docRef) => {
+            console.log("Document written with ID: " + 'move_'+selected);
+            game_loop();
+        }).catch((error) => {
+            console.error("Error adding document: " + error);
+        });
+
       }
+
     };
     
     const reset_board = () => {
