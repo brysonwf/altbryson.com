@@ -1,6 +1,6 @@
 var button_create_game = function(){
-    $("#button_create_game").click(function () {
-        var type = $("#form_create_game_type").val();
+    $(".button_create_game").click(function () {
+        var type = $(this).data("type");
         var toISOString = new Date().toISOString();
         db.collection("games").add({
             type: type,

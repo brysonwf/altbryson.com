@@ -35,8 +35,8 @@ var btn_hide = function(){
     })
 }
 var button_create_game = function(){
-    $("#button_create_game").click(function () {
-        var type = $("#form_create_game_type").val();
+    $(".button_create_game").click(function () {
+        var type = $(this).data("type");
         var toISOString = new Date().toISOString();
         db.collection("games").add({
             type: type,
@@ -96,16 +96,26 @@ var database_loadGame = function () {
 var database_loadGamesList = function(){
     console.log("database_loadGamesList");
 
-    db.collection("games").onSnapshot(function(querySnapshot) {
+    db
+    .collection("games")
+    .where("uid", "==", uid)
+    .get()
+    .then((querySnapshot) => {
+        console.log("database_loadGamesList querySnapshot");
         var html = '';
+        html += '<ol>';
         querySnapshot.forEach(function(doc) {
-            html += '<div class="div_game">';
+            html += '<li class="div_game">';
             html += '<a class="btn btn-default btn-lg btn-join" href="/g/' + doc.data().type + '/' + doc.id + '">';
             html += doc.data().type + '/' + doc.id;
             html += '</a>';
-            html += '</div>';
+            html += '</li>';
         });
+        html += '</ol>';
         $('#loadGamesHere').html(html);
+    })
+    .catch((error) => {
+        console.log("Error getting documents: ", error);
     });
 
 
@@ -189,8 +199,39 @@ var firebase_init = function() {
 var firebase_onAuthStateChanged = function () {
   // console.log('firebaseManager.onAuthStateChanged init')
   firebase.auth().onAuthStateChanged(function (user) {
-    router();
-    ui(user);user
+    
+
+    if (user) {
+
+      // User logged in already or has just logged in.
+      uid = user.uid;
+      database_setUser(user);
+      database_setLocation();
+      button_logout();
+      button_create_game();
+
+    } else {
+
+      uid = null;
+      //not logged in
+      button_login();
+      // User not logged in or has just logged out.
+    
+    }
+
+    
+    switch (path[1]) {
+      case "games":
+        database_loadGamesList();
+        break;
+      case "g":
+        gameId = path[3];
+        database_loadGame();
+        break;
+      default:
+        console.log("404 / home");
+    }
+
   });
 };
 
@@ -820,6 +861,7 @@ var getGravatar = function(email) {
 };
 
 var path = window.location.pathname.split("/");
+var uid = null;
 var is_colliding = function(div1, div2) {
 
     var rect1 = {x: div1.position().left, y: div1.position().top, width: div1.width(), height: div1.height()}
@@ -834,35 +876,3 @@ var is_colliding = function(div1, div2) {
   
     return false;
   }; 
-var router = function(){
-  console.log("router");
-  switch (path[1]) {
-    case "games":
-      database_loadGamesList();
-      break;
-    case "g":
-      gameId = path[3];
-      database_loadGame();
-      break;
-    default:
-      console.log("404 / home");
-  }
-}
-var ui = function(user){
-    console.log('ui');
-
-    if (user){
-
-        //logged in
-        database_setUser(user);
-        database_setLocation();
-        button_logout();
-        button_create_game();
-
-    }else{
-
-        //not logged in
-        button_login();
-
-    }
-}
