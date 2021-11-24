@@ -1,8 +1,6 @@
 {{#> layouts/base title="Games" }}
 
 {{#*inline "sectionApp-block"}}
-    <div class="container">
-        <h1>Tic-Tac-Toe</h1>
         <div class="tictactoe-play-area">
             <div id="block_0" class="tictactoe-block" onclick="game_tictactoe.addPlayerMove(0)"></div>
             <div id="block_1" class="tictactoe-block" onclick="game_tictactoe.addPlayerMove(1)"></div>
@@ -15,7 +13,6 @@
             <div id="block_8" class="tictactoe-block" onclick="game_tictactoe.addPlayerMove(8)"></div>
         </div>
         <h2 id="tictactoe-winner"></h2>
-    </div>
 {{/inline}}
 
 {{#*inline "modal-block"}}
