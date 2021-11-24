@@ -10,7 +10,7 @@ var game_tictactoe = function(){
     
     const board_container = document.querySelector(".tictactoe-play-area");
     
-    const winner_statement = document.getElementById("tictactoe-winner");
+    const winner = document.getElementById("tictactoe-winner");
     
     check_board_complete = () => {
       let flag = true;
@@ -34,17 +34,17 @@ var game_tictactoe = function(){
     const check_match = () => {
       for (i = 0; i < 9; i += 3) {
         if (check_line(i, i + 1, i + 2)) {
-          document.querySelector('#block_${i}').classList.add("tictactoe-win");
-          document.querySelector('#block_${i + 1}').classList.add("tictactoe-win");
-          document.querySelector('#block_${i + 2}').classList.add("tictactoe-win");
+          document.querySelector(`#block_${i}`).classList.add("tictactoe-win");
+          document.querySelector(`#block_${i + 1}`).classList.add("tictactoe-win");
+          document.querySelector(`#block_${i + 2}`).classList.add("tictactoe-win");
           return play_board[i];
         }
       }
       for (i = 0; i < 3; i++) {
         if (check_line(i, i + 3, i + 6)) {
-          document.querySelector('#block_${i}').classList.add("tictactoe-win");
-          document.querySelector('#block_${i + 3}').classList.add("tictactoe-win");
-          document.querySelector('#block_${i + 6}').classList.add("tictactoe-win");
+          document.querySelector(`#block_${i}`).classList.add("tictactoe-win");
+          document.querySelector(`#block_${i + 3}`).classList.add("tictactoe-win");
+          document.querySelector(`#block_${i + 6}`).classList.add("tictactoe-win");
           return play_board[i];
         }
       }
@@ -83,11 +83,18 @@ var game_tictactoe = function(){
     const render_board = () => {
       board_container.innerHTML = ""
       play_board.forEach((e, i) => {
-        board_container.innerHTML += '<div id="block_${i}" class="tictactoe-block" data-move="${i}">${play_board[i]}</div>'
+        board_container.innerHTML += `<div id="block_${i}" class="tictactoe-block" data-move="${i}">${play_board[i]}</div>`;
         if (e == player || e == computer) {
-          document.querySelector('#block_${i}').classList.add("tictactoe-occupied");
+          document.querySelector(`#block_${i}`).classList.add("tictactoe-occupied");
         }
       });
+
+      $('.tictactoe-block').click(function(){
+        console.log('click');
+        var move = $(this).data( "move" );
+        addPlayerMove(move);
+      });
+
     };
     
     const game_loop = () => {
@@ -126,10 +133,4 @@ var game_tictactoe = function(){
     
     //initial render
     render_board();
-
-    $('.tictactoe-block').click(function(){
-      var move = $(this).data( "move" );
-      addPlayerMove(move);
-    });
-
 }
