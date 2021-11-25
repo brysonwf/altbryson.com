@@ -2,6 +2,7 @@ var game_tictactoe = function(){
 
     console.log('game_tictactoe init');
 
+    let turn = "O";
     const player = "O";
     const computer = "X";
     
@@ -82,7 +83,6 @@ var game_tictactoe = function(){
     };
 
     console.log("database_loadGamesList");
-
     
     const game_loop = () => {
 
@@ -112,11 +112,11 @@ var game_tictactoe = function(){
         
         db.collection("games/"+gameId+"/moves").doc('move_'+e).set({
           move : e,
-          user : player
+          user : turn
         }).then((docRef) => {
             console.log("Document written with ID: " + 'move_'+e);
             game_loop();
-            playerTwoMove();
+            // playerTwoMove();
         }).catch((error) => {
             console.error("Error adding document: "+ error);
         });
@@ -125,7 +125,7 @@ var game_tictactoe = function(){
     }
     
     const playerTwoMove = () => {
-      console.log('playerOneMove');
+      console.log('playerTwoMove');
 
       if (!board_full) {
 
@@ -161,9 +161,12 @@ var game_tictactoe = function(){
     
     //initial render
     db.collection("games/"+gameId+"/moves").onSnapshot(function(querySnapshot) {
+      var count = 0;
       querySnapshot.forEach(function(doc) {
+        count++;
         play_board[doc.data().move] = doc.data().user
       });
+      turn = (count % 2) ? "O" : "X"; 
       game_loop();
     });
 }

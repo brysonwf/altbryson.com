@@ -1,12 +1,19 @@
 html{
     height:100%;
+    padding:0;
+    margin: 0;
 }
 body {
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-size: 14px;
-    line-height: 1.42857;
-    color: #333;
-    background-color: #fff;
     height: 100%;
-    padding-bottom: 76px;
+    padding:0;
+    margin: 0;
+    overflow:hidden;
+    padding-bottom: 150px;
+}
+.viewport{
+    height: 100%;
+    width: 100%;
+    padding:0;
+    margin: 0;
+    overflow: scroll;
 }

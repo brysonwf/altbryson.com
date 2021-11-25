@@ -1,10 +1,10 @@
 div#sidebar {
-    position: absolute;
+    position: fixed;
+    height: 100px;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: #000;
-    padding: 10px;
+    background-color: #000000;
     border-top: 1px solid #ccc;
     box-shadow: 1px -1px 4px rgba(0, 0, 0, 50%);
 }

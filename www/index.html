@@ -29,30 +29,13 @@
   <meta property="og:description" content="altbryson.com sandbox" />
   <meta property="og:image" content="https://altbryson.com/images/ogimage.png" />
   <meta name="theme-color" content="#f1e2ba" />
-  <link rel="stylesheet" type="text/css" href="/base.css?v20211024182932" />
+  <link rel="stylesheet" type="text/css" href="/base.css?v202110259170" />
 </head>
 
 <body>
   
-<div id="sidebar">
-    <a class="navbutton" href="/"><i class="fas fa-home"></i></a>
-    <a class="navbutton button_create_game" href="#" data-type="tictactoe">TicTacToe</a>
-    
-    <a class="navbutton button_login hidden" href="#">Login</a>
-    <div class="ddmenu dropdown pull-right hidden dropup">
-        <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-            <span id="userimage"></span>
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-            <li class="dropdown-header"><span id="username"></span></li>
-            <li role="separator" class="divider"></li>
-            <li><a class="navbutton" href="/games/">games</a></li>
-            <li>
-                <a class="button_logout hidden">Logout</a>
-            </li>
-        </ul>
-    </div>
-</div>
+
+<div class="viewport">
     
     <p><div class="container">
     <div class="col-xs-12">
@@ -85,7 +68,27 @@
     </div>
 </div></p>
  
+</div>
 
+<div id="sidebar">
+    <a class="navbutton" href="/"><i class="fas fa-home"></i></a>
+    <a class="navbutton button_create_game" href="#" data-type="tictactoe">TicTacToe</a>
+    
+    <a class="navbutton button_login hidden" href="#">Login</a>
+    <div class="ddmenu dropdown pull-right hidden dropup">
+        <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <span id="userimage"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li class="dropdown-header"><span id="username"></span></li>
+            <li role="separator" class="divider"></li>
+            <li><a class="navbutton" href="/games/">games</a></li>
+            <li>
+                <a class="button_logout hidden">Logout</a>
+            </li>
+        </ul>
+    </div>
+</div>
 
 <!-- edit item popup -->
 <div id="sectionModalLogin">
@@ -139,8 +142,8 @@
 <script type="text/javascript" src="/firebase-analytics.js"></script>
 <script type="text/javascript" src="/firebase-firestore.js"></script>
 <script type="text/javascript" src="/moment-with-locales.min.js"></script>
-<script type="text/javascript" src="/lib.js?v20211024182932"></script>
-<script type="text/javascript" src="/app.js?v20211024182932"></script>
+<script type="text/javascript" src="/lib.js?v202110259170"></script>
+<script type="text/javascript" src="/app.js?v202110259170"></script>
 
 <script type="text/javascript">
   appManager.init();
