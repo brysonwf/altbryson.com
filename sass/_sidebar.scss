@@ -1,12 +1,17 @@
 div#sidebar {
     position: fixed;
-    height: 100px;
-    bottom: 0;
+    top: 5px;
     left: 0;
     right: 0;
+    z-index: 11;
+}
+
+.sidebarbg{
     background-color: #657637;
-    border-top: 1px solid #c9e778;
-    box-shadow: 0px -1px 10px #96a372;
+    border-radius: 10px;
+    height: 56px;
+    border: 1px solid #c9e778;
+    box-shadow: 0 2px 5px #96a372;
 }
 
 #username{
@@ -15,26 +20,35 @@ div#sidebar {
 }
 
 a.navbutton{
-    padding: 19px;
+    padding: 17px;
     color: #Fff;
     float: left;
+}
+
+.navbutton_home{
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
 }
 
 .ddmenu .dropdown-menu {
     width: 300px;
     font-size: 2rem;
+    z-index: 13;
+    transform: translate(1px, -2px);
     padding: 0;
-    border: 1px solid #fff;
-    background-color: #edeaea;
-    box-shadow: 1px 1px 20px rgba(0, 0, 0, 50%);
+    border: 1px solid #c5e276;
+    border-top: 0;
+    background-color: #7a8e46;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 .ddmenu li>a {
     padding: 10px 20px;
-    border-bottom: 1px solid #bdbbbb;
-    border-top: 1px solid #d5d4d4;
-    color: black;
-    text-shadow: 1px 1px 0px #fff;
+    border-bottom: 1px solid #5a6833;
+    border-top: 1px solid #a2bd5b;
+    color: #e9ffb5;
+    text-shadow: 1px 1px 0 #2f3a12;
     font-weight: bold;
     text-transform: uppercase;
 }
@@ -45,6 +59,12 @@ a.navbutton{
 
 .ddmenu li:last-child>a {
     border-bottom: 0;
+}
+
+.ddmenu .dropdown-menu>li>a:focus, .ddmenu .dropdown-menu>li>a:hover {
+    text-decoration: none;
+    color: #ffffff;
+    background-color: #7b8f47;
 }
 
 .li_logout{
@@ -58,4 +78,14 @@ a.navbutton{
     bottom: 0;
     left: 0;
     right: 0;
+}
+
+.ddmenu .dropdown-toggle {
+    border-left: 1px solid #879956;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.ddmenu.open .dropdown-toggle {
+    background-color: rgb(123, 143, 71);
+    border-bottom-right-radius: 0;
 }

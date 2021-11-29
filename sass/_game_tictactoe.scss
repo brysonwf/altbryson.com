@@ -9,10 +9,10 @@
   height: 100%;
   max-width: 300px;
   max-height: 300px;
-  top: 50%;
+  top: 100px;
   position: absolute;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
 }
 
 .tictactoe-block {
