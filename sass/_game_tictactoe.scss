@@ -82,9 +82,7 @@
 
 h2#tictactoe-winner {
   position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 20px;
-  border-radius: 20px;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
 }
