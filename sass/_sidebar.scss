@@ -9,8 +9,44 @@ div#sidebar {
     box-shadow: 1px -1px 4px rgba(0, 0, 0, 50%);
 }
 
+#username{
+    color: #fff;
+    text-decoration: none;
+}
+
 a.navbutton{
-    padding: 17px 10px;
+    padding: 19px;
     color: #Fff;
     float: left;
+}
+
+.ddmenu .dropdown-menu {
+    width: 300px;
+    font-size: 2rem;
+    padding: 0;
+    border: 1px solid #fff;
+    background-color: #edeaea;
+    box-shadow: 1px 1px 20px rgba(0, 0, 0, 50%);
+}
+
+.ddmenu li>a {
+    padding: 10px 20px;
+    border-bottom: 1px solid #bdbbbb;
+    border-top: 1px solid #d5d4d4;
+    color: black;
+    text-shadow: 1px 1px 0px #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.ddmenu li:first-child>a {
+    border-top: 0;
+}
+
+.ddmenu li:last-child>a {
+    border-bottom: 0;
+}
+
+.li_logout{
+    padding-bottom: 20px;
 }
