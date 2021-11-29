@@ -230,6 +230,20 @@ var firebase_onAuthStateChanged = function () {
       uid = null;
       button_login();
 
+      
+      //route
+      switch (path[1]) {
+  
+        case "games":
+        case "g":
+          gameId = path[3];
+          $(".button_login").click();
+          break;
+        default:
+          console.log("404 / home");
+          
+      }
+
     }
 
   });
