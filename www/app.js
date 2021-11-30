@@ -105,6 +105,7 @@ var database_loadGame = function () {
                     game_tictactoe();
                 }
 
+                database_removeUserFromAllGames();
                 database_updateGameStats();
                 database_addUserToGame();
                 
@@ -219,6 +220,10 @@ var database_loadYourGamesList = function(){
         $('#loadYourGamesHere').html(html);
 
     });
+}
+var database_removeUserFromAllGames = function(){
+    console.log("init database_removeUserFromAllGames");
+
 }
 var database_setLocation = function () {
     console.log("database_setLocation");

@@ -15,6 +15,7 @@ var database_loadGame = function () {
                     game_tictactoe();
                 }
 
+                database_removeUserFromAllGames();
                 database_updateGameStats();
                 database_addUserToGame();
                 
