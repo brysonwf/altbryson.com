@@ -765,12 +765,12 @@ var game_tictactoe = function(){
     const check_for_winner = () => {
       let res = check_match()
       if (res == player) {
-        winner.innerText = "Winner is player!!";
+        winner.innerText = "Winner is player1";
         winner.classList.add("playerWin");
         winner.classList.remove("hidden");
         board_full = true
       } else if (res == computer) {
-        winner.innerText = "Winner is computer";
+        winner.innerText = "Winner is player2";
         winner.classList.add("computerWin");
         winner.classList.remove("hidden");
         board_full = true
@@ -858,6 +858,7 @@ var game_tictactoe = function(){
       var count = 0;
       querySnapshot.forEach(function(doc) {
         count++;
+        
         play_board[doc.data().move] = doc.data().user
       });
       turn = (count % 2) ? "O" : "X"; 
