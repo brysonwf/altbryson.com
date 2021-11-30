@@ -17,6 +17,7 @@ var firebase_onAuthStateChanged = function () {
         case "":
           console.log("home");
           database_loadGamesList();
+          database_loadYourGamesList();
           break;
         case "g":
           gameId = path[3];

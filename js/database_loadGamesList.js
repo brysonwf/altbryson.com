@@ -17,9 +17,11 @@ var database_loadGamesList = function(){
         var html = '';
         html += '';
         querySnapshot.forEach(function(doc) {
+
             html += '';
-            html += '<a class="" href="/g/' + doc.data().type + '/' + doc.id + '">';
-            html += doc.data().type;
+            html += '<a class="div_game" href="/g/' + doc.data().type + '/' + doc.id + '">';
+            html += '<div class="title">' + doc.data().type + '</div>';
+            html += func_timeSince(doc.data().dateCreated);
             html += '</a>';
             html += '';
         });

@@ -140,9 +140,11 @@ var database_loadGamesList = function(){
         var html = '';
         html += '';
         querySnapshot.forEach(function(doc) {
+
             html += '';
-            html += '<a class="" href="/g/' + doc.data().type + '/' + doc.id + '">';
-            html += doc.data().type;
+            html += '<a class="div_game" href="/g/' + doc.data().type + '/' + doc.id + '">';
+            html += '<div class="title">' + doc.data().type + '</div>';
+            html += func_timeSince(doc.data().dateCreated);
             html += '</a>';
             html += '';
         });
@@ -185,6 +187,36 @@ var database_loadGameUsers = function(){
 
     });
 
+}
+var database_loadYourGamesList = function(){
+    console.log("database_loadYourGamesList");
+
+    var now = new Date();
+    var durationInMinutes = 15;
+    var MS_PER_MINUTE = 60000;
+    var oneMinuteAgo = new Date(now - durationInMinutes * MS_PER_MINUTE);
+    
+    db
+    .collection("games")
+    .where("uid", "==", uid)
+    .orderBy("dateCreated", "desc")
+    .onSnapshot(function(querySnapshot) {
+        
+        console.log("database_loadYourGamesList querySnapshot");
+        var html = '';
+        html += '';
+        querySnapshot.forEach(function(doc) {
+            html += '';
+            html += '<a class="div_game" href="/g/' + doc.data().type + '/' + doc.id + '">';
+            html += '<div class="title">' + doc.data().type + '</div>';
+            html += func_timeSince(doc.data().dateCreated);
+            html += '</a>';
+            html += '';
+        });
+        html += '';
+        $('#loadYourGamesHere').html(html);
+
+    });
 }
 var database_setLocation = function () {
     console.log("database_setLocation");
@@ -300,6 +332,7 @@ var firebase_onAuthStateChanged = function () {
         case "":
           console.log("home");
           database_loadGamesList();
+          database_loadYourGamesList();
           break;
         case "g":
           gameId = path[3];
@@ -341,6 +374,20 @@ var firebase_signOut = function () {
   }, function (error) {
     console.error('Sign Out Error', error)
   })
+}
+var func_timeSince = function(start){
+    var startDate = new Date(start);
+    var endDate = new Date();
+    var diff = endDate.getTime() - startDate.getTime();
+    var hours = Math.floor(diff / 1000 / 60 / 60);
+    diff -= hours * 1000 * 60 * 60;
+    var minutes = Math.floor(diff / 1000 / 60);
+
+    // If using time pickers with 24 hours format, add the below line get exact hours
+    if (hours < 0)
+       hours = hours + 24;
+
+    return (hours <= 9 ? "0" : "") + hours + ":" + (minutes <= 9 ? "0" : "") + minutes;
 }
 var ball_left = 0;
 var ball_top = 0;
