@@ -37,7 +37,7 @@ var game_tictactoe = function(){
           document.querySelector(`#block_${i}`).classList.add("tictactoe-win");
           document.querySelector(`#block_${i + 1}`).classList.add("tictactoe-win");
           document.querySelector(`#block_${i + 2}`).classList.add("tictactoe-win");
-          return document.querySelector(`#block_${i}`).data('uid');
+          return play_board[i];
         }
       }
       for (i = 0; i < 3; i++) {
@@ -45,35 +45,40 @@ var game_tictactoe = function(){
           document.querySelector(`#block_${i}`).classList.add("tictactoe-win");
           document.querySelector(`#block_${i + 3}`).classList.add("tictactoe-win");
           document.querySelector(`#block_${i + 6}`).classList.add("tictactoe-win");
-          return document.querySelector(`#block_${i}`).data('uid');
+          return play_board[i];
         }
       }
       if (check_line(0, 4, 8)) {
         document.querySelector("#block_0").classList.add("tictactoe-win");
         document.querySelector("#block_4").classList.add("tictactoe-win");
         document.querySelector("#block_8").classList.add("tictactoe-win");
-        return document.querySelector("#block_0").data('uid');
+        return play_board[0];
       }
       if (check_line(2, 4, 6)) {
         document.querySelector("#block_2").classList.add("tictactoe-win");
         document.querySelector("#block_4").classList.add("tictactoe-win");
         document.querySelector("#block_6").classList.add("tictactoe-win");
-        return document.querySelector("#block_2").data('uid');
+        return play_board[2];
       }
       return "";
     };
     
     const check_for_winner = () => {
-      let res = check_match();
-      if (board_full) {
+      let res = check_match()
+      if (res == player) {
+        winner.innerText = "Winner is player1";
+        winner.classList.add("playerWin");
+        winner.classList.remove("hidden");
+        board_full = true
+      } else if (res == computer) {
+        winner.innerText = "Winner is player2";
+        winner.classList.add("computerWin");
+        winner.classList.remove("hidden");
+        board_full = true
+      } else if (board_full) {
         winner.innerText = "Draw!";
         winner.classList.add("draw");
         winner.classList.remove("hidden");
-      }else{
-        winner.innerText = "Winner is " + res;
-        winner.classList.add("playerWin");
-        winner.classList.remove("hidden");
-        board_full = true;
       }
     };
 
@@ -122,7 +127,6 @@ var game_tictactoe = function(){
         do {
           selected = Math.floor(Math.random() * 9);
         } while (play_board[selected] != "");
-
         play_board[selected] = computer;
 
         db.collection("games/"+gameId+"/moves").doc('move_'+selected).set({
@@ -155,6 +159,7 @@ var game_tictactoe = function(){
       var count = 0;
       querySnapshot.forEach(function(doc) {
         count++;
+        
         play_board[doc.data().move] = doc.data().user
       });
       turn = (count % 2) ? "X" : "O"; 

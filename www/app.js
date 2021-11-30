@@ -861,7 +861,7 @@ var game_tictactoe = function(){
         
         play_board[doc.data().move] = doc.data().user
       });
-      turn = (count % 2) ? "O" : "X"; 
+      turn = (count % 2) ? "X" : "O"; 
       game_loop();
     });
 }
