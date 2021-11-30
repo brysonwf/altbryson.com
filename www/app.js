@@ -113,7 +113,6 @@ var database_loadGame = function () {
                     database_addUserToGame();
                 }, 10000);
                 
-                
             } else {
                 console.log("else game does not exist");
             }
@@ -143,8 +142,12 @@ var database_loadGamesList = function(){
 
             html += '';
             html += '<a class="div_game" href="/g/' + doc.data().type + '/' + doc.id + '">';
-            html += '<div class="title">' + doc.data().type + '</div>';
-            html += func_timeSince(doc.data().dateCreated);
+            if (doc.data().type == "page"){
+                html += '<div class="title">' + doc.id + '</div>';
+            }else{
+                html += '<div class="title">' + doc.data().type + '</div>';
+            }
+            html += func_timeSince(doc.data().activeDate);
             html += '</a>';
             html += '';
         });
@@ -331,12 +334,22 @@ var firebase_onAuthStateChanged = function () {
 
         case "":
           console.log("home");
+          gameId = path[3];
+          gameId = "home";
+          database_loadGame();
           database_loadGamesList();
           database_loadYourGamesList();
           break;
         case "g":
           gameId = path[3];
           database_loadGame();
+          switch (path[3]) {
+            case "home":
+              console.log("home");
+              database_loadGamesList();
+              database_loadYourGamesList();
+              break;
+          }
           break;
         default:
           console.log("404");

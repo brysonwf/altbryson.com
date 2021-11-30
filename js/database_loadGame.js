@@ -23,7 +23,6 @@ var database_loadGame = function () {
                     database_addUserToGame();
                 }, 10000);
                 
-                
             } else {
                 console.log("else game does not exist");
             }

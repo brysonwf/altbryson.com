@@ -16,12 +16,22 @@ var firebase_onAuthStateChanged = function () {
 
         case "":
           console.log("home");
+          gameId = path[3];
+          gameId = "home";
+          database_loadGame();
           database_loadGamesList();
           database_loadYourGamesList();
           break;
         case "g":
           gameId = path[3];
           database_loadGame();
+          switch (path[3]) {
+            case "home":
+              console.log("home");
+              database_loadGamesList();
+              database_loadYourGamesList();
+              break;
+          }
           break;
         default:
           console.log("404");
