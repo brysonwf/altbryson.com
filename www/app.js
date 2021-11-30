@@ -180,10 +180,9 @@ var database_loadGameUsers = function(){
             classNames = 'user ';
             if (userTime <= elevenSecondsAgo){
                 classNames += 'nothere ';
-            }else if(userTime <= oneMinuteAgo){
+            }
+            if(userTime <= oneMinuteAgo){
                 doc.ref.delete();
-            }else{
-
             }
             letter = (doc.data().name).charAt(0);
             html += "<div class=\"" + classNames +"\">"+ letter +"</div>";
