@@ -25,7 +25,6 @@ var database_loadGamesList = function(){
             }else{
                 html += '<div class="title">' + doc.data().type + '</div>';
             }
-            html += func_timeSince(doc.data().activeDate);
             html += '</a>';
             html += '';
         });
