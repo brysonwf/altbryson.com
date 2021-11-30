@@ -75,11 +75,14 @@ var button_logout = function(){
 var database_addUserToGame = function(){
     console.log('add user');
 
+    newUserData = userData;
+    newUserData.createDate = new Date();
+
     //add my user to this game
     db.collection("games/"+gameId+"/gameUsers")
         .doc("" + firebase.auth().currentUser.uid)
         .set(
-            userData,
+            newUserData,
             { merge: true }
         );
 
@@ -101,8 +104,13 @@ var database_loadGame = function () {
                 }else if (doc.data().type == 'tictactoe'){
                     game_tictactoe();
                 }
-
+                
                 database_addUserToGame();
+                
+                setInterval(function() {
+                    database_addUserToGame();
+                }, 10000);
+                
                 
             } else {
                 console.log("else game does not exist");
@@ -141,16 +149,37 @@ var database_loadGamesList = function(){
 var database_loadGameUsers = function(){
     console.log('database_loadGameUsers');
 
+    var now = new Date();
+    var durationInMinutes = 1;
+    var MS_PER_MINUTE = 60000;
+    var oneMinuteAgo = new Date(now - durationInMinutes * MS_PER_MINUTE);
+
     db.collection("games/"+gameId+"/gameUsers").onSnapshot(function(querySnapshot) {
         console.log("database_loadGameUsers onSnapshot");
+
+        var classNames = '';
+        let letter = '';
         var html = '';
         html += '';
         querySnapshot.forEach(function(doc) {
-            html += "<div class=\"user\"><img src=" + doc.data().gravatar + "/></div>";
+
+            var userTime = new Date(doc.data().createDate.toDate())
+            
+            classNames = 'user ';
+            if (userTime <= oneMinuteAgo){
+                classNames += 'nothere '
+            }else{
+
+            }
+            letter = (doc.data().name).charAt(0);
+            html += "<div class=\"" + classNames +"\">"+ letter +"</div>";
         });
         html += '';
+
         $('.userbank').html(html);
-      });
+
+    });
+
 }
 var database_setLocation = function () {
     console.log("database_setLocation");
@@ -166,13 +195,15 @@ var database_setLocation = function () {
 var database_setUser = function (user) {
     console.log("database_setUser");
 
-    var gravatarImage = getGravatar(user.email);
+    // var gravatarImage = getGravatar(user.email);
     
     $('#username').html(user.email);
 
-    $('#userimage').html('<img src="' + gravatarImage + '" />');
+    // $('#userimage').html('<img src="' + gravatarImage + '" />');
 
     $('.ddmenu').removeClass('hidden');
+
+    let createDate = new Date();
 
     userData = {
         name: user.displayName,
@@ -180,7 +211,8 @@ var database_setUser = function (user) {
         photoUrl: user.photoURL,
         emailVerified: user.emailVerified,
         uid: user.uid,
-        gravatar: gravatarImage,
+        // gravatar: gravatarImage,
+        createDate: createDate
     }
 
     db.collection("users")

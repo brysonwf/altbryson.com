@@ -1,13 +1,15 @@
 var database_setUser = function (user) {
     console.log("database_setUser");
 
-    var gravatarImage = getGravatar(user.email);
+    // var gravatarImage = getGravatar(user.email);
     
     $('#username').html(user.email);
 
-    $('#userimage').html('<img src="' + gravatarImage + '" />');
+    // $('#userimage').html('<img src="' + gravatarImage + '" />');
 
     $('.ddmenu').removeClass('hidden');
+
+    let createDate = new Date();
 
     userData = {
         name: user.displayName,
@@ -15,7 +17,8 @@ var database_setUser = function (user) {
         photoUrl: user.photoURL,
         emailVerified: user.emailVerified,
         uid: user.uid,
-        gravatar: gravatarImage,
+        // gravatar: gravatarImage,
+        createDate: createDate
     }
 
     db.collection("users")
