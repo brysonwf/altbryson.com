@@ -72,6 +72,19 @@ var button_logout = function(){
         location.reload();
     });
 }
+var database_addUserToGame = function(){
+    console.log('add user');
+
+    //add my user to this game
+    db.collection("games/"+gameId+"/gameUsers")
+        .doc("" + firebase.auth().currentUser.uid)
+        .set(
+            userData,
+            { merge: true }
+        );
+
+    database_loadGameUsers();
+}
 var database_loadGame = function () {
     console.log("init database_loadGame for : " + gameId);
     var docRef = db.collection("games").doc("" + gameId);
@@ -79,13 +92,18 @@ var database_loadGame = function () {
         .get()
         .then(function (doc) {
             if (doc.exists) {
+                
                 console.log("game exists");
-                document.title = "altbryson.com/g/" + doc.Id;
+                document.title = "altbryson.com/g/" + gameId;
+
                 if (doc.data().type == "minigolf"){
                     game_minigolf();
                 }else if (doc.data().type == 'tictactoe'){
                     game_tictactoe();
                 }
+
+                database_addUserToGame();
+                
             } else {
                 console.log("else game does not exist");
             }
@@ -120,6 +138,20 @@ var database_loadGamesList = function(){
 
 
 }
+var database_loadGameUsers = function(){
+    console.log('database_loadGameUsers');
+
+    db.collection("games/"+gameId+"/gameUsers").onSnapshot(function(querySnapshot) {
+        console.log("database_loadGameUsers onSnapshot");
+        var html = '';
+        html += '';
+        querySnapshot.forEach(function(doc) {
+            html += "<div class=\"user\"><img src=" + doc.data().gravatar + "/></div>";
+        });
+        html += '';
+        $('.userbank').html(html);
+      });
+}
 var database_setLocation = function () {
     console.log("database_setLocation");
     db.collection("users")
@@ -142,17 +174,19 @@ var database_setUser = function (user) {
 
     $('.ddmenu').removeClass('hidden');
 
+    userData = {
+        name: user.displayName,
+        email: user.email,
+        photoUrl: user.photoURL,
+        emailVerified: user.emailVerified,
+        uid: user.uid,
+        gravatar: gravatarImage,
+    }
+
     db.collection("users")
         .doc("" + firebase.auth().currentUser.uid)
         .set(
-            {
-                name: user.displayName,
-                email: user.email,
-                photoUrl: user.photoURL,
-                emailVerified: user.emailVerified,
-                uid: user.uid,
-                gravatar: gravatarImage,
-            },
+            userData,
             { merge: true }
         );
 }
@@ -878,7 +912,9 @@ var getGravatar = function(email) {
 };
 
 var path = window.location.pathname.split("/");
+var userData = null;
 var uid = null;
+var gameId = null;
 var is_colliding = function(div1, div2) {
 
     var rect1 = {x: div1.position().left, y: div1.position().top, width: div1.width(), height: div1.height()}

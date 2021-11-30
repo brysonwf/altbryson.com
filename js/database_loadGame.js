@@ -5,13 +5,18 @@ var database_loadGame = function () {
         .get()
         .then(function (doc) {
             if (doc.exists) {
+                
                 console.log("game exists");
-                document.title = "altbryson.com/g/" + doc.Id;
+                document.title = "altbryson.com/g/" + gameId;
+
                 if (doc.data().type == "minigolf"){
                     game_minigolf();
                 }else if (doc.data().type == 'tictactoe'){
                     game_tictactoe();
                 }
+
+                database_addUserToGame();
+                
             } else {
                 console.log("else game does not exist");
             }

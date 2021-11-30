@@ -9,17 +9,19 @@ var database_setUser = function (user) {
 
     $('.ddmenu').removeClass('hidden');
 
+    userData = {
+        name: user.displayName,
+        email: user.email,
+        photoUrl: user.photoURL,
+        emailVerified: user.emailVerified,
+        uid: user.uid,
+        gravatar: gravatarImage,
+    }
+
     db.collection("users")
         .doc("" + firebase.auth().currentUser.uid)
         .set(
-            {
-                name: user.displayName,
-                email: user.email,
-                photoUrl: user.photoURL,
-                emailVerified: user.emailVerified,
-                uid: user.uid,
-                gravatar: gravatarImage,
-            },
+            userData,
             { merge: true }
         );
 }
