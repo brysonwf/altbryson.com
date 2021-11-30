@@ -2,9 +2,11 @@ var database_loadGameUsers = function(){
     console.log('database_loadGameUsers');
 
     var now = new Date();
-    var durationInMinutes = 1;
+    var oneMinute = 1;
+    var elevenSeconds = (1/60)*11;
     var MS_PER_MINUTE = 60000;
-    var oneMinuteAgo = new Date(now - durationInMinutes * MS_PER_MINUTE);
+    var oneMinuteAgo = new Date(now - oneMinute * MS_PER_MINUTE);
+    var elevenSecondsAgo = new Date(now - elevenSeconds * MS_PER_MINUTE);
 
     db.collection("games/"+gameId+"/gameUsers").onSnapshot(function(querySnapshot) {
         console.log("database_loadGameUsers onSnapshot");
@@ -18,8 +20,9 @@ var database_loadGameUsers = function(){
             var userTime = new Date(doc.data().createDate.toDate())
             
             classNames = 'user ';
-            if (userTime <= oneMinuteAgo){
-                classNames += 'nothere '
+            if (userTime <= elevenSecondsAgo){
+                classNames += 'nothere ';
+            }else if(userTime <= oneMinuteAgo){
                 doc.ref.delete();
             }else{
 

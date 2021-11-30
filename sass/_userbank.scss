@@ -1,6 +1,7 @@
 .userbank{
-    background-color: #ccc;
+    background-color: #eff3e6;
     border-radius: 10px;
+    border: 1px dashed #ccc;
     padding: 3px;
     margin-top: 6px;
     height: 35px;
@@ -17,7 +18,8 @@
 }
 
 .userbank .nothere {
-    background-color: red;
+    background-color: #b7b7b7;
+    opacity: .5;
 }  
 
 .userbank .user img {
