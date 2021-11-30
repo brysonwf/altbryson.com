@@ -138,15 +138,15 @@ var database_loadGamesList = function(){
         
         console.log("database_loadGamesList querySnapshot");
         var html = '';
-        html += '<ol>';
+        html += '';
         querySnapshot.forEach(function(doc) {
-            html += '<li class="div_game">';
-            html += '<a class="btn btn-default btn-lg btn-join" href="/g/' + doc.data().type + '/' + doc.id + '">';
-            html += doc.data().type + '/' + doc.id;
+            html += '';
+            html += '<a class="" href="/g/' + doc.data().type + '/' + doc.id + '">';
+            html += doc.data().type;
             html += '</a>';
-            html += '</li>';
+            html += '';
         });
-        html += '</ol>';
+        html += '';
         $('#loadGamesHere').html(html);
 
     });
@@ -297,7 +297,7 @@ var firebase_onAuthStateChanged = function () {
       //route
       switch (path[1]) {
 
-        case "home":
+        case "":
           console.log("home");
           database_loadGamesList();
           break;

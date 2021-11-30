@@ -14,7 +14,7 @@ var firebase_onAuthStateChanged = function () {
       //route
       switch (path[1]) {
 
-        case "home":
+        case "":
           console.log("home");
           database_loadGamesList();
           break;
