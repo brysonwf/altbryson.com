@@ -13,8 +13,9 @@ var firebase_onAuthStateChanged = function () {
 
       //route
       switch (path[1]) {
-  
-        case "games":
+
+        case "home":
+          console.log("home");
           database_loadGamesList();
           break;
         case "g":
@@ -22,7 +23,7 @@ var firebase_onAuthStateChanged = function () {
           database_loadGame();
           break;
         default:
-          console.log("404 / home");
+          console.log("404");
           
       }
 

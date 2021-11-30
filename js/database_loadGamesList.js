@@ -1,11 +1,18 @@
 var database_loadGamesList = function(){
     console.log("database_loadGamesList");
 
+    var now = new Date();
+    var durationInMinutes = 15;
+    var MS_PER_MINUTE = 60000;
+    var oneMinuteAgo = new Date(now - durationInMinutes * MS_PER_MINUTE);
+    
     db
     .collection("games")
-    .where("uid", "==", uid)
-    .get()
-    .then((querySnapshot) => {
+    .where("activeDate", ">=", oneMinuteAgo)
+    .orderBy("activeDate", "desc")
+    .limit(5)
+    .onSnapshot(function(querySnapshot) {
+        
         console.log("database_loadGamesList querySnapshot");
         var html = '';
         html += '<ol>';
@@ -18,10 +25,6 @@ var database_loadGamesList = function(){
         });
         html += '</ol>';
         $('#loadGamesHere').html(html);
-    })
-    .catch((error) => {
-        console.log("Error getting documents: ", error);
+
     });
-
-
 }

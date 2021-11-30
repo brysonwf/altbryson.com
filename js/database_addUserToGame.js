@@ -6,11 +6,11 @@ var database_addUserToGame = function(){
 
     //add my user to this game
     db.collection("games/"+gameId+"/gameUsers")
-        .doc("" + firebase.auth().currentUser.uid)
-        .set(
-            newUserData,
-            { merge: true }
-        );
+    .doc("" + firebase.auth().currentUser.uid)
+    .set(
+        newUserData,
+        { merge: true }
+    );
 
     database_loadGameUsers();
 }

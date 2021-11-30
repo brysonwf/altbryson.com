@@ -80,11 +80,11 @@ var database_addUserToGame = function(){
 
     //add my user to this game
     db.collection("games/"+gameId+"/gameUsers")
-        .doc("" + firebase.auth().currentUser.uid)
-        .set(
-            newUserData,
-            { merge: true }
-        );
+    .doc("" + firebase.auth().currentUser.uid)
+    .set(
+        newUserData,
+        { merge: true }
+    );
 
     database_loadGameUsers();
 }
@@ -104,10 +104,12 @@ var database_loadGame = function () {
                 }else if (doc.data().type == 'tictactoe'){
                     game_tictactoe();
                 }
-                
+
+                database_updateGameStats();
                 database_addUserToGame();
                 
                 setInterval(function() {
+                    database_updateGameStats();
                     database_addUserToGame();
                 }, 10000);
                 
@@ -122,11 +124,18 @@ var database_loadGame = function () {
 var database_loadGamesList = function(){
     console.log("database_loadGamesList");
 
+    var now = new Date();
+    var durationInMinutes = 15;
+    var MS_PER_MINUTE = 60000;
+    var oneMinuteAgo = new Date(now - durationInMinutes * MS_PER_MINUTE);
+    
     db
     .collection("games")
-    .where("uid", "==", uid)
-    .get()
-    .then((querySnapshot) => {
+    .where("activeDate", ">=", oneMinuteAgo)
+    .orderBy("activeDate", "desc")
+    .limit(5)
+    .onSnapshot(function(querySnapshot) {
+        
         console.log("database_loadGamesList querySnapshot");
         var html = '';
         html += '<ol>';
@@ -139,12 +148,8 @@ var database_loadGamesList = function(){
         });
         html += '</ol>';
         $('#loadGamesHere').html(html);
-    })
-    .catch((error) => {
-        console.log("Error getting documents: ", error);
+
     });
-
-
 }
 var database_loadGameUsers = function(){
     console.log('database_loadGameUsers');
@@ -222,6 +227,20 @@ var database_setUser = function (user) {
             { merge: true }
         );
 }
+var database_updateGameStats = function(){
+    console.log('init database_updateGameStats');
+
+    var activeDate = new Date();
+
+    db.collection("games")
+    .doc("" + gameId)
+    .set(
+        {
+            activeDate: activeDate
+        },
+        { merge: true }
+    );
+}
 var firebase_init = function() {
   // console.log('firebaseManager init')
 
@@ -277,8 +296,9 @@ var firebase_onAuthStateChanged = function () {
 
       //route
       switch (path[1]) {
-  
-        case "games":
+
+        case "home":
+          console.log("home");
           database_loadGamesList();
           break;
         case "g":
@@ -286,7 +306,7 @@ var firebase_onAuthStateChanged = function () {
           database_loadGame();
           break;
         default:
-          console.log("404 / home");
+          console.log("404");
           
       }
 

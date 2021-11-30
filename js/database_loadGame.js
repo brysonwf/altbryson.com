@@ -14,10 +14,12 @@ var database_loadGame = function () {
                 }else if (doc.data().type == 'tictactoe'){
                     game_tictactoe();
                 }
-                
+
+                database_updateGameStats();
                 database_addUserToGame();
                 
                 setInterval(function() {
+                    database_updateGameStats();
                     database_addUserToGame();
                 }, 10000);
                 

@@ -56,10 +56,6 @@
         "destination": "/help.html"
       },
       {
-        "source": "/games",
-        "destination": "/list_games.html"
-      },
-      {
         "source": "/g/minigolf/**",
         "destination": "/game_minigolf.html"
       },
