@@ -8,21 +8,23 @@ var database_loadGame = function () {
                 
                 console.log("game exists");
                 document.title = "altbryson.com/g/" + gameId;
+                if (doc.data().userLimit){
+                    userLimit = doc.data().userLimit;
+                }
 
                 if (doc.data().type == "minigolf"){
                     game_minigolf();
                 }else if (doc.data().type == 'tictactoe'){
                     game_tictactoe();
                 }
-
-                database_removeUserFromAllGames();
+                
                 database_updateGameStats();
                 database_addUserToGame();
                 
-                setInterval(function() {
-                    database_updateGameStats();
-                    database_addUserToGame();
-                }, 10000);
+                // setInterval(function() {
+                //     database_updateGameStats();
+                //     database_addUserToGame();
+                // }, 10000);
                 
             } else {
                 console.log("else game does not exist");

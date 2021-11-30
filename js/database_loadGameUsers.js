@@ -24,10 +24,11 @@ var database_loadGameUsers = function(){
                 classNames += 'nothere ';
             }
             if(userTime <= oneMinuteAgo){
-                doc.ref.delete();
+                // doc.ref.delete();
             }
             letter = (doc.data().name).charAt(0);
             html += "<div class=\"" + classNames +"\">"+ letter +"</div>";
+            
         });
         html += '';
 

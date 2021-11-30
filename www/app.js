@@ -72,12 +72,27 @@ var button_logout = function(){
         location.reload();
     });
 }
+var database_addMove = function(docName, docJson){
+    console.log('init database_addMove');
+    
+    docJson.uid = uid;
+    docJson.createDate = new Date();
+
+    db.collection("games/"+gameId+"/moves")
+    .doc(docName)
+    .set(docJson)
+    .then((docRef) => {
+        
+    }).catch((error) => {
+        console.error("Error adding document: " + error);
+    });
+}
 var database_addUserToGame = function(){
     console.log('add user');
 
+
     newUserData = userData;
     newUserData.createDate = new Date();
-
     //add my user to this game
     db.collection("games/"+gameId+"/gameUsers")
     .doc("" + firebase.auth().currentUser.uid)
@@ -87,6 +102,45 @@ var database_addUserToGame = function(){
     );
 
     database_loadGameUsers();
+}
+var database_confirmMove = function(docName, docJson){
+    console.log("init database_confirmMove");
+
+    var playersOnTheBoard = [];
+    var alreadyOnTheBoard = [];
+
+    var count = 1;
+    db.collection("games/"+gameId+"/moves")
+    .orderBy("createDate", "desc")
+    .limit(userLimit)
+    .get()
+    .then((querySnapshot) => {
+        console.log("database_confirmMove querySnapshot");
+        querySnapshot.forEach((doc) => {
+            if (alreadyOnTheBoard[doc.data().uid] != true){
+                alreadyOnTheBoard[doc.data().uid] = true;
+                playersOnTheBoard[count] = doc.data().uid;
+                count++;
+            }
+        });
+        console.log('count: ' + count);
+        //if we havn't had enough plays yet
+        if (count <= userLimit){
+            console.log('not enough players allowing move');
+            if (alreadyOnTheBoard[uid]){
+                console.log('user on the board already: ' + uid);
+            }else{
+                database_addMove(docName, docJson);
+            }
+        }else if (playersOnTheBoard[userLimit] == uid){
+            console.log('you are allowed to move');
+            database_addMove(docName, docJson);
+        }
+    })
+    .catch((error) => {
+        console.log("Error getting documents: ", error);
+    });
+
 }
 var database_loadGame = function () {
     console.log("init database_loadGame for : " + gameId);
@@ -98,21 +152,23 @@ var database_loadGame = function () {
                 
                 console.log("game exists");
                 document.title = "altbryson.com/g/" + gameId;
+                if (doc.data().userLimit){
+                    userLimit = doc.data().userLimit;
+                }
 
                 if (doc.data().type == "minigolf"){
                     game_minigolf();
                 }else if (doc.data().type == 'tictactoe'){
                     game_tictactoe();
                 }
-
-                database_removeUserFromAllGames();
+                
                 database_updateGameStats();
                 database_addUserToGame();
                 
-                setInterval(function() {
-                    database_updateGameStats();
-                    database_addUserToGame();
-                }, 10000);
+                // setInterval(function() {
+                //     database_updateGameStats();
+                //     database_addUserToGame();
+                // }, 10000);
                 
             } else {
                 console.log("else game does not exist");
@@ -182,10 +238,11 @@ var database_loadGameUsers = function(){
                 classNames += 'nothere ';
             }
             if(userTime <= oneMinuteAgo){
-                doc.ref.delete();
+                // doc.ref.delete();
             }
             letter = (doc.data().name).charAt(0);
             html += "<div class=\"" + classNames +"\">"+ letter +"</div>";
+            
         });
         html += '';
 
@@ -223,10 +280,6 @@ var database_loadYourGamesList = function(){
         $('#loadYourGamesHere').html(html);
 
     });
-}
-var database_removeUserFromAllGames = function(){
-    console.log("init database_removeUserFromAllGames");
-
 }
 var database_setLocation = function () {
     console.log("database_setLocation");
@@ -754,18 +807,13 @@ var game_tictactoe = function(){
     const playerOneMove = e => {
       console.log('playerOneMove');
       if (!board_full && play_board[e] == "") {
-        play_board[e] = player;
-        
-        db.collection("games/"+gameId+"/moves").doc('move_'+e).set({
-          move : e,
-          user : turn
-        }).then((docRef) => {
-            console.log("Document written with ID: " + 'move_'+e);
-            game_loop();
-            // playerTwoMove();
-        }).catch((error) => {
-            console.error("Error adding document: "+ error);
-        });
+          
+          var docJson = {
+            move : e,
+            user : turn
+          }
+
+          database_confirmMove('move_'+e, docJson)
 
       }
     }
@@ -1034,6 +1082,7 @@ var path = window.location.pathname.split("/");
 var userData = null;
 var uid = null;
 var gameId = null;
+var userLimit = 2;
 var is_colliding = function(div1, div2) {
 
     var rect1 = {x: div1.position().left, y: div1.position().top, width: div1.width(), height: div1.height()}

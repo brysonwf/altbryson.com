@@ -108,18 +108,13 @@ var game_tictactoe = function(){
     const playerOneMove = e => {
       console.log('playerOneMove');
       if (!board_full && play_board[e] == "") {
-        play_board[e] = player;
-        
-        db.collection("games/"+gameId+"/moves").doc('move_'+e).set({
-          move : e,
-          user : turn
-        }).then((docRef) => {
-            console.log("Document written with ID: " + 'move_'+e);
-            game_loop();
-            // playerTwoMove();
-        }).catch((error) => {
-            console.error("Error adding document: "+ error);
-        });
+          
+          var docJson = {
+            move : e,
+            user : turn
+          }
+
+          database_confirmMove('move_'+e, docJson)
 
       }
     }
