@@ -20,6 +20,7 @@ var database_loadGameUsers = function(){
             classNames = 'user ';
             if (userTime <= oneMinuteAgo){
                 classNames += 'nothere '
+                doc.ref.delete();
             }else{
 
             }
