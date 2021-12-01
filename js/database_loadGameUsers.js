@@ -27,7 +27,7 @@ var database_loadGameUsers = function(){
                 // doc.ref.delete();
             }
             letter = (doc.data().name).charAt(0);
-            html += "<div class=\"" + classNames +"\">"+ letter +"</div>";
+            html += "<div class=\"" + classNames +"\" id=\"uid-" + doc.data().uid +"\">"+ letter +"</div>";
             
         });
         html += '';

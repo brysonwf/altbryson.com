@@ -11,12 +11,6 @@ var database_loadGame = function () {
                 if (doc.data().userLimit){
                     userLimit = doc.data().userLimit;
                 }
-
-                if (doc.data().type == "minigolf"){
-                    game_minigolf();
-                }else if (doc.data().type == 'tictactoe'){
-                    game_tictactoe();
-                }
                 
                 database_updateGameStats();
                 database_addUserToGame();
@@ -25,6 +19,12 @@ var database_loadGame = function () {
                 //     database_updateGameStats();
                 //     database_addUserToGame();
                 // }, 10000);
+
+                if (doc.data().type == "minigolf"){
+                    game_minigolf();
+                }else if (doc.data().type == 'tictactoe'){
+                    game_tictactoe();
+                }
                 
             } else {
                 console.log("else game does not exist");

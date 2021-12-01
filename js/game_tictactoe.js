@@ -155,13 +155,20 @@ var game_tictactoe = function(){
     };
     
     //initial render
-    db.collection("games/"+gameId+"/moves").onSnapshot(function(querySnapshot) {
+    db.collection("games/"+gameId+"/moves")
+    .orderBy("createDate", "desc")
+    .onSnapshot(function(querySnapshot) {
       var count = 0;
+      var playerBeforeLastUid = '';
+      var lastPlayerUid = '';
       querySnapshot.forEach(function(doc) {
+        playerBeforeLastUid = lastPlayerUid;
         count++;
-        
         play_board[doc.data().move] = doc.data().user
+        lastPlayerUid = doc.data().uid;
       });
+      $('#uid-' + lastPlayerUid).addClass('lastPlayer');
+      $('#uid-' + playerBeforeLastUid).addClass('playerBeforeLast');
       turn = (count % 2) ? "X" : "O"; 
       game_loop();
     });
