@@ -12,14 +12,15 @@ var database_loadGame = function () {
                     userLimit = doc.data().userLimit;
                 }
                 
-                database_updateGameStats();
-                database_addUserToGame();
+                database_setGameActive();
+                database_setGameUser();
                 
                 // setInterval(function() {
-                //     database_updateGameStats();
-                //     database_addUserToGame();
+                //     database_setGameActive();
+                //     database_setGameUser();
                 // }, 10000);
 
+                console.log('testing type: ' + doc.data().type);
                 if (doc.data().type == "minigolf"){
                     game_minigolf();
                 }else if (doc.data().type == 'tictactoe'){

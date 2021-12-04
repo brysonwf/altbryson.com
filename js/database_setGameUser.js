@@ -1,5 +1,5 @@
-var database_addUserToGame = function(){
-    console.log('add user');
+var database_setGameUser = function(){
+    console.log('init database_setGameUser');
 
 
     newUserData = userData;

@@ -1,6 +1,5 @@
 var firebase_init = function() {
   // console.log('firebaseManager init')
-
   
   //config and init firebase
   firebase.initializeApp({

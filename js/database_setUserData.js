@@ -1,15 +1,13 @@
-var database_setUser = function (user) {
-    console.log("database_setUser");
+var database_setUserData = function (user) {
+    console.log("database_setUserData");
 
-    // var gravatarImage = getGravatar(user.email);
+    // var gravatarImage = func_getGravatar(user.email);
     
     $('#username').html(user.email);
 
     // $('#userimage').html('<img src="' + gravatarImage + '" />');
 
     $('.ddmenu').removeClass('hidden');
-
-    let createDate = new Date();
 
     userData = {
         name: user.displayName,
@@ -18,7 +16,7 @@ var database_setUser = function (user) {
         emailVerified: user.emailVerified,
         uid: user.uid,
         // gravatar: gravatarImage,
-        createDate: createDate
+        createDate: firebase.firestore.FieldValue.serverTimestamp()
     }
 
     db.collection("users")

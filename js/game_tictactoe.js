@@ -70,15 +70,18 @@ var game_tictactoe = function(){
         winner.classList.add("playerWin");
         winner.classList.remove("hidden");
         board_full = true
+        database_setGameComplete();
       } else if (res == computer) {
         winner.innerText = "Winner is player2";
         winner.classList.add("computerWin");
         winner.classList.remove("hidden");
         board_full = true
+        database_setGameComplete();
       } else if (board_full) {
         winner.innerText = "Draw!";
         winner.classList.add("draw");
         winner.classList.remove("hidden");
+        database_setGameComplete();
       }
     };
 
@@ -114,7 +117,7 @@ var game_tictactoe = function(){
             user : turn
           }
 
-          database_confirmMove('move_'+e, docJson)
+          func_confirmMove('move_'+e, docJson)
 
       }
     }

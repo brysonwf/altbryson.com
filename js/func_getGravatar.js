@@ -1,4 +1,4 @@
-var getGravatar = function(email) {
+var func_getGravatar = function(email) {
   var MD5 = function(s) {
     function L(k, d) {
       return (k << d) | (k >>> (32 - d));

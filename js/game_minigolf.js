@@ -198,13 +198,13 @@ var game_minigolf = function(){
 
 
             //todo: add test to make sure ball is moving slow enough to actually go into the hole
-            if (is_colliding($('#mgb_ball'), $('#mgb_hole'))){
+            if (func_is_colliding($('#mgb_ball'), $('#mgb_hole'))){
                     winner = true;
                     ball.velocity.x = 0;
                     ball.velocity.y = 0;
             }
             else 
-            if (is_colliding($('#mgb_ball'), $('#mgb_barrier'))){
+            if (func_is_colliding($('#mgb_ball'), $('#mgb_barrier'))){
                 
             }
             else 

@@ -1,8 +1,8 @@
-var database_addMove = function(docName, docJson){
-    console.log('init database_addMove');
+var database_setMove = function(docName, docJson){
+    console.log('init database_setMove');
     
     docJson.uid = uid;
-    docJson.createDate = new Date();
+    docJson.createDate = firebase.firestore.FieldValue.serverTimestamp();
 
     db.collection("games/"+gameId+"/moves")
     .doc(docName)

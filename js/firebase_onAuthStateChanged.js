@@ -6,7 +6,7 @@ var firebase_onAuthStateChanged = function () {
 
       // User logged in already or has just logged in.
       uid = user.uid;
-      database_setUser(user);
+      database_setUserData(user);
       database_setLocation();
       button_logout();
       button_create_game();

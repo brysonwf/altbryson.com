@@ -1,4 +1,4 @@
-var is_colliding = function(div1, div2) {
+var func_is_colliding = function(div1, div2) {
 
     var rect1 = {x: div1.position().left, y: div1.position().top, width: div1.width(), height: div1.height()}
     var rect2 = {x: div2.position().left, y: div2.position().top, width: div2.width(), height: div2.height()}

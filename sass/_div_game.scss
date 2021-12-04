@@ -1,2 +1,18 @@
-.div_game{
+.container_games a.div_game {
+    float: left;
+    padding: 10px;
+    background-color: #ccc;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    color: black;
+    border-radius: 10px;
+}
+
+.container_games a.div_game .title {
+    font-weight: bold;
+}
+
+.game_complete{
+    background-color: #ededed;
+    color: #a3a3a3;
 }

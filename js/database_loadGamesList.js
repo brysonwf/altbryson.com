@@ -14,12 +14,15 @@ var database_loadGamesList = function(){
     .onSnapshot(function(querySnapshot) {
         
         console.log("database_loadGamesList querySnapshot");
+        var classString = '';
         var html = '';
         html += '';
         querySnapshot.forEach(function(doc) {
 
+            classString = (doc.data().complete) ?  'game_complete' : '';
+
             html += '';
-            html += '<a class="div_game" href="/g/' + doc.data().type + '/' + doc.id + '">';
+            html += '<a class="div_game ' + classString + '" href="/g/' + doc.data().type + '/' + doc.id + '">';
             if (doc.data().type == "page"){
                 html += '<div class="title">' + doc.id + '</div>';
             }else{

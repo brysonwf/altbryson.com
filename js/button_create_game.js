@@ -1,14 +1,11 @@
 var button_create_game = function(){
     $(".button_create_game").click(function () {
         var type = $(this).data("type");
-        var toISOString = new Date().toISOString();
         db.collection("games").add({
             type: type,
-            dateCreated: toISOString,
-            dateUpdated: toISOString,
+            dateCreated: firebase.firestore.FieldValue.serverTimestamp(),
+            dateUpdated: firebase.firestore.FieldValue.serverTimestamp(),
             uid: firebase.auth().currentUser.uid,
-            budgetItems: 0,
-            budgetLines: 0,
             create: [],
             read: [],
             update: [],

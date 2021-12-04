@@ -37,14 +37,11 @@ var btn_hide = function(){
 var button_create_game = function(){
     $(".button_create_game").click(function () {
         var type = $(this).data("type");
-        var toISOString = new Date().toISOString();
         db.collection("games").add({
             type: type,
-            dateCreated: toISOString,
-            dateUpdated: toISOString,
+            dateCreated: firebase.firestore.FieldValue.serverTimestamp(),
+            dateUpdated: firebase.firestore.FieldValue.serverTimestamp(),
             uid: firebase.auth().currentUser.uid,
-            budgetItems: 0,
-            budgetLines: 0,
             create: [],
             read: [],
             update: [],
@@ -72,76 +69,6 @@ var button_logout = function(){
         location.reload();
     });
 }
-var database_addMove = function(docName, docJson){
-    console.log('init database_addMove');
-    
-    docJson.uid = uid;
-    docJson.createDate = new Date();
-
-    db.collection("games/"+gameId+"/moves")
-    .doc(docName)
-    .set(docJson)
-    .then((docRef) => {
-        
-    }).catch((error) => {
-        console.error("Error adding document: " + error);
-    });
-}
-var database_addUserToGame = function(){
-    console.log('add user');
-
-
-    newUserData = userData;
-    newUserData.createDate = new Date();
-    //add my user to this game
-    db.collection("games/"+gameId+"/gameUsers")
-    .doc("" + firebase.auth().currentUser.uid)
-    .set(
-        newUserData,
-        { merge: true }
-    );
-
-    database_loadGameUsers();
-}
-var database_confirmMove = function(docName, docJson){
-    console.log("init database_confirmMove");
-
-    var playersOnTheBoard = [];
-    var alreadyOnTheBoard = [];
-
-    var count = 1;
-    db.collection("games/"+gameId+"/moves")
-    .orderBy("createDate", "desc")
-    .limit(userLimit)
-    .get()
-    .then((querySnapshot) => {
-        console.log("database_confirmMove querySnapshot");
-        querySnapshot.forEach((doc) => {
-            if (alreadyOnTheBoard[doc.data().uid] != true){
-                alreadyOnTheBoard[doc.data().uid] = true;
-                playersOnTheBoard[count] = doc.data().uid;
-                count++;
-            }
-        });
-        console.log('count: ' + count);
-        //if we havn't had enough plays yet
-        if (count <= userLimit){
-            console.log('not enough players allowing move');
-            if (alreadyOnTheBoard[uid]){
-                console.log('user on the board already: ' + uid);
-            }else{
-                database_addMove(docName, docJson);
-            }
-        }else if (playersOnTheBoard[userLimit] == uid){
-            console.log('you are allowed to move');
-            database_addMove(docName, docJson);
-        }
-    })
-    .catch((error) => {
-        console.log("Error getting documents: ", error);
-    });
-
-}
 var database_loadGame = function () {
     console.log("init database_loadGame for : " + gameId);
     var docRef = db.collection("games").doc("" + gameId);
@@ -156,14 +83,15 @@ var database_loadGame = function () {
                     userLimit = doc.data().userLimit;
                 }
                 
-                database_updateGameStats();
-                database_addUserToGame();
+                database_setGameActive();
+                database_setGameUser();
                 
                 // setInterval(function() {
-                //     database_updateGameStats();
-                //     database_addUserToGame();
+                //     database_setGameActive();
+                //     database_setGameUser();
                 // }, 10000);
 
+                console.log('testing type: ' + doc.data().type);
                 if (doc.data().type == "minigolf"){
                     game_minigolf();
                 }else if (doc.data().type == 'tictactoe'){
@@ -193,12 +121,15 @@ var database_loadGamesList = function(){
     .onSnapshot(function(querySnapshot) {
         
         console.log("database_loadGamesList querySnapshot");
+        var classString = '';
         var html = '';
         html += '';
         querySnapshot.forEach(function(doc) {
 
+            classString = (doc.data().complete) ?  'game_complete' : '';
+
             html += '';
-            html += '<a class="div_game" href="/g/' + doc.data().type + '/' + doc.id + '">';
+            html += '<a class="div_game ' + classString + '" href="/g/' + doc.data().type + '/' + doc.id + '">';
             if (doc.data().type == "page"){
                 html += '<div class="title">' + doc.id + '</div>';
             }else{
@@ -266,11 +197,13 @@ var database_loadYourGamesList = function(){
     .onSnapshot(function(querySnapshot) {
         
         console.log("database_loadYourGamesList querySnapshot");
+        var classString = '';
         var html = '';
         html += '';
         querySnapshot.forEach(function(doc) {
+            classString = (doc.data().complete) ?  'game_complete' : '';
             html += '';
-            html += '<a class="div_game" href="/g/' + doc.data().type + '/' + doc.id + '">';
+            html += '<a class="div_game ' + classString + '" href="/g/' + doc.data().type + '/' + doc.id + '">';
             html += '<div class="title">' + doc.data().type + '</div>';
             html += func_timeSince(doc.data().dateCreated);
             html += '</a>';
@@ -280,6 +213,51 @@ var database_loadYourGamesList = function(){
         $('#loadYourGamesHere').html(html);
 
     });
+}
+var database_setGameActive = function(){
+    console.log('init database_setGameActive');
+
+    db.collection("games")
+    .doc("" + gameId)
+    .set(
+        {
+            activeDate: firebase.firestore.FieldValue.serverTimestamp()
+        },
+        { merge: true }
+    );
+}
+var database_setGameComplete = function(){
+    console.log('init database_setGameComplete');
+
+    db.collection("games")
+    .doc(gameId)
+    .set(
+        {
+            complete : true
+        },
+        { merge: true }
+    )
+    .then((docRef) => {
+        
+    }).catch((error) => {
+        console.error("Error adding document: " + error);
+    });
+}
+var database_setGameUser = function(){
+    console.log('init database_setGameUser');
+
+
+    newUserData = userData;
+    newUserData.createDate = new Date();
+    //add my user to this game
+    db.collection("games/"+gameId+"/gameUsers")
+    .doc("" + firebase.auth().currentUser.uid)
+    .set(
+        newUserData,
+        { merge: true }
+    );
+
+    database_loadGameUsers();
 }
 var database_setLocation = function () {
     console.log("database_setLocation");
@@ -292,18 +270,31 @@ var database_setLocation = function () {
             { merge: true }
         );
 }
-var database_setUser = function (user) {
-    console.log("database_setUser");
+var database_setMove = function(docName, docJson){
+    console.log('init database_setMove');
+    
+    docJson.uid = uid;
+    docJson.createDate = firebase.firestore.FieldValue.serverTimestamp();
 
-    // var gravatarImage = getGravatar(user.email);
+    db.collection("games/"+gameId+"/moves")
+    .doc(docName)
+    .set(docJson)
+    .then((docRef) => {
+        
+    }).catch((error) => {
+        console.error("Error adding document: " + error);
+    });
+}
+var database_setUserData = function (user) {
+    console.log("database_setUserData");
+
+    // var gravatarImage = func_getGravatar(user.email);
     
     $('#username').html(user.email);
 
     // $('#userimage').html('<img src="' + gravatarImage + '" />');
 
     $('.ddmenu').removeClass('hidden');
-
-    let createDate = new Date();
 
     userData = {
         name: user.displayName,
@@ -312,7 +303,7 @@ var database_setUser = function (user) {
         emailVerified: user.emailVerified,
         uid: user.uid,
         // gravatar: gravatarImage,
-        createDate: createDate
+        createDate: firebase.firestore.FieldValue.serverTimestamp()
     }
 
     db.collection("users")
@@ -322,23 +313,8 @@ var database_setUser = function (user) {
             { merge: true }
         );
 }
-var database_updateGameStats = function(){
-    console.log('init database_updateGameStats');
-
-    var activeDate = new Date();
-
-    db.collection("games")
-    .doc("" + gameId)
-    .set(
-        {
-            activeDate: activeDate
-        },
-        { merge: true }
-    );
-}
 var firebase_init = function() {
   // console.log('firebaseManager init')
-
   
   //config and init firebase
   firebase.initializeApp({
@@ -384,7 +360,7 @@ var firebase_onAuthStateChanged = function () {
 
       // User logged in already or has just logged in.
       uid = user.uid;
-      database_setUser(user);
+      database_setUserData(user);
       database_setLocation();
       button_logout();
       button_create_game();
@@ -448,6 +424,273 @@ var firebase_signOut = function () {
     console.error('Sign Out Error', error)
   })
 }
+var func_confirmMove = function(docName, docJson){
+    console.log("init func_confirmMove");
+
+    var currentPlayerUid = [];
+    var alreadyOnTheBoard = [];
+
+    var count = 1;
+    db.collection("games/"+gameId+"/moves")
+    .orderBy("createDate", "desc")
+    .limit(userLimit)
+    .get()
+    .then((querySnapshot) => {
+        console.log("func_confirmMove querySnapshot");
+        querySnapshot.forEach((doc) => {
+            console.log('count ' + count + ': ' + doc.data().uid + ' ' + doc.data().user + ' at ' + doc.data().createDate)
+            alreadyOnTheBoard[doc.data().uid] = true;
+            currentPlayerUid[count] = doc.data().uid;
+            count++;
+        });
+        //if we havn't had enough plays yet
+        if (count <= userLimit){
+            console.log('not enough players allowing move');
+            if (alreadyOnTheBoard[uid]){
+                console.log('user on the board already: ' + uid);
+            }else{
+                database_setMove(docName, docJson);
+            }
+        }else if (currentPlayerUid[userLimit] == uid){
+            console.log('you are allowed to move');
+            database_setMove(docName, docJson);
+        }else{
+            console.log('not your turen player: ' + uid);
+        }
+    })
+    .catch((error) => {
+        console.log("Error getting documents: ", error);
+    });
+
+}
+var func_getGravatar = function(email) {
+  var MD5 = function(s) {
+    function L(k, d) {
+      return (k << d) | (k >>> (32 - d));
+    }
+    function K(G, k) {
+      var I, d, F, H, x;
+      F = G & 2147483648;
+      H = k & 2147483648;
+      I = G & 1073741824;
+      d = k & 1073741824;
+      x = (G & 1073741823) + (k & 1073741823);
+      if (I & d) {
+        return x ^ 2147483648 ^ F ^ H;
+      }
+      if (I | d) {
+        if (x & 1073741824) {
+          return x ^ 3221225472 ^ F ^ H;
+        } else {
+          return x ^ 1073741824 ^ F ^ H;
+        }
+      } else {
+        return x ^ F ^ H;
+      }
+    }
+    function r(d, F, k) {
+      return (d & F) | (~d & k);
+    }
+    function q(d, F, k) {
+      return (d & k) | (F & ~k);
+    }
+    function p(d, F, k) {
+      return d ^ F ^ k;
+    }
+    function n(d, F, k) {
+      return F ^ (d | ~k);
+    }
+    function u(G, F, aa, Z, k, H, I) {
+      G = K(G, K(K(r(F, aa, Z), k), I));
+      return K(L(G, H), F);
+    }
+    function f(G, F, aa, Z, k, H, I) {
+      G = K(G, K(K(q(F, aa, Z), k), I));
+      return K(L(G, H), F);
+    }
+    function D(G, F, aa, Z, k, H, I) {
+      G = K(G, K(K(p(F, aa, Z), k), I));
+      return K(L(G, H), F);
+    }
+    function t(G, F, aa, Z, k, H, I) {
+      G = K(G, K(K(n(F, aa, Z), k), I));
+      return K(L(G, H), F);
+    }
+    function e(G) {
+      var Z;
+      var F = G.length;
+      var x = F + 8;
+      var k = (x - (x % 64)) / 64;
+      var I = (k + 1) * 16;
+      var aa = Array(I - 1);
+      var d = 0;
+      var H = 0;
+      while (H < F) {
+        Z = (H - (H % 4)) / 4;
+        d = (H % 4) * 8;
+        aa[Z] = aa[Z] | (G.charCodeAt(H) << d);
+        H++;
+      }
+      Z = (H - (H % 4)) / 4;
+      d = (H % 4) * 8;
+      aa[Z] = aa[Z] | (128 << d);
+      aa[I - 2] = F << 3;
+      aa[I - 1] = F >>> 29;
+      return aa;
+    }
+    function B(x) {
+      var k = "",
+        F = "",
+        G,
+        d;
+      for (d = 0; d <= 3; d++) {
+        G = (x >>> (d * 8)) & 255;
+        F = "0" + G.toString(16);
+        k = k + F.substr(F.length - 2, 2);
+      }
+      return k;
+    }
+    function J(k) {
+      k = k.replace(/rn/g, "n");
+      var d = "";
+      for (var F = 0; F < k.length; F++) {
+        var x = k.charCodeAt(F);
+        if (x < 128) {
+          d += String.fromCharCode(x);
+        } else {
+          if (x > 127 && x < 2048) {
+            d += String.fromCharCode((x >> 6) | 192);
+            d += String.fromCharCode((x & 63) | 128);
+          } else {
+            d += String.fromCharCode((x >> 12) | 224);
+            d += String.fromCharCode(((x >> 6) & 63) | 128);
+            d += String.fromCharCode((x & 63) | 128);
+          }
+        }
+      }
+      return d;
+    }
+    var C = Array();
+    var P, h, E, v, g, Y, X, W, V;
+    var S = 7,
+      Q = 12,
+      N = 17,
+      M = 22;
+    var A = 5,
+      z = 9,
+      y = 14,
+      w = 20;
+    var o = 4,
+      m = 11,
+      l = 16,
+      j = 23;
+    var U = 6,
+      T = 10,
+      R = 15,
+      O = 21;
+    s = J(s);
+    C = e(s);
+    Y = 1732584193;
+    X = 4023233417;
+    W = 2562383102;
+    V = 271733878;
+    for (P = 0; P < C.length; P += 16) {
+      h = Y;
+      E = X;
+      v = W;
+      g = V;
+      Y = u(Y, X, W, V, C[P + 0], S, 3614090360);
+      V = u(V, Y, X, W, C[P + 1], Q, 3905402710);
+      W = u(W, V, Y, X, C[P + 2], N, 606105819);
+      X = u(X, W, V, Y, C[P + 3], M, 3250441966);
+      Y = u(Y, X, W, V, C[P + 4], S, 4118548399);
+      V = u(V, Y, X, W, C[P + 5], Q, 1200080426);
+      W = u(W, V, Y, X, C[P + 6], N, 2821735955);
+      X = u(X, W, V, Y, C[P + 7], M, 4249261313);
+      Y = u(Y, X, W, V, C[P + 8], S, 1770035416);
+      V = u(V, Y, X, W, C[P + 9], Q, 2336552879);
+      W = u(W, V, Y, X, C[P + 10], N, 4294925233);
+      X = u(X, W, V, Y, C[P + 11], M, 2304563134);
+      Y = u(Y, X, W, V, C[P + 12], S, 1804603682);
+      V = u(V, Y, X, W, C[P + 13], Q, 4254626195);
+      W = u(W, V, Y, X, C[P + 14], N, 2792965006);
+      X = u(X, W, V, Y, C[P + 15], M, 1236535329);
+      Y = f(Y, X, W, V, C[P + 1], A, 4129170786);
+      V = f(V, Y, X, W, C[P + 6], z, 3225465664);
+      W = f(W, V, Y, X, C[P + 11], y, 643717713);
+      X = f(X, W, V, Y, C[P + 0], w, 3921069994);
+      Y = f(Y, X, W, V, C[P + 5], A, 3593408605);
+      V = f(V, Y, X, W, C[P + 10], z, 38016083);
+      W = f(W, V, Y, X, C[P + 15], y, 3634488961);
+      X = f(X, W, V, Y, C[P + 4], w, 3889429448);
+      Y = f(Y, X, W, V, C[P + 9], A, 568446438);
+      V = f(V, Y, X, W, C[P + 14], z, 3275163606);
+      W = f(W, V, Y, X, C[P + 3], y, 4107603335);
+      X = f(X, W, V, Y, C[P + 8], w, 1163531501);
+      Y = f(Y, X, W, V, C[P + 13], A, 2850285829);
+      V = f(V, Y, X, W, C[P + 2], z, 4243563512);
+      W = f(W, V, Y, X, C[P + 7], y, 1735328473);
+      X = f(X, W, V, Y, C[P + 12], w, 2368359562);
+      Y = D(Y, X, W, V, C[P + 5], o, 4294588738);
+      V = D(V, Y, X, W, C[P + 8], m, 2272392833);
+      W = D(W, V, Y, X, C[P + 11], l, 1839030562);
+      X = D(X, W, V, Y, C[P + 14], j, 4259657740);
+      Y = D(Y, X, W, V, C[P + 1], o, 2763975236);
+      V = D(V, Y, X, W, C[P + 4], m, 1272893353);
+      W = D(W, V, Y, X, C[P + 7], l, 4139469664);
+      X = D(X, W, V, Y, C[P + 10], j, 3200236656);
+      Y = D(Y, X, W, V, C[P + 13], o, 681279174);
+      V = D(V, Y, X, W, C[P + 0], m, 3936430074);
+      W = D(W, V, Y, X, C[P + 3], l, 3572445317);
+      X = D(X, W, V, Y, C[P + 6], j, 76029189);
+      Y = D(Y, X, W, V, C[P + 9], o, 3654602809);
+      V = D(V, Y, X, W, C[P + 12], m, 3873151461);
+      W = D(W, V, Y, X, C[P + 15], l, 530742520);
+      X = D(X, W, V, Y, C[P + 2], j, 3299628645);
+      Y = t(Y, X, W, V, C[P + 0], U, 4096336452);
+      V = t(V, Y, X, W, C[P + 7], T, 1126891415);
+      W = t(W, V, Y, X, C[P + 14], R, 2878612391);
+      X = t(X, W, V, Y, C[P + 5], O, 4237533241);
+      Y = t(Y, X, W, V, C[P + 12], U, 1700485571);
+      V = t(V, Y, X, W, C[P + 3], T, 2399980690);
+      W = t(W, V, Y, X, C[P + 10], R, 4293915773);
+      X = t(X, W, V, Y, C[P + 1], O, 2240044497);
+      Y = t(Y, X, W, V, C[P + 8], U, 1873313359);
+      V = t(V, Y, X, W, C[P + 15], T, 4264355552);
+      W = t(W, V, Y, X, C[P + 6], R, 2734768916);
+      X = t(X, W, V, Y, C[P + 13], O, 1309151649);
+      Y = t(Y, X, W, V, C[P + 4], U, 4149444226);
+      V = t(V, Y, X, W, C[P + 11], T, 3174756917);
+      W = t(W, V, Y, X, C[P + 2], R, 718787259);
+      X = t(X, W, V, Y, C[P + 9], O, 3951481745);
+      Y = K(Y, h);
+      X = K(X, E);
+      W = K(W, v);
+      V = K(V, g);
+    }
+    var i = B(Y) + B(X) + B(W) + B(V);
+    return i.toLowerCase();
+  };
+
+  var size = 80;
+
+  return "http://www.gravatar.com/avatar/" + MD5(email) + ".jpg?s=" + size;
+};
+
+var func_is_colliding = function(div1, div2) {
+
+    var rect1 = {x: div1.position().left, y: div1.position().top, width: div1.width(), height: div1.height()}
+    var rect2 = {x: div2.position().left, y: div2.position().top, width: div2.width(), height: div2.height()}
+  
+    if (rect1.x < rect2.x + rect2.width &&
+      rect1.x + rect1.width > rect2.x &&
+      rect1.y < rect2.y + rect2.height &&
+      rect1.y + rect1.height > rect2.y) {
+        return true;
+   }
+  
+    return false;
+  }; 
 var func_timeSince = function(start){
     var startDate = new Date(start);
     var endDate = new Date();
@@ -662,13 +905,13 @@ var game_minigolf = function(){
 
 
             //todo: add test to make sure ball is moving slow enough to actually go into the hole
-            if (is_colliding($('#mgb_ball'), $('#mgb_hole'))){
+            if (func_is_colliding($('#mgb_ball'), $('#mgb_hole'))){
                     winner = true;
                     ball.velocity.x = 0;
                     ball.velocity.y = 0;
             }
             else 
-            if (is_colliding($('#mgb_ball'), $('#mgb_barrier'))){
+            if (func_is_colliding($('#mgb_ball'), $('#mgb_barrier'))){
                 
             }
             else 
@@ -769,15 +1012,18 @@ var game_tictactoe = function(){
         winner.classList.add("playerWin");
         winner.classList.remove("hidden");
         board_full = true
+        database_setGameComplete();
       } else if (res == computer) {
         winner.innerText = "Winner is player2";
         winner.classList.add("computerWin");
         winner.classList.remove("hidden");
         board_full = true
+        database_setGameComplete();
       } else if (board_full) {
         winner.innerText = "Draw!";
         winner.classList.add("draw");
         winner.classList.remove("hidden");
+        database_setGameComplete();
       }
     };
 
@@ -813,7 +1059,7 @@ var game_tictactoe = function(){
             user : turn
           }
 
-          database_confirmMove('move_'+e, docJson)
+          func_confirmMove('move_'+e, docJson)
 
       }
     }
@@ -872,236 +1118,8 @@ var game_tictactoe = function(){
       game_loop();
     });
 }
-var getGravatar = function(email) {
-  var MD5 = function(s) {
-    function L(k, d) {
-      return (k << d) | (k >>> (32 - d));
-    }
-    function K(G, k) {
-      var I, d, F, H, x;
-      F = G & 2147483648;
-      H = k & 2147483648;
-      I = G & 1073741824;
-      d = k & 1073741824;
-      x = (G & 1073741823) + (k & 1073741823);
-      if (I & d) {
-        return x ^ 2147483648 ^ F ^ H;
-      }
-      if (I | d) {
-        if (x & 1073741824) {
-          return x ^ 3221225472 ^ F ^ H;
-        } else {
-          return x ^ 1073741824 ^ F ^ H;
-        }
-      } else {
-        return x ^ F ^ H;
-      }
-    }
-    function r(d, F, k) {
-      return (d & F) | (~d & k);
-    }
-    function q(d, F, k) {
-      return (d & k) | (F & ~k);
-    }
-    function p(d, F, k) {
-      return d ^ F ^ k;
-    }
-    function n(d, F, k) {
-      return F ^ (d | ~k);
-    }
-    function u(G, F, aa, Z, k, H, I) {
-      G = K(G, K(K(r(F, aa, Z), k), I));
-      return K(L(G, H), F);
-    }
-    function f(G, F, aa, Z, k, H, I) {
-      G = K(G, K(K(q(F, aa, Z), k), I));
-      return K(L(G, H), F);
-    }
-    function D(G, F, aa, Z, k, H, I) {
-      G = K(G, K(K(p(F, aa, Z), k), I));
-      return K(L(G, H), F);
-    }
-    function t(G, F, aa, Z, k, H, I) {
-      G = K(G, K(K(n(F, aa, Z), k), I));
-      return K(L(G, H), F);
-    }
-    function e(G) {
-      var Z;
-      var F = G.length;
-      var x = F + 8;
-      var k = (x - (x % 64)) / 64;
-      var I = (k + 1) * 16;
-      var aa = Array(I - 1);
-      var d = 0;
-      var H = 0;
-      while (H < F) {
-        Z = (H - (H % 4)) / 4;
-        d = (H % 4) * 8;
-        aa[Z] = aa[Z] | (G.charCodeAt(H) << d);
-        H++;
-      }
-      Z = (H - (H % 4)) / 4;
-      d = (H % 4) * 8;
-      aa[Z] = aa[Z] | (128 << d);
-      aa[I - 2] = F << 3;
-      aa[I - 1] = F >>> 29;
-      return aa;
-    }
-    function B(x) {
-      var k = "",
-        F = "",
-        G,
-        d;
-      for (d = 0; d <= 3; d++) {
-        G = (x >>> (d * 8)) & 255;
-        F = "0" + G.toString(16);
-        k = k + F.substr(F.length - 2, 2);
-      }
-      return k;
-    }
-    function J(k) {
-      k = k.replace(/rn/g, "n");
-      var d = "";
-      for (var F = 0; F < k.length; F++) {
-        var x = k.charCodeAt(F);
-        if (x < 128) {
-          d += String.fromCharCode(x);
-        } else {
-          if (x > 127 && x < 2048) {
-            d += String.fromCharCode((x >> 6) | 192);
-            d += String.fromCharCode((x & 63) | 128);
-          } else {
-            d += String.fromCharCode((x >> 12) | 224);
-            d += String.fromCharCode(((x >> 6) & 63) | 128);
-            d += String.fromCharCode((x & 63) | 128);
-          }
-        }
-      }
-      return d;
-    }
-    var C = Array();
-    var P, h, E, v, g, Y, X, W, V;
-    var S = 7,
-      Q = 12,
-      N = 17,
-      M = 22;
-    var A = 5,
-      z = 9,
-      y = 14,
-      w = 20;
-    var o = 4,
-      m = 11,
-      l = 16,
-      j = 23;
-    var U = 6,
-      T = 10,
-      R = 15,
-      O = 21;
-    s = J(s);
-    C = e(s);
-    Y = 1732584193;
-    X = 4023233417;
-    W = 2562383102;
-    V = 271733878;
-    for (P = 0; P < C.length; P += 16) {
-      h = Y;
-      E = X;
-      v = W;
-      g = V;
-      Y = u(Y, X, W, V, C[P + 0], S, 3614090360);
-      V = u(V, Y, X, W, C[P + 1], Q, 3905402710);
-      W = u(W, V, Y, X, C[P + 2], N, 606105819);
-      X = u(X, W, V, Y, C[P + 3], M, 3250441966);
-      Y = u(Y, X, W, V, C[P + 4], S, 4118548399);
-      V = u(V, Y, X, W, C[P + 5], Q, 1200080426);
-      W = u(W, V, Y, X, C[P + 6], N, 2821735955);
-      X = u(X, W, V, Y, C[P + 7], M, 4249261313);
-      Y = u(Y, X, W, V, C[P + 8], S, 1770035416);
-      V = u(V, Y, X, W, C[P + 9], Q, 2336552879);
-      W = u(W, V, Y, X, C[P + 10], N, 4294925233);
-      X = u(X, W, V, Y, C[P + 11], M, 2304563134);
-      Y = u(Y, X, W, V, C[P + 12], S, 1804603682);
-      V = u(V, Y, X, W, C[P + 13], Q, 4254626195);
-      W = u(W, V, Y, X, C[P + 14], N, 2792965006);
-      X = u(X, W, V, Y, C[P + 15], M, 1236535329);
-      Y = f(Y, X, W, V, C[P + 1], A, 4129170786);
-      V = f(V, Y, X, W, C[P + 6], z, 3225465664);
-      W = f(W, V, Y, X, C[P + 11], y, 643717713);
-      X = f(X, W, V, Y, C[P + 0], w, 3921069994);
-      Y = f(Y, X, W, V, C[P + 5], A, 3593408605);
-      V = f(V, Y, X, W, C[P + 10], z, 38016083);
-      W = f(W, V, Y, X, C[P + 15], y, 3634488961);
-      X = f(X, W, V, Y, C[P + 4], w, 3889429448);
-      Y = f(Y, X, W, V, C[P + 9], A, 568446438);
-      V = f(V, Y, X, W, C[P + 14], z, 3275163606);
-      W = f(W, V, Y, X, C[P + 3], y, 4107603335);
-      X = f(X, W, V, Y, C[P + 8], w, 1163531501);
-      Y = f(Y, X, W, V, C[P + 13], A, 2850285829);
-      V = f(V, Y, X, W, C[P + 2], z, 4243563512);
-      W = f(W, V, Y, X, C[P + 7], y, 1735328473);
-      X = f(X, W, V, Y, C[P + 12], w, 2368359562);
-      Y = D(Y, X, W, V, C[P + 5], o, 4294588738);
-      V = D(V, Y, X, W, C[P + 8], m, 2272392833);
-      W = D(W, V, Y, X, C[P + 11], l, 1839030562);
-      X = D(X, W, V, Y, C[P + 14], j, 4259657740);
-      Y = D(Y, X, W, V, C[P + 1], o, 2763975236);
-      V = D(V, Y, X, W, C[P + 4], m, 1272893353);
-      W = D(W, V, Y, X, C[P + 7], l, 4139469664);
-      X = D(X, W, V, Y, C[P + 10], j, 3200236656);
-      Y = D(Y, X, W, V, C[P + 13], o, 681279174);
-      V = D(V, Y, X, W, C[P + 0], m, 3936430074);
-      W = D(W, V, Y, X, C[P + 3], l, 3572445317);
-      X = D(X, W, V, Y, C[P + 6], j, 76029189);
-      Y = D(Y, X, W, V, C[P + 9], o, 3654602809);
-      V = D(V, Y, X, W, C[P + 12], m, 3873151461);
-      W = D(W, V, Y, X, C[P + 15], l, 530742520);
-      X = D(X, W, V, Y, C[P + 2], j, 3299628645);
-      Y = t(Y, X, W, V, C[P + 0], U, 4096336452);
-      V = t(V, Y, X, W, C[P + 7], T, 1126891415);
-      W = t(W, V, Y, X, C[P + 14], R, 2878612391);
-      X = t(X, W, V, Y, C[P + 5], O, 4237533241);
-      Y = t(Y, X, W, V, C[P + 12], U, 1700485571);
-      V = t(V, Y, X, W, C[P + 3], T, 2399980690);
-      W = t(W, V, Y, X, C[P + 10], R, 4293915773);
-      X = t(X, W, V, Y, C[P + 1], O, 2240044497);
-      Y = t(Y, X, W, V, C[P + 8], U, 1873313359);
-      V = t(V, Y, X, W, C[P + 15], T, 4264355552);
-      W = t(W, V, Y, X, C[P + 6], R, 2734768916);
-      X = t(X, W, V, Y, C[P + 13], O, 1309151649);
-      Y = t(Y, X, W, V, C[P + 4], U, 4149444226);
-      V = t(V, Y, X, W, C[P + 11], T, 3174756917);
-      W = t(W, V, Y, X, C[P + 2], R, 718787259);
-      X = t(X, W, V, Y, C[P + 9], O, 3951481745);
-      Y = K(Y, h);
-      X = K(X, E);
-      W = K(W, v);
-      V = K(V, g);
-    }
-    var i = B(Y) + B(X) + B(W) + B(V);
-    return i.toLowerCase();
-  };
-
-  var size = 80;
-
-  return "http://www.gravatar.com/avatar/" + MD5(email) + ".jpg?s=" + size;
-};
-
 var path = window.location.pathname.split("/");
 var userData = null;
 var uid = null;
 var gameId = null;
 var userLimit = 2;
-var is_colliding = function(div1, div2) {
-
-    var rect1 = {x: div1.position().left, y: div1.position().top, width: div1.width(), height: div1.height()}
-    var rect2 = {x: div2.position().left, y: div2.position().top, width: div2.width(), height: div2.height()}
-  
-    if (rect1.x < rect2.x + rect2.width &&
-      rect1.x + rect1.width > rect2.x &&
-      rect1.y < rect2.y + rect2.height &&
-      rect1.y + rect1.height > rect2.y) {
-        return true;
-   }
-  
-    return false;
-  }; 
