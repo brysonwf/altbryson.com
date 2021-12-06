@@ -5,3 +5,4 @@ var gameId = null;
 var userLimit = 2;
 var playerBeforeLastUid = '';
 var lastPlayerUid = '';
+var playerArray = []; 

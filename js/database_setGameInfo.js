@@ -1,10 +1,8 @@
 var database_setGameInfo = function(){
     console.log('init database_setGameUser');
 
-
-    //add my user to this game
-    db.collection("games/"+gameId+"/gameUsers")
-    .doc("" + firebase.auth().currentUser.uid)
+    db.collection("games")
+    .doc(gameId)
     .set(
         {
             dateUpdated: firebase.firestore.FieldValue.serverTimestamp()

@@ -10,7 +10,8 @@ var button_create_game = function(){
             create: [],
             read: [],
             update: [],
-            delete: []
+            delete: [],
+            photoUrl: userData.photoUrl
         })
         .then((docRef) => {
             console.log("Document written with ID: ", docRef.id);

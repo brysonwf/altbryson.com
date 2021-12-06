@@ -66,22 +66,13 @@ var game_tictactoe = function(){
     const check_for_winner = () => {
       let res = check_match()
       if (res == player) {
-        winner.innerText = "Winner is player1";
-        winner.classList.add("playerWin");
-        winner.classList.remove("hidden");
         board_full = true
-        database_setGameComplete();
+        database_setGameComplete(playerArray[0]);
       } else if (res == computer) {
-        winner.innerText = "Winner is player2";
-        winner.classList.add("computerWin");
-        winner.classList.remove("hidden");
         board_full = true
-        database_setGameComplete();
+        database_setGameComplete(playerArray[1]);
       } else if (board_full) {
-        winner.innerText = "Draw!";
-        winner.classList.add("draw");
-        winner.classList.remove("hidden");
-        database_setGameComplete();
+        database_setGameComplete('draw');
       }
     };
 
@@ -168,8 +159,12 @@ var game_tictactoe = function(){
       lastPlayerUid = '';
 
       querySnapshot.forEach(function(doc) {
+
+        playerArray[count] = doc.data().uid;
+
         console.log(doc.data().user + ' played by ' + doc.data().uid);
         console.log('playerBeforeLastUid: ' + lastPlayerUid);
+
         playerBeforeLastUid = lastPlayerUid;
         count++;
         play_board[doc.data().move] = doc.data().user;

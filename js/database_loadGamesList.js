@@ -17,6 +17,7 @@ var database_loadGamesList = function(){
         html += '<table>';
         html += '<thead>';
             html += '<tr>';
+                html += '<td></td>';
                 html += '<td>type</td>';
                 html += '<td>name</td>';
                 html += '<td>age</td>';
@@ -38,6 +39,9 @@ var database_loadGamesList = function(){
                     classString += (doc.data().uid == uid) ?  ' game_user' : '';
 
                     html += '<tr class="div_game ' + classString + '">';
+                        html += '<td>';
+                            html += '<img src="' + doc.data().photoUrl + '" />';
+                        html += '</td>';
                         html += '<td>';
                             html += '<a href="/g/' + doc.data().type + '/' + doc.id + '">';
                                 html += doc.data().type;

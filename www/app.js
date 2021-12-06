@@ -46,7 +46,8 @@ var button_create_game = function(){
             create: [],
             read: [],
             update: [],
-            delete: []
+            delete: [],
+            photoUrl: userData.photoUrl
         })
         .then((docRef) => {
             console.log("Document written with ID: ", docRef.id);
@@ -127,6 +128,7 @@ var database_loadGamesList = function(){
         html += '<table>';
         html += '<thead>';
             html += '<tr>';
+                html += '<td></td>';
                 html += '<td>type</td>';
                 html += '<td>name</td>';
                 html += '<td>age</td>';
@@ -148,6 +150,9 @@ var database_loadGamesList = function(){
                     classString += (doc.data().uid == uid) ?  ' game_user' : '';
 
                     html += '<tr class="div_game ' + classString + '">';
+                        html += '<td>';
+                            html += '<img src="' + doc.data().photoUrl + '" />';
+                        html += '</td>';
                         html += '<td>';
                             html += '<a href="/g/' + doc.data().type + '/' + doc.id + '">';
                                 html += doc.data().type;
@@ -241,19 +246,20 @@ var database_setGameActive = function(){
         { merge: true }
     );
 }
-var database_setGameComplete = function(){
+var database_setGameComplete = function(winnerUid){
     console.log('init database_setGameComplete');
 
     db.collection("games")
     .doc(gameId)
     .set(
         {
+            winner: winnerUid,
             complete : true
         },
         { merge: true }
     )
     .then((docRef) => {
-        
+        $('#uid-'+winnerUid).addClass('winner');
     }).catch((error) => {
         console.error("Error adding document: " + error);
     });
@@ -261,10 +267,8 @@ var database_setGameComplete = function(){
 var database_setGameInfo = function(){
     console.log('init database_setGameUser');
 
-
-    //add my user to this game
-    db.collection("games/"+gameId+"/gameUsers")
-    .doc("" + firebase.auth().currentUser.uid)
+    db.collection("games")
+    .doc(gameId)
     .set(
         {
             dateUpdated: firebase.firestore.FieldValue.serverTimestamp()
@@ -1045,22 +1049,13 @@ var game_tictactoe = function(){
     const check_for_winner = () => {
       let res = check_match()
       if (res == player) {
-        winner.innerText = "Winner is player1";
-        winner.classList.add("playerWin");
-        winner.classList.remove("hidden");
         board_full = true
-        database_setGameComplete();
+        database_setGameComplete(playerArray[0]);
       } else if (res == computer) {
-        winner.innerText = "Winner is player2";
-        winner.classList.add("computerWin");
-        winner.classList.remove("hidden");
         board_full = true
-        database_setGameComplete();
+        database_setGameComplete(playerArray[1]);
       } else if (board_full) {
-        winner.innerText = "Draw!";
-        winner.classList.add("draw");
-        winner.classList.remove("hidden");
-        database_setGameComplete();
+        database_setGameComplete('draw');
       }
     };
 
@@ -1147,8 +1142,12 @@ var game_tictactoe = function(){
       lastPlayerUid = '';
 
       querySnapshot.forEach(function(doc) {
+
+        playerArray[count] = doc.data().uid;
+
         console.log(doc.data().user + ' played by ' + doc.data().uid);
         console.log('playerBeforeLastUid: ' + lastPlayerUid);
+
         playerBeforeLastUid = lastPlayerUid;
         count++;
         play_board[doc.data().move] = doc.data().user;
@@ -1172,3 +1171,4 @@ var gameId = null;
 var userLimit = 2;
 var playerBeforeLastUid = '';
 var lastPlayerUid = '';
+var playerArray = []; 
