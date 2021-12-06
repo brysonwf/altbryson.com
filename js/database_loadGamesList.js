@@ -1,7 +1,6 @@
 var database_loadGamesList = function(){
     console.log("database_loadGamesList");
 
-    var userGameIdArray = [];
 
     db
     .collection("games")
@@ -10,7 +9,10 @@ var database_loadGamesList = function(){
     .onSnapshot(function(querySnapshot) {
         console.log("database_loadGamesList querySnapshot");
 
+
+        var userGameIdArray = [];
         var classString = '';
+        
         var html = '';
         html += '<table>';
         html += '<thead>';
@@ -32,8 +34,8 @@ var database_loadGamesList = function(){
                     }
                     userGameIdArray[uniqueString] = true;
 
-                    classString = (doc.data().complete) ?  'game_complete' : '';
-                    classString += (doc.data().uid == uid) ?  'game_user' : '';
+                    classString = (doc.data().complete) ?  ' game_complete' : '';
+                    classString += (doc.data().uid == uid) ?  ' game_user' : '';
 
                     html += '<tr class="div_game ' + classString + '">';
                         html += '<td>';

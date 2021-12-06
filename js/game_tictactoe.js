@@ -159,20 +159,30 @@ var game_tictactoe = function(){
     
     //initial render
     db.collection("games/"+gameId+"/moves")
-    .orderBy("createDate", "desc")
+    .orderBy("createDate", "asc")
     .onSnapshot(function(querySnapshot) {
+      console.log('game_tictactoe loading moves');
+
       var count = 0;
-      var playerBeforeLastUid = '';
-      var lastPlayerUid = '';
+      playerBeforeLastUid = '';
+      lastPlayerUid = '';
+
       querySnapshot.forEach(function(doc) {
+        console.log(doc.data().user + ' played by ' + doc.data().uid);
+        console.log('playerBeforeLastUid: ' + lastPlayerUid);
         playerBeforeLastUid = lastPlayerUid;
         count++;
-        play_board[doc.data().move] = doc.data().user
+        play_board[doc.data().move] = doc.data().user;
         lastPlayerUid = doc.data().uid;
+        console.log('lastPlayerUid: ' + doc.data().uid);
       });
-      $('#uid-' + lastPlayerUid).addClass('lastPlayer');
-      $('#uid-' + playerBeforeLastUid).addClass('playerBeforeLast');
+
+      $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
+      $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
+
       turn = (count % 2) ? "X" : "O"; 
+      
       game_loop();
+
     });
 }

@@ -87,6 +87,7 @@ var database_loadGame = function () {
                 database_setGameActive();
                 database_setGameUser();
                 database_setGameInfo();
+                database_loadGameUsers();
                 
                 // setInterval(function() {
                 //     database_setGameActive();
@@ -110,7 +111,6 @@ var database_loadGame = function () {
 var database_loadGamesList = function(){
     console.log("database_loadGamesList");
 
-    var userGameIdArray = [];
 
     db
     .collection("games")
@@ -119,7 +119,10 @@ var database_loadGamesList = function(){
     .onSnapshot(function(querySnapshot) {
         console.log("database_loadGamesList querySnapshot");
 
+
+        var userGameIdArray = [];
         var classString = '';
+        
         var html = '';
         html += '<table>';
         html += '<thead>';
@@ -141,8 +144,8 @@ var database_loadGamesList = function(){
                     }
                     userGameIdArray[uniqueString] = true;
 
-                    classString = (doc.data().complete) ?  'game_complete' : '';
-                    classString += (doc.data().uid == uid) ?  'game_user' : '';
+                    classString = (doc.data().complete) ?  ' game_complete' : '';
+                    classString += (doc.data().uid == uid) ?  ' game_user' : '';
 
                     html += '<tr class="div_game ' + classString + '">';
                         html += '<td>';
@@ -186,35 +189,42 @@ var database_loadGameUsers = function(){
         var userArray = [];
 
         var classNames = '';
-        let letter = '';
         var html = '';
-        html += '';''
+        html += '';
         querySnapshot.forEach(function(doc) {
 
             var uniqueUserString = (doc.data().name).charAt(0);
             var charAtCount = 1;
             while (userArray[uniqueUserString]){
                 uniqueUserString = uniqueUserString + '' + (doc.data().name).charAt(charAtCount);
+                charAtCount++;
             }
             userArray[uniqueUserString] = true;
 
-            var userTime = new Date(doc.data().createDate.toDate())
-            classNames = 'user ';
+            var userLastActiveDate = new Date();
+            if (doc.data().dateUpdated != null){
+                userLastActiveDate = doc.data().dateUpdated.toDate();
+            }
+            var userTime = new Date(userLastActiveDate);
+            classNames = ' user';
             if (doc.data().uid == uid){
-                classNames += 'uid ';
+                classNames += ' me';
             }
             if (userTime <= elevenSecondsAgo){
-                classNames += 'nothere ';
+                classNames += ' nothere';
             }
             if(userTime <= oneMinuteAgo){
                 // doc.ref.delete();
             }
-            html += "<div class=\"" + classNames +"\" id=\"uid-" + doc.data().uid +"\">"+ uniqueUserString +"</div>";
+            html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'"><img src="' + doc.data().photoUrl + '" /></div>';
             
         });
         html += '';
 
         $('.userbank').html(html);
+        
+        $('#uid-' + lastPlayerUid).addClass('lastPlayer');
+        $('#uid-' + playerBeforeLastUid).addClass('itsyourturn');
 
     });
 
@@ -248,7 +258,7 @@ var database_setGameComplete = function(){
         console.error("Error adding document: " + error);
     });
 }
-var database_setGameUser = function(){
+var database_setGameInfo = function(){
     console.log('init database_setGameUser');
 
 
@@ -261,8 +271,7 @@ var database_setGameUser = function(){
         },
         { merge: true }
     );
-
-    database_loadGameUsers();
+    
 }
 var database_setGameMoveCount = function(moveCount){
     console.log('init database_setGameMoveCount');
@@ -286,7 +295,7 @@ var database_setGameUser = function(){
 
 
     newUserData = userData;
-    newUserData.createDate = firebase.firestore.FieldValue.serverTimestamp();
+    newUserData.dateCreated = firebase.firestore.FieldValue.serverTimestamp();
     //add my user to this game
     db.collection("games/"+gameId+"/gameUsers")
     .doc("" + firebase.auth().currentUser.uid)
@@ -295,7 +304,6 @@ var database_setGameUser = function(){
         { merge: true }
     );
 
-    database_loadGameUsers();
 }
 var database_setLocation = function () {
     console.log("database_setLocation");
@@ -333,16 +341,14 @@ var database_setUserData = function (user) {
 
     // $('#userimage').html('<img src="' + gravatarImage + '" />');
 
-    $('.ddmenu').removeClass('hidden');
-
     userData = {
         name: user.displayName,
         email: user.email,
         photoUrl: user.photoURL,
         emailVerified: user.emailVerified,
         uid: user.uid,
-        // gravatar: gravatarImage,
-        createDate: firebase.firestore.FieldValue.serverTimestamp()
+        dateCreated: firebase.firestore.FieldValue.serverTimestamp(),
+        dateUpdated: firebase.firestore.FieldValue.serverTimestamp()
     }
 
     db.collection("users")
@@ -492,7 +498,7 @@ var func_confirmMove = function(docName, docJson){
             console.log('you are allowed to move');
             database_setMove(docName, docJson, count);
         }else{
-            console.log('not your turen player: ' + uid);
+            console.log('not your turn player: ' + uid);
         }
     })
     .catch((error) => {
@@ -732,15 +738,9 @@ var func_timeSince = function(start){
     var startDate = new Date(start);
     var endDate = new Date();
     var diff = endDate.getTime() - startDate.getTime();
-    var hours = Math.floor(diff / 1000 / 60 / 60);
-    diff -= hours * 1000 * 60 * 60;
-    var minutes = Math.floor(diff / 1000 / 60);
-
-    // If using time pickers with 24 hours format, add the below line get exact hours
-    if (hours < 0)
-       hours = hours + 24;
-
-    return (hours <= 9 ? "0" : "") + hours + ":" + (minutes <= 9 ? "0" : "") + minutes;
+    var minutes = Math.floor(diff / 1000 / 60 );
+    
+    return  minutes;
 }
 var ball_left = 0;
 var ball_top = 0;
@@ -1138,21 +1138,31 @@ var game_tictactoe = function(){
     
     //initial render
     db.collection("games/"+gameId+"/moves")
-    .orderBy("createDate", "desc")
+    .orderBy("createDate", "asc")
     .onSnapshot(function(querySnapshot) {
+      console.log('game_tictactoe loading moves');
+
       var count = 0;
-      var playerBeforeLastUid = '';
-      var lastPlayerUid = '';
+      playerBeforeLastUid = '';
+      lastPlayerUid = '';
+
       querySnapshot.forEach(function(doc) {
+        console.log(doc.data().user + ' played by ' + doc.data().uid);
+        console.log('playerBeforeLastUid: ' + lastPlayerUid);
         playerBeforeLastUid = lastPlayerUid;
         count++;
-        play_board[doc.data().move] = doc.data().user
+        play_board[doc.data().move] = doc.data().user;
         lastPlayerUid = doc.data().uid;
+        console.log('lastPlayerUid: ' + doc.data().uid);
       });
-      $('#uid-' + lastPlayerUid).addClass('lastPlayer');
-      $('#uid-' + playerBeforeLastUid).addClass('playerBeforeLast');
+
+      $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
+      $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
+
       turn = (count % 2) ? "X" : "O"; 
+      
       game_loop();
+
     });
 }
 var path = window.location.pathname.split("/");
@@ -1160,3 +1170,5 @@ var userData = null;
 var uid = null;
 var gameId = null;
 var userLimit = 2;
+var playerBeforeLastUid = '';
+var lastPlayerUid = '';

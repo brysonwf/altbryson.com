@@ -14,35 +14,42 @@ var database_loadGameUsers = function(){
         var userArray = [];
 
         var classNames = '';
-        let letter = '';
         var html = '';
-        html += '';''
+        html += '';
         querySnapshot.forEach(function(doc) {
 
             var uniqueUserString = (doc.data().name).charAt(0);
             var charAtCount = 1;
             while (userArray[uniqueUserString]){
                 uniqueUserString = uniqueUserString + '' + (doc.data().name).charAt(charAtCount);
+                charAtCount++;
             }
             userArray[uniqueUserString] = true;
 
-            var userTime = new Date(doc.data().createDate.toDate())
-            classNames = 'user ';
+            var userLastActiveDate = new Date();
+            if (doc.data().dateUpdated != null){
+                userLastActiveDate = doc.data().dateUpdated.toDate();
+            }
+            var userTime = new Date(userLastActiveDate);
+            classNames = ' user';
             if (doc.data().uid == uid){
-                classNames += 'uid ';
+                classNames += ' me';
             }
             if (userTime <= elevenSecondsAgo){
-                classNames += 'nothere ';
+                classNames += ' nothere';
             }
             if(userTime <= oneMinuteAgo){
                 // doc.ref.delete();
             }
-            html += "<div class=\"" + classNames +"\" id=\"uid-" + doc.data().uid +"\">"+ uniqueUserString +"</div>";
+            html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'"><img src="' + doc.data().photoUrl + '" /></div>';
             
         });
         html += '';
 
         $('.userbank').html(html);
+        
+        $('#uid-' + lastPlayerUid).addClass('lastPlayer');
+        $('#uid-' + playerBeforeLastUid).addClass('itsyourturn');
 
     });
 

@@ -3,7 +3,7 @@ var database_setGameUser = function(){
 
 
     newUserData = userData;
-    newUserData.createDate = firebase.firestore.FieldValue.serverTimestamp();
+    newUserData.dateCreated = firebase.firestore.FieldValue.serverTimestamp();
     //add my user to this game
     db.collection("games/"+gameId+"/gameUsers")
     .doc("" + firebase.auth().currentUser.uid)
@@ -12,5 +12,4 @@ var database_setGameUser = function(){
         { merge: true }
     );
 
-    database_loadGameUsers();
 }

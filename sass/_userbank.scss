@@ -1,26 +1,26 @@
 .userbank{ 
-    margin-top: 3px;
     float: left;
 }
 
 .userbank .user {
-    background-color: #fff;
-    margin-left: 8px;
+    margin-left: 5px;
     margin-top: 3px;
-    border-radius: 10px;
-    padding: 2px 6px;
-    text-align: center;
     float: left;
-    font-size: 2rem;
 }
 
-.userbank .nothere {
-    background-color: #bfcbbf;
-    border: 1px dashed #809580;
-    color: #000000;
+.userbank .user img {
+    border-radius: 100%;
+    height: 40px;
+    border: 2px solid #000;
+}
+
+.userbank .nothere img {
+    border-style: dashed;
 }  
 
-.userbank .user img {
-    border-radius: 10px;
-    height: 28px;
+.userbank .itsyourturn img {
+    border-color: red;
+}  
+.userbank .me img {
+    box-shadow: 1px 1px 9px black;
 }

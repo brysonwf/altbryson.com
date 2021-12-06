@@ -1,4 +1,4 @@
-var database_setGameUser = function(){
+var database_setGameInfo = function(){
     console.log('init database_setGameUser');
 
 
@@ -11,6 +11,5 @@ var database_setGameUser = function(){
         },
         { merge: true }
     );
-
-    database_loadGameUsers();
+    
 }

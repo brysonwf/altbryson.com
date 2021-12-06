@@ -8,16 +8,14 @@ var database_setUserData = function (user) {
 
     // $('#userimage').html('<img src="' + gravatarImage + '" />');
 
-    $('.ddmenu').removeClass('hidden');
-
     userData = {
         name: user.displayName,
         email: user.email,
         photoUrl: user.photoURL,
         emailVerified: user.emailVerified,
         uid: user.uid,
-        // gravatar: gravatarImage,
-        createDate: firebase.firestore.FieldValue.serverTimestamp()
+        dateCreated: firebase.firestore.FieldValue.serverTimestamp(),
+        dateUpdated: firebase.firestore.FieldValue.serverTimestamp()
     }
 
     db.collection("users")

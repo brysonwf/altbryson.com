@@ -29,7 +29,7 @@ var func_confirmMove = function(docName, docJson){
             console.log('you are allowed to move');
             database_setMove(docName, docJson, count);
         }else{
-            console.log('not your turen player: ' + uid);
+            console.log('not your turn player: ' + uid);
         }
     })
     .catch((error) => {

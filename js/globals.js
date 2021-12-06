@@ -3,3 +3,5 @@ var userData = null;
 var uid = null;
 var gameId = null;
 var userLimit = 2;
+var playerBeforeLastUid = '';
+var lastPlayerUid = '';
