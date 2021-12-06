@@ -23,11 +23,11 @@ var func_confirmMove = function(docName, docJson){
             if (alreadyOnTheBoard[uid]){
                 console.log('user on the board already: ' + uid);
             }else{
-                database_setMove(docName, docJson);
+                database_setMove(docName, docJson, count);
             }
         }else if (currentPlayerUid[userLimit] == uid){
             console.log('you are allowed to move');
-            database_setMove(docName, docJson);
+            database_setMove(docName, docJson, count);
         }else{
             console.log('not your turen player: ' + uid);
         }

@@ -1,4 +1,4 @@
-var database_setMove = function(docName, docJson){
+var database_setMove = function(docName, docJson, moveCount){
     console.log('init database_setMove');
     
     docJson.uid = uid;
@@ -8,7 +8,7 @@ var database_setMove = function(docName, docJson){
     .doc(docName)
     .set(docJson)
     .then((docRef) => {
-        
+        database_setGameComplete(moveCount);        
     }).catch((error) => {
         console.error("Error adding document: " + error);
     });

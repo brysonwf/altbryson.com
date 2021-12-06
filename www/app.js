@@ -135,6 +135,7 @@ var database_loadGamesList = function(){
             }else{
                 html += '<div class="title">' + doc.data().type + '</div>';
             }
+            html += '<div class="moveCount">' + doc.data().moveCount + '</div>';
             html += '</a>';
             html += '';
         });
@@ -205,6 +206,7 @@ var database_loadYourGamesList = function(){
             html += '';
             html += '<a class="div_game ' + classString + '" href="/g/' + doc.data().type + '/' + doc.id + '">';
             html += '<div class="title">' + doc.data().type + '</div>';
+            html += '<div class="moveCount">' + doc.data().moveCount + '</div>';
             html += func_timeSince(doc.data().dateCreated);
             html += '</a>';
             html += '';
@@ -243,6 +245,23 @@ var database_setGameComplete = function(){
         console.error("Error adding document: " + error);
     });
 }
+var database_setGameComplete = function(moveCount){
+    console.log('init database_setGameComplete');
+
+    db.collection("games")
+    .doc(gameId)
+    .set(
+        {
+            moveCount : moveCount
+        },
+        { merge: true }
+    )
+    .then((docRef) => {
+        
+    }).catch((error) => {
+        console.error("Error adding document: " + error);
+    });
+}
 var database_setGameUser = function(){
     console.log('init database_setGameUser');
 
@@ -270,7 +289,7 @@ var database_setLocation = function () {
             { merge: true }
         );
 }
-var database_setMove = function(docName, docJson){
+var database_setMove = function(docName, docJson, moveCount){
     console.log('init database_setMove');
     
     docJson.uid = uid;
@@ -280,7 +299,7 @@ var database_setMove = function(docName, docJson){
     .doc(docName)
     .set(docJson)
     .then((docRef) => {
-        
+        database_setGameComplete(moveCount);        
     }).catch((error) => {
         console.error("Error adding document: " + error);
     });
@@ -449,11 +468,11 @@ var func_confirmMove = function(docName, docJson){
             if (alreadyOnTheBoard[uid]){
                 console.log('user on the board already: ' + uid);
             }else{
-                database_setMove(docName, docJson);
+                database_setMove(docName, docJson, count);
             }
         }else if (currentPlayerUid[userLimit] == uid){
             console.log('you are allowed to move');
-            database_setMove(docName, docJson);
+            database_setMove(docName, docJson, count);
         }else{
             console.log('not your turen player: ' + uid);
         }

@@ -21,6 +21,7 @@ var database_loadYourGamesList = function(){
             html += '';
             html += '<a class="div_game ' + classString + '" href="/g/' + doc.data().type + '/' + doc.id + '">';
             html += '<div class="title">' + doc.data().type + '</div>';
+            html += '<div class="moveCount">' + doc.data().moveCount + '</div>';
             html += func_timeSince(doc.data().dateCreated);
             html += '</a>';
             html += '';

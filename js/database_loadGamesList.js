@@ -28,6 +28,7 @@ var database_loadGamesList = function(){
             }else{
                 html += '<div class="title">' + doc.data().type + '</div>';
             }
+            html += '<div class="moveCount">' + doc.data().moveCount + '</div>';
             html += '</a>';
             html += '';
         });
