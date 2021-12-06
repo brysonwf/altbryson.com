@@ -14,6 +14,7 @@ var database_loadGame = function () {
                 
                 database_setGameActive();
                 database_setGameUser();
+                database_setGameInfo();
                 
                 // setInterval(function() {
                 //     database_setGameActive();

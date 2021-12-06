@@ -82,11 +82,11 @@ gulp.task("sass", function() {
       .src("sass/**/*.scss")
       // .pipe(sourcemaps.init())
       .pipe(sass.sync().on("error", sass.logError))
-      .pipe(
-        purgecss({
-          content: ["./www/*.html"]
-        })
-      )
+      // .pipe(
+      //   purgecss({
+      //     content: ["./www/*.html"]
+      //   })
+      // )
       .pipe(cleanCSS({ compatibility: "ie8" }))
       .pipe(minify())
       // .pipe(sourcemaps.write())

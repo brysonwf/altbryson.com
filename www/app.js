@@ -42,6 +42,7 @@ var button_create_game = function(){
             dateCreated: firebase.firestore.FieldValue.serverTimestamp(),
             dateUpdated: firebase.firestore.FieldValue.serverTimestamp(),
             uid: firebase.auth().currentUser.uid,
+            moveCount : 0,
             create: [],
             read: [],
             update: [],
@@ -85,6 +86,7 @@ var database_loadGame = function () {
                 
                 database_setGameActive();
                 database_setGameUser();
+                database_setGameInfo();
                 
                 // setInterval(function() {
                 //     database_setGameActive();
@@ -108,39 +110,63 @@ var database_loadGame = function () {
 var database_loadGamesList = function(){
     console.log("database_loadGamesList");
 
-    var now = new Date();
-    var durationInMinutes = 15;
-    var MS_PER_MINUTE = 60000;
-    var oneMinuteAgo = new Date(now - durationInMinutes * MS_PER_MINUTE);
-    
+    var userGameIdArray = [];
+
     db
     .collection("games")
-    .where("activeDate", ">=", oneMinuteAgo)
     .orderBy("activeDate", "desc")
-    .limit(5)
+    .where("type", "==", 'tictactoe')
     .onSnapshot(function(querySnapshot) {
-        
         console.log("database_loadGamesList querySnapshot");
+
         var classString = '';
         var html = '';
-        html += '';
-        querySnapshot.forEach(function(doc) {
+        html += '<table>';
+        html += '<thead>';
+            html += '<tr>';
+                html += '<td>type</td>';
+                html += '<td>name</td>';
+                html += '<td>age</td>';
+                html += '<td>moves</td>';
+                html += '<td>fin</td>';
+            html += '</tr>';
+        html += '</<thead>';
+            html += '<tbody>';
+                querySnapshot.forEach(function(doc) {
+                
+                    var uniqueString = (doc.id).charAt(0);
+                    var charAtCount = 1;
+                    while (userGameIdArray[uniqueString]){
+                        uniqueString = uniqueString + '' + (doc.id).charAt(charAtCount);
+                    }
+                    userGameIdArray[uniqueString] = true;
 
-            classString = (doc.data().complete) ?  'game_complete' : '';
+                    classString = (doc.data().complete) ?  'game_complete' : '';
+                    classString += (doc.data().uid == uid) ?  'game_user' : '';
 
-            html += '';
-            html += '<a class="div_game ' + classString + '" href="/g/' + doc.data().type + '/' + doc.id + '">';
-            if (doc.data().type == "page"){
-                html += '<div class="title">' + doc.id + '</div>';
-            }else{
-                html += '<div class="title">' + doc.data().type + '</div>';
-            }
-            html += '<div class="moveCount">' + doc.data().moveCount + '</div>';
-            html += '</a>';
-            html += '';
-        });
-        html += '';
-        $('#loadGamesHere').html(html);
+                    html += '<tr class="div_game ' + classString + '">';
+                        html += '<td>';
+                            html += '<a href="/g/' + doc.data().type + '/' + doc.id + '">';
+                                html += doc.data().type;
+                            html += '</a>';
+                        html += '</td>';
+                        html += '<td>';
+                            html += uniqueString;
+                        html += '</td>';
+                        html += '<td>';
+                            html += (doc.data().activeDate)? func_timeSince(doc.data().activeDate.toDate()) : 'old';
+                        html += '</td>';
+                        html += '<td>';
+                            html += (doc.data().moveCount)? doc.data().moveCount : '0';
+                        html += '</td>';
+                        html += '<td>';
+                            html += (doc.data().complete)? doc.data().complete : 'false';
+                        html += '</td>';
+                    html += '</tr>';
+                });
+            html += '</tbody>';
+        html += '</table>';
+        $('#loadGamesHere').html(html).find('table').DataTable();
 
     });
 }
@@ -157,23 +183,33 @@ var database_loadGameUsers = function(){
     db.collection("games/"+gameId+"/gameUsers").onSnapshot(function(querySnapshot) {
         console.log("database_loadGameUsers onSnapshot");
 
+        var userArray = [];
+
         var classNames = '';
         let letter = '';
         var html = '';
-        html += '';
+        html += '';''
         querySnapshot.forEach(function(doc) {
 
+            var uniqueUserString = (doc.data().name).charAt(0);
+            var charAtCount = 1;
+            while (userArray[uniqueUserString]){
+                uniqueUserString = uniqueUserString + '' + (doc.data().name).charAt(charAtCount);
+            }
+            userArray[uniqueUserString] = true;
+
             var userTime = new Date(doc.data().createDate.toDate())
-            
             classNames = 'user ';
+            if (doc.data().uid == uid){
+                classNames += 'uid ';
+            }
             if (userTime <= elevenSecondsAgo){
                 classNames += 'nothere ';
             }
             if(userTime <= oneMinuteAgo){
                 // doc.ref.delete();
             }
-            letter = (doc.data().name).charAt(0);
-            html += "<div class=\"" + classNames +"\" id=\"uid-" + doc.data().uid +"\">"+ letter +"</div>";
+            html += "<div class=\"" + classNames +"\" id=\"uid-" + doc.data().uid +"\">"+ uniqueUserString +"</div>";
             
         });
         html += '';
@@ -182,39 +218,6 @@ var database_loadGameUsers = function(){
 
     });
 
-}
-var database_loadYourGamesList = function(){
-    console.log("database_loadYourGamesList");
-
-    var now = new Date();
-    var durationInMinutes = 15;
-    var MS_PER_MINUTE = 60000;
-    var oneMinuteAgo = new Date(now - durationInMinutes * MS_PER_MINUTE);
-    
-    db
-    .collection("games")
-    .where("uid", "==", uid)
-    .orderBy("dateCreated", "desc")
-    .onSnapshot(function(querySnapshot) {
-        
-        console.log("database_loadYourGamesList querySnapshot");
-        var classString = '';
-        var html = '';
-        html += '';
-        querySnapshot.forEach(function(doc) {
-            classString = (doc.data().complete) ?  'game_complete' : '';
-            html += '';
-            html += '<a class="div_game ' + classString + '" href="/g/' + doc.data().type + '/' + doc.id + '">';
-            html += '<div class="title">' + doc.data().type + '</div>';
-            html += '<div class="moveCount">' + doc.data().moveCount + '</div>';
-            html += func_timeSince(doc.data().dateCreated);
-            html += '</a>';
-            html += '';
-        });
-        html += '';
-        $('#loadYourGamesHere').html(html);
-
-    });
 }
 var database_setGameActive = function(){
     console.log('init database_setGameActive');
@@ -245,6 +248,22 @@ var database_setGameComplete = function(){
         console.error("Error adding document: " + error);
     });
 }
+var database_setGameUser = function(){
+    console.log('init database_setGameUser');
+
+
+    //add my user to this game
+    db.collection("games/"+gameId+"/gameUsers")
+    .doc("" + firebase.auth().currentUser.uid)
+    .set(
+        {
+            dateUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        },
+        { merge: true }
+    );
+
+    database_loadGameUsers();
+}
 var database_setGameMoveCount = function(moveCount){
     console.log('init database_setGameMoveCount');
 
@@ -267,7 +286,7 @@ var database_setGameUser = function(){
 
 
     newUserData = userData;
-    newUserData.createDate = new Date();
+    newUserData.createDate = firebase.firestore.FieldValue.serverTimestamp();
     //add my user to this game
     db.collection("games/"+gameId+"/gameUsers")
     .doc("" + firebase.auth().currentUser.uid)
@@ -310,6 +329,7 @@ var database_setUserData = function (user) {
     // var gravatarImage = func_getGravatar(user.email);
     
     $('#username').html(user.email);
+    // $('#usernameShort').html((user.email).charAt(0) + (user.email).charAt(1) + (user.email).charAt(2));
 
     // $('#userimage').html('<img src="' + gravatarImage + '" />');
 
@@ -393,7 +413,6 @@ var firebase_onAuthStateChanged = function () {
           gameId = "home";
           database_loadGame();
           database_loadGamesList();
-          database_loadYourGamesList();
           break;
         case "g":
           gameId = path[3];
@@ -402,7 +421,6 @@ var firebase_onAuthStateChanged = function () {
             case "home":
               console.log("home");
               database_loadGamesList();
-              database_loadYourGamesList();
               break;
           }
           break;

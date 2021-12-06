@@ -3,45 +3,38 @@
 {{#*inline "sectionApp-block"}}
     
     <div class="container">
-        <div class="col-xs-12">
-            <h1>altbryson.com</h1>
-            <p class="lead">Coding is my hobby. Here is what I've done for fun.</p>
-            <ol>
-                <li>
-                    <a href="https://budgetforecast.app">
-                        budgetforecast.app - Cash flow forecasting
-                    </a>
-                </li>
-                <li>
-                    <a href="https://github.com/brysonwf/netsuite-nodeGulpTest-circleciGitflowDeployment">
-                        netsuite circleci -> node/gulp/karma -> mocha unit tests -> git deployment
-                    </a>
-                </li>
-                <li>
-                    I'm currently using altbryson.com to build an game dev sandbox.
-                </li>
-            </ol>
-            <hr />
-            <div class="panel panel-default">
-                <div class="panel-heading">Active Pages</div>
-                <div class="panel-body">
-                    <div id="loadGamesHere" class="container_games">
-                        <a class="div_game game_complete">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>altbryson.com</h1>
+                <p class="lead">Coding is my hobby. Here is what I've done for fun.</p>
+                <ol>
+                    <li>
+                        <a href="https://budgetforecast.app">
+                            budgetforecast.app - Cash flow forecasting
                         </a>
-                    </div>
-                </div>
+                    </li>
+                    <li>
+                        <a href="https://github.com/brysonwf/netsuite-nodeGulpTest-circleciGitflowDeployment">
+                            netsuite circleci -> node/gulp/karma -> mocha unit tests -> git deployment
+                        </a>
+                    </li>
+                    <li>
+                        I'm currently using altbryson.com to build an game dev sandbox.
+                    </li>
+                </ol>
+                <hr />
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">Your Pages</div>
-                <div class="panel-body">
-                    <div id="loadYourGamesHere" class="container_games">
-                        <a class="div_game">
-                        </a>
-                    </div>
-                </div>
+            <div id="loadGamesHere" class="container_games">
+                <table class="dataTable">
+                    <tbody>
+                        <tr><th><td>Games</td></th></tr>
+                        <tr><td><a class="div_game " href="/g/page/home">page</a></td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+
  
 {{/inline}}
 

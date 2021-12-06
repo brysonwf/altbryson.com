@@ -1,18 +1,16 @@
 <div id="sidebar">
-    <div class="container">
-        <div class="sidebarbg">
-            <a class="navbutton navbutton_home" href="/"><i class="fas fa-home"></i></a>
-            <a class="navbutton button_login hidden" href="#">Login for Games</a>
-            <a class="navbutton button_logout hidden">Logout</a>
-            <div class="ddmenu dropdown pull-right hidden">
-                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    <span id="username"></span><span id="userimage"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li><a class="button_create_game" href="#" data-type="tictactoe"><i class="fas fa-hashtag"></i> TicTacToe</a></li>
-                    <li><a class="button_create_game" href="#" data-type="minigolf"><i class="fas fa-golf-ball"></i> minigolf</a></li>
-                </ul>
-            </div>
+    <div class="sidebarbg">            
+        <div class="ddmenu dropdown pull-right hidden">
+            <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <i class="fas fa-cog"></i>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a class="navbutton_home" href="/"><i class="fas fa-home"></i> Homepage</a></li>
+                <li><a class="navbutton button_login hidden" href="#">Login for Games</a></li>
+                <li><a class="button_create_game" href="#" data-type="tictactoe"><i class="fas fa-hashtag"></i> TicTacToe</a></li>
+                <li><a class="button_create_game" href="#" data-type="minigolf"><i class="fas fa-golf-ball"></i> minigolf</a></li>
+                <li><a class="button_logout hidden">Logout <span id="username"></span></a></li>
+            </ul>
         </div>
         <div class="userbank">
             <div class="user nothere playerBeforeLast"><i class="fas fa-user"></i></div>

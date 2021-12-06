@@ -29,26 +29,24 @@
   <meta property="og:description" content="altbryson.com sandbox" />
   <meta property="og:image" content="https://altbryson.com/images/ogimage.png" />
   <meta name="theme-color" content="#f1e2ba" />
-  <link rel="stylesheet" type="text/css" href="/base.css?v202111681635" />
+  <link rel="stylesheet" type="text/css" href="/base.css?v2021116123843" />
 </head>
 
 <body>
   
 <div id="sidebar">
-    <div class="container">
-        <div class="sidebarbg">
-            <a class="navbutton navbutton_home" href="/"><i class="fas fa-home"></i></a>
-            <a class="navbutton button_login hidden" href="#">Login for Games</a>
-            <a class="navbutton button_logout hidden">Logout</a>
-            <div class="ddmenu dropdown pull-right hidden">
-                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    <span id="username"></span><span id="userimage"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li><a class="button_create_game" href="#" data-type="tictactoe"><i class="fas fa-hashtag"></i> TicTacToe</a></li>
-                    <li><a class="button_create_game" href="#" data-type="minigolf"><i class="fas fa-golf-ball"></i> minigolf</a></li>
-                </ul>
-            </div>
+    <div class="sidebarbg">            
+        <div class="ddmenu dropdown pull-right hidden">
+            <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <i class="fas fa-cog"></i>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a class="navbutton_home" href="/"><i class="fas fa-home"></i> Homepage</a></li>
+                <li><a class="navbutton button_login hidden" href="#">Login for Games</a></li>
+                <li><a class="button_create_game" href="#" data-type="tictactoe"><i class="fas fa-hashtag"></i> TicTacToe</a></li>
+                <li><a class="button_create_game" href="#" data-type="minigolf"><i class="fas fa-golf-ball"></i> minigolf</a></li>
+                <li><a class="button_logout hidden">Logout <span id="username"></span></a></li>
+            </ul>
         </div>
         <div class="userbank">
             <div class="user nothere playerBeforeLast"><i class="fas fa-user"></i></div>
@@ -58,47 +56,44 @@
 <div class="viewport">
     
     <div class="container">
-        <div class="col-xs-12">
-            <h1>altbryson.com</h1>
-            <p class="lead">Coding is my hobby. Here is what I've done for fun.</p>
-            <ol>
-                <li>
-                    <a href="https://budgetforecast.app">
-                        budgetforecast.app - Cash flow forecasting
-                    </a>
-                </li>
-                <li>
-                    <a href="https://github.com/brysonwf/netsuite-nodeGulpTest-circleciGitflowDeployment">
-                        netsuite circleci -> node/gulp/karma -> mocha unit tests -> git deployment
-                    </a>
-                </li>
-                <li>
-                    I'm currently using altbryson.com to build an game dev sandbox.
-                </li>
-            </ol>
-            <hr />
-            <div class="panel panel-default">
-                <div class="panel-heading">Active Pages</div>
-                <div class="panel-body">
-                    <div id="loadGamesHere" class="container_games">
-                        <a class="div_game game_complete">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>altbryson.com</h1>
+                <p class="lead">Coding is my hobby. Here is what I've done for fun.</p>
+                <ol>
+                    <li>
+                        <a href="https://budgetforecast.app">
+                            budgetforecast.app - Cash flow forecasting
                         </a>
-                    </div>
-                </div>
+                    </li>
+                    <li>
+                        <a href="https://github.com/brysonwf/netsuite-nodeGulpTest-circleciGitflowDeployment">
+                            netsuite circleci -> node/gulp/karma -> mocha unit tests -> git deployment
+                        </a>
+                    </li>
+                    <li>
+                        I'm currently using altbryson.com to build an game dev sandbox.
+                    </li>
+                </ol>
+                <hr />
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">Your Pages</div>
-                <div class="panel-body">
-                    <div id="loadYourGamesHere" class="container_games">
-                        <a class="div_game">
-                        </a>
-                    </div>
-                </div>
+            <div id="loadGamesHere" class="container_games">
+                <table class="dataTable">
+                    <tbody>
+                        <tr><th><td>Games</td></th></tr>
+                        <tr><td><a class="div_game " href="/g/page/home">page</a></td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+
  
-</div>
+  <div id="footer">
+      <div class="container">
+          Woot.
+      </div>
+  </div></div>
 
 
 
@@ -154,8 +149,9 @@
 <script type="text/javascript" src="/firebase-analytics.js"></script>
 <script type="text/javascript" src="/firebase-firestore.js"></script>
 <script type="text/javascript" src="/moment-with-locales.min.js"></script>
-<script type="text/javascript" src="/lib.js?v202111681635"></script>
-<script type="text/javascript" src="/app.js?v202111681635"></script>
+<script type="text/javascript" src="/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/lib.js?v2021116123843"></script>
+<script type="text/javascript" src="/app.js?v2021116123843"></script>
 
 <script type="text/javascript">
   appManager.init();

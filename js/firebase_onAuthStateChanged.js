@@ -20,7 +20,6 @@ var firebase_onAuthStateChanged = function () {
           gameId = "home";
           database_loadGame();
           database_loadGamesList();
-          database_loadYourGamesList();
           break;
         case "g":
           gameId = path[3];
@@ -29,7 +28,6 @@ var firebase_onAuthStateChanged = function () {
             case "home":
               console.log("home");
               database_loadGamesList();
-              database_loadYourGamesList();
               break;
           }
           break;

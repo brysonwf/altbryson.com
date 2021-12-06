@@ -6,6 +6,7 @@ var button_create_game = function(){
             dateCreated: firebase.firestore.FieldValue.serverTimestamp(),
             dateUpdated: firebase.firestore.FieldValue.serverTimestamp(),
             uid: firebase.auth().currentUser.uid,
+            moveCount : 0,
             create: [],
             read: [],
             update: [],

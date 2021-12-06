@@ -11,23 +11,33 @@ var database_loadGameUsers = function(){
     db.collection("games/"+gameId+"/gameUsers").onSnapshot(function(querySnapshot) {
         console.log("database_loadGameUsers onSnapshot");
 
+        var userArray = [];
+
         var classNames = '';
         let letter = '';
         var html = '';
-        html += '';
+        html += '';''
         querySnapshot.forEach(function(doc) {
 
+            var uniqueUserString = (doc.data().name).charAt(0);
+            var charAtCount = 1;
+            while (userArray[uniqueUserString]){
+                uniqueUserString = uniqueUserString + '' + (doc.data().name).charAt(charAtCount);
+            }
+            userArray[uniqueUserString] = true;
+
             var userTime = new Date(doc.data().createDate.toDate())
-            
             classNames = 'user ';
+            if (doc.data().uid == uid){
+                classNames += 'uid ';
+            }
             if (userTime <= elevenSecondsAgo){
                 classNames += 'nothere ';
             }
             if(userTime <= oneMinuteAgo){
                 // doc.ref.delete();
             }
-            letter = (doc.data().name).charAt(0);
-            html += "<div class=\"" + classNames +"\" id=\"uid-" + doc.data().uid +"\">"+ letter +"</div>";
+            html += "<div class=\"" + classNames +"\" id=\"uid-" + doc.data().uid +"\">"+ uniqueUserString +"</div>";
             
         });
         html += '';
