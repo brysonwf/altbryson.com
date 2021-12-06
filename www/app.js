@@ -245,8 +245,8 @@ var database_setGameComplete = function(){
         console.error("Error adding document: " + error);
     });
 }
-var database_setGameComplete = function(moveCount){
-    console.log('init database_setGameComplete');
+var database_setGameMoveCount = function(moveCount){
+    console.log('init database_setGameMoveCount');
 
     db.collection("games")
     .doc(gameId)
@@ -299,7 +299,7 @@ var database_setMove = function(docName, docJson, moveCount){
     .doc(docName)
     .set(docJson)
     .then((docRef) => {
-        database_setGameComplete(moveCount);        
+        database_setGameMoveCount(moveCount);        
     }).catch((error) => {
         console.error("Error adding document: " + error);
     });

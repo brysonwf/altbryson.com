@@ -8,7 +8,7 @@ var database_setMove = function(docName, docJson, moveCount){
     .doc(docName)
     .set(docJson)
     .then((docRef) => {
-        database_setGameComplete(moveCount);        
+        database_setGameMoveCount(moveCount);        
     }).catch((error) => {
         console.error("Error adding document: " + error);
     });

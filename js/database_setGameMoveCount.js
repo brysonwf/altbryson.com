@@ -1,5 +1,5 @@
-var database_setGameComplete = function(moveCount){
-    console.log('init database_setGameComplete');
+var database_setGameMoveCount = function(moveCount){
+    console.log('init database_setGameMoveCount');
 
     db.collection("games")
     .doc(gameId)
