@@ -5,7 +5,7 @@ var database_loadGamesList = function(){
     db
     .collection("games")
     .orderBy("activeDate", "desc")
-    .where("type", "==", 'tictactoe')
+    // .where("type", "==", 'tictactoe')
     .onSnapshot(function(querySnapshot) {
         console.log("database_loadGamesList querySnapshot");
 

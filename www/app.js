@@ -116,7 +116,7 @@ var database_loadGamesList = function(){
     db
     .collection("games")
     .orderBy("activeDate", "desc")
-    .where("type", "==", 'tictactoe')
+    // .where("type", "==", 'tictactoe')
     .onSnapshot(function(querySnapshot) {
         console.log("database_loadGamesList querySnapshot");
 
@@ -182,7 +182,7 @@ var database_loadGameUsers = function(){
     console.log('database_loadGameUsers');
 
     var now = new Date();
-    var oneMinute = 1;
+    var oneMinute = 15;
     var elevenSeconds = (1/60)*11;
     var MS_PER_MINUTE = 60000;
     var oneMinuteAgo = new Date(now - oneMinute * MS_PER_MINUTE);
@@ -218,8 +218,21 @@ var database_loadGameUsers = function(){
             if (userTime <= elevenSecondsAgo){
                 classNames += ' nothere';
             }
-            if(userTime <= oneMinuteAgo){
+            if(
+                userTime <= oneMinuteAgo 
+                && doc.data().uid != playerArray[0]
+                && doc.data().uid != playerArray[1]
+                && null != playerArray[0]
+                && null != playerArray[1]
+            ){
+                console.log('want to delete ' + doc.id);
                 // doc.ref.delete();
+            }
+            if (
+                doc.data().type = 'page'
+                && userTime <= oneMinuteAgo 
+            ){
+                doc.ref.delete();
             }
             html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'"><img src="' + doc.data().photoUrl + '" /></div>';
             
