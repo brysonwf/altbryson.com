@@ -29,7 +29,7 @@
   <meta property="og:description" content="altbryson.com sandbox" />
   <meta property="og:image" content="https://altbryson.com/images/ogimage.png" />
   <meta name="theme-color" content="#f1e2ba" />
-  <link rel="stylesheet" type="text/css" href="/base.css?v2021118123734" />
+  <link rel="stylesheet" type="text/css" href="/base.css?v2021118125958" />
 </head>
 
 <body>
@@ -58,30 +58,24 @@
 </div>
 <div class="viewport">
     <div class="dotsandboxes-container">
-       <main>
+       <div class="dotsandboxes-main">
             <div class="player">
-            <div id="p1">PLAYER ONE</div>
+            <div id="p1">Red</div>
             <div id="s1" class="score">0</div>
             </div>
             <div class="player">
-            <div id="p2">PLAYER TWO</div>
+            <div id="p2">Blue</div>
             <div id="s2" class="score">0</div>
-            </div>
-            <div id = "board-size-options">
-            <div class="play">Choose your board size:</div>
-                <div id="four" class="bs">4 x 4</div>
-                <div id="six" class="bs">6 x 6</div>
-                <div id="eight" class="bs">8 x 8</div>
             </div>
             <div id="win-message">
             <div id="message"></div>
             <div id="playAgain"></div>
             </div>
             <div id="board">
-            <table id="table">
-            </table>
+                <table id="table">
+                </table>
             </div>
-        </main>
+        </div>
     </div>
     <h2 class="game-winner hidden"></h2>
   <div id="footer">
@@ -145,8 +139,8 @@
 <script type="text/javascript" src="/firebase-firestore.js"></script>
 <script type="text/javascript" src="/moment-with-locales.min.js"></script>
 <script type="text/javascript" src="/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="/lib.js?v2021118123734"></script>
-<script type="text/javascript" src="/app.js?v2021118123734"></script>
+<script type="text/javascript" src="/lib.js?v2021118125958"></script>
+<script type="text/javascript" src="/app.js?v2021118125958"></script>
 
 <script type="text/javascript">
   appManager.init();

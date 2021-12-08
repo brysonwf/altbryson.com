@@ -1,198 +1,155 @@
 
 
 #board-size-options {
-    width: 40%;
-    font-family: 'Questrial', cursive;
-    font-size: 3vw;
-    text-align: center;
-    margin: auto;
-  }
-  
-  #dots {
-    font-family:'Codystar', cursive;
-    font-size: 4vw;
-    text-align: center;
-    letter-spacing: 1vw;
-    display: inline-block;
-  }
-  
-  #boxes{
-    font-family: 'Bungee Hairline', cursive;
-    font-size: 6vw;
-    padding: 0;
-    text-align: center;
-  }
-  
-  #and{
-    font-size: 2vw;
-    letter-spacing: 1vw;
-    text-align: center;
-    display: inline-block;
-  
-  
-  #turnMessage{
-    font-size: 20px;
-    letter-spacing: 5px;
-    text-align: center;
-    padding: 15px;
-  }
-  
-  #win-message{
-    font-size: 30px;
-    letter-spacing: 5px;
-    text-align: center;
-    padding: 15px 15px 30px;
-    display: inline;
-  }
-  
-  #playAgain:hover {
-    color: #7300F6;
-    cursor: pointer;
-  }
-  
-  #table {
-    margin: auto;
-    padding: 15px;
-  }
-  
-  td {
-    padding: 0;
-    text-align: center;
-    font-family: none;
-  }
-  
-  div.box {
-    width: 50px;
-    height: 50px;
-    padding: 0;
-    background-color: transparent;
-  }
-  
-  main{
-    margin: auto;
-    width: 80%;
-    text-align: center;
-    padding: 5px;
-  }
-  
-  #board {
-    margin: 0 auto 100px;
-  }
-  
-  div.player {
-    display: inline-block;
-    font-family: 'Questrial', cursive;
-    letter-spacing: 1vw;
-    font-size: 3.5vw;
-    text-align: center;
-    margin: 10px;
-  }
-  
-  #p1, #s1 {
-    color: #F60303;
-  }
-  
-  #score {
-    padding: 10px;
-  }
-  
-  #p2, #s2 {
-    color: #042AFF;
-  }
-  
-  div .line {
-    background-color: transparent;
-    padding: 0;
-    margin: auto;
-  }
-  
-  div .line:hover{
-    cursor: pointer;
-  }
-  
-  div .h {
-    width: 50px;
-    height: 4px;
-  }
-  
-  div .v {
-    width: 4px;
-    height: 50px;
-  }
-  
-  div #square {
-    background-color: none;
-  }
-  
-  /*INSUTRCTIONS PAGE CSS*/
-  h1{
-    letter-spacing: 10px;
-    text-align: center;
-  }
-  
-  #instruct {
-    width: 85%;
-    margin: auto;
-  }
-  
-  p{
-    font-size: 30px;
-    text-align: left;
-  }
-  
-  #backbtn a{
-    font-size: 50px;
-    text-decoration: none;
-    color: black;
-  }
-  
-  #backbtn a:hover{
-    color: #7300F6;
-  }
-  
-  /*ABOUT PAGE CSS*/
-  img.aboutPic {
-    width: 200px;
-    height: 200px;
-    object-fit:cover;
-    border-radius: 50%;
-  }
-  
-  /*RESPONSIVE CSS*/
-  @media screen and (max-width: 800px){
-    header{
-      width: 300px;
-    }
-  
-    #dots {
-      font-size: 31px;
-    }
-  
-    #and {
-      font-size: 16px;
-    }
-  
-    #boxes {
-      font-size: 48px;
-    }
-  }
-  
-  @media screen and (max-width: 800px){
-    main {
-      width: 100%;
-    }
-  
-    #board-size-options, div.player {
-      font-size: 24px;
-    }
-  }
-  
-  @media screen and (min-width: 800px){
-    main {
-      width: 70%;
-    }
-  
-    #board-size-options, div.player {
-      font-size: 30px;
-    }
-  }
+  width: 40%;
+  font-family: 'Questrial', cursive;
+  font-size: 3vw;
+  text-align: center;
+  margin: auto;
+}
+
+#dots {
+  font-family:'Codystar', cursive;
+  font-size: 4vw;
+  text-align: center;
+  letter-spacing: 1vw;
+  display: inline-block;
+}
+
+#boxes{
+  font-family: 'Bungee Hairline', cursive;
+  font-size: 6vw;
+  padding: 0;
+  text-align: center;
+}
+
+#and{
+  font-size: 2vw;
+  letter-spacing: 1vw;
+  text-align: center;
+  display: inline-block;
+}
+
+
+#turnMessage{
+  font-size: 20px;
+  letter-spacing: 5px;
+  text-align: center;
+  padding: 15px;
+}
+
+#win-message{
+  font-size: 30px;
+  letter-spacing: 5px;
+  text-align: center;
+  padding: 15px 15px 30px;
+  display: inline;
+}
+
+#playAgain:hover {
+  color: #7300F6;
+  cursor: pointer;
+}
+
+#table {
+  margin: auto;
+  padding: 15px;
+}
+
+td {
+  padding: 0;
+  text-align: center;
+  font-family: none;
+}
+
+div.box {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background-color: transparent;
+}
+
+main{
+  margin: auto;
+  width: 80%;
+  text-align: center;
+  padding: 5px;
+}
+
+#board {
+  margin: 0 auto 100px;
+}
+
+div.player {
+  display: inline-block;
+  font-family: 'Questrial', cursive;
+  letter-spacing: 1vw;
+  font-size: 3.5vw;
+  text-align: center;
+  margin: 10px;
+}
+
+#p1, #s1 {
+  color: #F60303;
+}
+
+#score {
+  padding: 10px;
+}
+
+#p2, #s2 {
+  color: #042AFF;
+}
+
+div .line {
+  background-color: transparent;
+  padding: 0;
+  margin: auto;
+}
+
+div .line:hover{
+  cursor: pointer;
+}
+
+div .h {
+  width: 36px;
+  height: 4px;
+}
+
+div .v {
+  width: 4px;
+  height: 36px;
+}
+
+div #square {
+  background-color: none;
+}
+
+
+#instruct {
+  width: 85%;
+  margin: auto;
+}
+
+p{
+  font-size: 30px;
+  text-align: left;
+}
+
+#backbtn a{
+  font-size: 36px;
+  text-decoration: none;
+  color: black;
+}
+
+#backbtn a:hover{
+  color: #7300F6;
+}
+
+/*ABOUT PAGE CSS*/
+img.aboutPic {
+  width: 200px;
+  height: 200px;
+  object-fit:cover;
+  border-radius: 50%;
+}

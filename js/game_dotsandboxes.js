@@ -10,64 +10,32 @@ var game_dotsandboxes = function(){
   var hArray = [];
   var vArray = [];
   var $message = $('#message');
-  var $playAgain = $('#playAgain');
   var $score1 = $('div#s1');
   var $score2 = $('div#s2');
-  var $lineH = $('td div.h');
-  var $lineV = $('td div.v');
-  var $board = $('div#board');
   var $player1 = $('div#p1');
   var $player2 = $('div#p2');
   var $html = $('html');
   var $table = $('#table');
-  var $board = $('#board');
-  var $fourBoard = $('div#four');
-  var $sixBoard = $('div#six');
-  var $eightBoard = $('div#eight');
-  var $boardSizeOptions = $('#board-size-options');
 
   // CONSTANTS //
   var dotTd = '<td>•</td>';
 
   // EVENT LISTENERS //
-  function registerListeners() {
+  var registerListeners = function() {
     $line = $('div.line')
     $line.on('click', handleClick);
     $line.on('mouseenter', lineHover);
     $line.on('mouseleave', lineUnhover);
   }
 
-  $playAgain.on('click', restart);
-  $fourBoard.on('click', function() {setBoard(4);});
-  $sixBoard.on('click', () => setBoard(6));
-  $eightBoard.on('click', () => setBoard(8));
-
-
-    ////////////////
-  ////FUNCTIONS///
-  ////////////////
-
-  // BOARD CREATION //
-  function setBoard(size) {
-    $board.show();
-    hArray=[];
-    vArray=[];
-    $boardSizeOptions.hide();
-    boardSize = size;
-    createBoard(size);
-    createBoardArrays(size);
-    registerListeners();
-    $line.data('clicked', false);
-  }
-
-  function buildRowPair(row, size) {
+  var buildRowPair = function(row, size) {
     var sRowPair = '';
     sRowPair = buildRowOne(row, size);
     sRowPair += buildRowTwo(row, size);
     return sRowPair;
   }
 
-  function buildRowTwo(row, size) {
+  var buildRowTwo = function(row, size) {
     var s = '<tr>';
     for (var cellPair = 0; cellPair < size; cellPair++) {
       s += `<td><div id="v${row + (cellPair * size)}" class="line v"></div></td>`;
@@ -78,7 +46,7 @@ var game_dotsandboxes = function(){
     return s;
   }
 
-  function buildRowOne(row, size) {
+  var buildRowOne = function(row, size) {
     var s = '<tr>';
     for (var cellPair = 0; cellPair < size; cellPair++) {
       var tmp = `<td><div id="h${row * size + cellPair}" class="line h"></div></td>`;
@@ -89,18 +57,7 @@ var game_dotsandboxes = function(){
     return s;
   }
 
-  function buildLastRow(row, size) {
-    var s = '<tr>';
-    for (var cellPair = size*size; cellPair <= (size*size); cellPair++) {
-      var tmp = `<td><div id="h${row * size + cellPair}" class="line h"></div></td>`;
-      s += dotTd;
-      s += tmp;
-    }
-    s += dotTd + '</tr>\n';
-    return s;
-  }
-
-  function createBoard(x){
+  var createBoard = function(x){
     html = '';
     for (var row = 0; row < x; row++) {
       html += buildRowPair(row, x);
@@ -108,10 +65,12 @@ var game_dotsandboxes = function(){
     html += buildRowOne(row, x);
 
     $table.html(html);
+
     initialize();
+
   }
 
-  function createBoardArrays(x) {
+  var createBoardArrays = function(x) {
     var innerBrdArr = [];
     for(var i = 0; i < x; i++){
       innerBrdArr.push(0);
@@ -125,27 +84,14 @@ var game_dotsandboxes = function(){
     }
   }
 
-  // GAME PLAY JS //
-  function restart(){
-    $board.hide();
-    $boardSizeOptions.show();
-    board = [];
-    score1 = 0;
-    score2 = 0;
-    $score1.html(score1.toString());
-    $score2.html(score2.toString());
-    initialize();
-  }
-
-  function initialize(){
+  var initialize = function(){
     player = 1;
     render();
     updateTurnMessage();
     $message.html('');
-    $playAgain.html('');
   }
 
-  function lineHover(evt){
+  var lineHover = function(evt){
     if($(this).data('clicked')){
         return;
     } else if (player === 1){
@@ -155,7 +101,7 @@ var game_dotsandboxes = function(){
     }
   }
 
-  function lineUnhover(evt){
+  var lineUnhover = function(evt){
     if($(this).data('clicked')){
         return;
     } else {
@@ -163,7 +109,7 @@ var game_dotsandboxes = function(){
     }
   }
 
-  function getAdjCells(lineId){
+  var getAdjCells = function(lineId){
     var lineNum = parseInt(lineId.substr(1));
     var cells = [];
     var hasTwoCells;
@@ -187,7 +133,7 @@ var game_dotsandboxes = function(){
     return cells;
   }
 
-  function render(){
+  var render = function(){
     score1 = 0;
     score2 = 0;
     for(i = 0; i<board.length; i++){
@@ -228,7 +174,7 @@ var game_dotsandboxes = function(){
     updateTurnMessage();
   }
 
-  function switchPlayer(){
+  var switchPlayer = function(){
     if(!boxMade){
       player = (player === 1) ? 2 : 1;
     } else {
@@ -236,17 +182,14 @@ var game_dotsandboxes = function(){
     }
   }
 
-  function checkWinner(){
+  var checkWinner = function(){
     if (!hArray.includes(false) && !vArray.includes(false)){
       if(score1 > score2){
         $message.html('PLAYER ONE WINS!');
-        $playAgain.html('Play again?');
       } else if(score1 < score2){
         $message.html('PLAYER TWO WINS!');
-        $playAgain.html('Play again?');
       } else if(score1===score2){
         $message.html(`It's a tie!`);
-        $playAgain.html('Play again?');
         console.log('aftering winning');
         console.log(score1);
         console.log(score2);
@@ -254,7 +197,7 @@ var game_dotsandboxes = function(){
     }
   }
 
-  function updateTurnMessage(){
+  var updateTurnMessage = function(){
     if(player === 1){
       $player1.css('text-decoration', 'underline');
       $player2.css('text-decoration', 'none');
@@ -264,7 +207,7 @@ var game_dotsandboxes = function(){
     }
   }
 
-  function handleClick(evt){
+  var handleClick = function(evt){
     if($(this).data('clicked')) return;
     var cells = getAdjCells($(this).attr('id'));
     cells.forEach(function(cell) {
@@ -280,7 +223,7 @@ var game_dotsandboxes = function(){
     checkWinner();
   }
 
-  function getLineValsForCell(cell) {
+  var getLineValsForCell = function(cell) {
     var row = cell.row;
     var col = cell.col;
     var t = row * board[row].length + col;
@@ -290,11 +233,14 @@ var game_dotsandboxes = function(){
     return [hArray[t], vArray[r], hArray[b], vArray[l]];
   }
 
-    
-  const game_loop = () => {
-    console.log('game_dotsandboxes game_loop');
-    
-  };
+  $('#board').show();
+  hArray=[];
+  vArray=[];
+  boardSize = 8;
+  createBoard(boardSize);
+  createBoardArrays(boardSize);
+  registerListeners();
+  $line.data('clicked', false);
   
   //initial watch
   db.collection("games/"+gameId+"/moves")
@@ -322,8 +268,7 @@ var game_dotsandboxes = function(){
 
     $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
     $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
-    
-    game_loop();
+
 
   });
 
