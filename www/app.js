@@ -105,7 +105,7 @@ var database_loadGame = function () {
                         game_tictactoe();
                         break;
                     case "dotsandboxes":
-                        game_dotsandboxes();
+                        game_dotsandboxes(doc);
                         break;
 
                 }
@@ -729,7 +729,7 @@ var func_timeSince = function(start){
     
     return  minutes;
 }
-var game_dotsandboxes = function(){
+var game_dotsandboxes = function(gameDoc){
 
   console.log('game_dotsandboxes init');
   
@@ -772,22 +772,17 @@ var game_dotsandboxes = function(){
 
     player = 1;
 
+    if (gameDoc.data().currentPlayer){
+      player = gameDoc.data().currentPlayer;
+    }
+
     var html = '';
     for (var row = 0; row < x; row++) {
       html += buildRowPair(row, x);
     }
     html += buildLineRow(row, x);
     $('#table').html(html);
-
-    game_loop();
-
-    $('#message').html('');
-
-    createBoardArrays(x);
-
-  }
-
-  var createBoardArrays = function(x) {
+    
     var innerBrdArr = [];
     for(var i = 0; i < x; i++){
       innerBrdArr.push(0);
@@ -799,29 +794,58 @@ var game_dotsandboxes = function(){
       hArray.push(false);
       vArray.push(false);
     }
+
   }
 
   var getAdjCells = function(lineId){
+
     var lineNum = parseInt(lineId.substr(1));
     var cells = [];
     var hasTwoCells;
+    
     if(lineId[0] === 'h'){
+
       hArray[lineNum]=player;
       var row = Math.min((Math.floor(lineNum/board[0].length)), board[0].length);
       hasTwoCells = (row !== board.length && row !== 0);
+
       var col = Math.min((Math.floor(lineNum-board.length*row)), board[0].length-1);
       row -= row === board.length ? 1 : 0;
+
       cells.push({row: row, col: col});
+
       if (hasTwoCells) cells.push({row: row -1, col: col});
+
     } else {
+
       vArray[lineNum] = player;
+
       var col=Math.min((Math.floor(lineNum/board[0].length)), board[0].length);
       hasTwoCells = (col !== board.length && col !== 0);
+
       var row=Math.min((Math.floor(lineNum-board.length*col)), board[0].length-1);
       col -= col === board.length ? 1 : 0;
+
       cells.push({row: row, col: col});
+
       if (hasTwoCells) cells.push({row: row, col: col-1});
     }
+    
+    console.log('init database_setMove');
+  
+    db.collection("games/"+gameId+"/moves")
+    .add({
+      array: lineId[0],
+      lineNum: lineNum,
+      player: player,
+      createDate: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then((docRef) => {
+      console.log('move added');
+    }).catch((error) => {
+        console.error("Error adding document: " + error);
+    });
+    
     return cells;
   }
 
@@ -889,6 +913,7 @@ var game_dotsandboxes = function(){
       var lineVals = getLineValsForCell(cell);
       if (!lineVals.includes(false)) {
         board[cell.row][cell.col] = player;
+
         console.log(board);
         boxMade = true;
       }
@@ -902,7 +927,16 @@ var game_dotsandboxes = function(){
       player = player;
     }
 
-    game_loop();
+    console.log('init database_setCurrentPlayer');
+  
+    db.collection("games")
+    .doc(gameId)
+    .set(
+        {
+            currentPlayer: player
+        },
+        { merge: true }
+    );
     
     //check winner
     if (!hArray.includes(false) && !vArray.includes(false)){
@@ -918,6 +952,8 @@ var game_dotsandboxes = function(){
       } else return;
     }
 
+    game_loop();
+
   }
 
   var getLineValsForCell = function(cell) {
@@ -932,7 +968,9 @@ var game_dotsandboxes = function(){
 
   hArray=[];
   vArray=[];
+
   createBoard(8);
+
   $('div.line').on('click', handleClick);
   $('div.line').data('clicked', false);
   
@@ -948,19 +986,28 @@ var game_dotsandboxes = function(){
 
     querySnapshot.forEach(function(doc) {
 
+      console.log(doc);
+
       //player data
       playerArray[count] = doc.data().uid;
       playerBeforeLastUid = lastPlayerUid;
       lastPlayerUid = doc.data().uid;
 
+      
       //game data
-      gameBoard[doc.data().move] = doc.data().game_unit;
+      if(doc.data().array === 'h'){
+        hArray[doc.data().lineNum] = doc.data().player;
+      }else{
+        vArray[doc.data().lineNum] = doc.data().player;
+      }
 
       count++;
     });
 
     $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
     $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
+
+    game_loop();
 
   });
 

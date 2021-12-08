@@ -32,7 +32,7 @@ var database_loadGame = function () {
                         game_tictactoe();
                         break;
                     case "dotsandboxes":
-                        game_dotsandboxes();
+                        game_dotsandboxes(doc);
                         break;
 
                 }
