@@ -68,6 +68,10 @@
         "destination": "/game_tictactoe.html"
       },
       {
+        "source": "/g/dotsandboxes/**",
+        "destination": "/game_dotsandboxes.html"
+      },
+      {
         "source": "*",
         "destination": "/404.html"
       }

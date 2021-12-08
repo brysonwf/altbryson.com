@@ -77,9 +77,11 @@ var database_loadGame = function () {
     docRef
         .get()
         .then(function (doc) {
+            
             if (doc.exists) {
                 
                 console.log("game exists");
+
                 document.title = "altbryson.com/g/" + gameId;
                 if (doc.data().userLimit){
                     userLimit = doc.data().userLimit;
@@ -95,16 +97,23 @@ var database_loadGame = function () {
                 //     database_setGameUser();
                 // }, 10000);
 
-                console.log('testing type: ' + doc.data().type);
-                if (doc.data().type == "minigolf"){
-                    game_minigolf();
-                }else if (doc.data().type == 'tictactoe'){
-                    game_tictactoe();
+                switch(doc.data().type){
+                    case "minigolf":
+                        game_minigolf();
+                        break;
+                    case "tictactoe":
+                        game_tictactoe();
+                        break;
+                    case "dotsandboxes":
+                        game_dotsandboxes();
+                        break;
+
                 }
                 
             } else {
                 console.log("else game does not exist");
             }
+
         }).catch(function (error) {
             console.log("Error getting document:", error);
         });
@@ -759,6 +768,336 @@ var func_timeSince = function(start){
     
     return  minutes;
 }
+var game_dotsandboxes = function(){
+
+  console.log('game_dotsandboxes init');
+  
+  // VARIABLES //
+  var player, boxMade, score1, score2, boardSize, html, $line;
+  var p1Color = "#F60303";
+  var p2Color = "#042AFF";
+  var board = [];
+  var hArray = [];
+  var vArray = [];
+  var $message = $('#message');
+  var $playAgain = $('#playAgain');
+  var $score1 = $('div#s1');
+  var $score2 = $('div#s2');
+  var $lineH = $('td div.h');
+  var $lineV = $('td div.v');
+  var $board = $('div#board');
+  var $player1 = $('div#p1');
+  var $player2 = $('div#p2');
+  var $html = $('html');
+  var $table = $('#table');
+  var $board = $('#board');
+  var $fourBoard = $('div#four');
+  var $sixBoard = $('div#six');
+  var $eightBoard = $('div#eight');
+  var $boardSizeOptions = $('#board-size-options');
+
+  // CONSTANTS //
+  var dotTd = '<td>•</td>';
+
+  // EVENT LISTENERS //
+  function registerListeners() {
+    $line = $('div.line')
+    $line.on('click', handleClick);
+    $line.on('mouseenter', lineHover);
+    $line.on('mouseleave', lineUnhover);
+  }
+
+  $playAgain.on('click', restart);
+  $fourBoard.on('click', function() {setBoard(4);});
+  $sixBoard.on('click', () => setBoard(6));
+  $eightBoard.on('click', () => setBoard(8));
+
+
+    ////////////////
+  ////FUNCTIONS///
+  ////////////////
+
+  // BOARD CREATION //
+  function setBoard(size) {
+    $board.show();
+    hArray=[];
+    vArray=[];
+    $boardSizeOptions.hide();
+    boardSize = size;
+    createBoard(size);
+    createBoardArrays(size);
+    registerListeners();
+    $line.data('clicked', false);
+  }
+
+  function buildRowPair(row, size) {
+    var sRowPair = '';
+    sRowPair = buildRowOne(row, size);
+    sRowPair += buildRowTwo(row, size);
+    return sRowPair;
+  }
+
+  function buildRowTwo(row, size) {
+    var s = '<tr>';
+    for (var cellPair = 0; cellPair < size; cellPair++) {
+      s += `<td><div id="v${row + (cellPair * size)}" class="line v"></div></td>`;
+      s += `<td><div id="${row}-${cellPair}" class="box"></div></td>`;
+    }
+    s += `<td><div id="v${row + (cellPair * size)}" class="line v"></div></td>`;
+    s += '</tr>\n';
+    return s;
+  }
+
+  function buildRowOne(row, size) {
+    var s = '<tr>';
+    for (var cellPair = 0; cellPair < size; cellPair++) {
+      var tmp = `<td><div id="h${row * size + cellPair}" class="line h"></div></td>`;
+      s += dotTd;
+      s += tmp;
+    }
+    s += dotTd + '</tr>\n';
+    return s;
+  }
+
+  function buildLastRow(row, size) {
+    var s = '<tr>';
+    for (var cellPair = size*size; cellPair <= (size*size); cellPair++) {
+      var tmp = `<td><div id="h${row * size + cellPair}" class="line h"></div></td>`;
+      s += dotTd;
+      s += tmp;
+    }
+    s += dotTd + '</tr>\n';
+    return s;
+  }
+
+  function createBoard(x){
+    html = '';
+    for (var row = 0; row < x; row++) {
+      html += buildRowPair(row, x);
+    }
+    html += buildRowOne(row, x);
+
+    $table.html(html);
+    initialize();
+  }
+
+  function createBoardArrays(x) {
+    var innerBrdArr = [];
+    for(var i = 0; i < x; i++){
+      innerBrdArr.push(0);
+    }
+    for(var i = 0; i < x; i++){
+      board.push(innerBrdArr.slice());
+    }
+    for(var i = 0; i < (x*(x+1)); i++){
+      hArray.push(false);
+      vArray.push(false);
+    }
+  }
+
+  // GAME PLAY JS //
+  function restart(){
+    $board.hide();
+    $boardSizeOptions.show();
+    board = [];
+    score1 = 0;
+    score2 = 0;
+    $score1.html(score1.toString());
+    $score2.html(score2.toString());
+    initialize();
+  }
+
+  function initialize(){
+    player = 1;
+    render();
+    updateTurnMessage();
+    $message.html('');
+    $playAgain.html('');
+  }
+
+  function lineHover(evt){
+    if($(this).data('clicked')){
+        return;
+    } else if (player === 1){
+      $(this).css('background-color', p1Color);
+    }else if (player === 2){
+      $(this).css('background-color', p2Color);
+    }
+  }
+
+  function lineUnhover(evt){
+    if($(this).data('clicked')){
+        return;
+    } else {
+      $(this).css('background-color', 'transparent');
+    }
+  }
+
+  function getAdjCells(lineId){
+    var lineNum = parseInt(lineId.substr(1));
+    var cells = [];
+    var hasTwoCells;
+    if(lineId[0] === 'h'){
+      hArray[lineNum]=player;
+      var row = Math.min((Math.floor(lineNum/board[0].length)), board[0].length);
+      hasTwoCells = (row !== board.length && row !== 0);
+      var col = Math.min((Math.floor(lineNum-board.length*row)), board[0].length-1);
+      row -= row === board.length ? 1 : 0;
+      cells.push({row: row, col: col});
+      if (hasTwoCells) cells.push({row: row -1, col: col});
+    } else {
+      vArray[lineNum] = player;
+      var col=Math.min((Math.floor(lineNum/board[0].length)), board[0].length);
+      hasTwoCells = (col !== board.length && col !== 0);
+      var row=Math.min((Math.floor(lineNum-board.length*col)), board[0].length-1);
+      col -= col === board.length ? 1 : 0;
+      cells.push({row: row, col: col});
+      if (hasTwoCells) cells.push({row: row, col: col-1});
+    }
+    return cells;
+  }
+
+  function render(){
+    score1 = 0;
+    score2 = 0;
+    for(i = 0; i<board.length; i++){
+      for(j = 0; j<board[i].length; j++){
+        var $bx = $('#' + i + '-' + j);
+        if(board[i][j] === 1){
+          $($bx).css('background-color', p1Color);
+          score1++;
+        } else if(board[i][j] === 2){
+          $($bx).css('background-color', p2Color);
+          score2++;
+        } else {
+          $($bx).css('background-color', 'transparent');
+        }
+        $score1.html(score1.toString());
+        $score2.html(score2.toString());
+      };
+    };
+    console.log(board);
+    boxMade = false;
+    function lineColor(lnArray, i, line){
+      if(lnArray[i] === 1){
+        $(line).css('background-color', p1Color).data('clicked', true);
+      } else if(lnArray[i] === 2){
+        $(line).css('background-color', p2Color).data('clicked', true);
+      } else if (lnArray[i] === false){
+        $(line).css('background-color', 'transparent');
+      }
+    }
+    hArray.forEach(function(ln,idx){
+      var $ln = $('#h' + idx);
+      lineColor(hArray, idx, $ln);
+    });
+    vArray.forEach(function(ln,idx){
+      var $ln = $('#v' + idx);
+      lineColor(vArray, idx, $ln);
+    });
+    updateTurnMessage();
+  }
+
+  function switchPlayer(){
+    if(!boxMade){
+      player = (player === 1) ? 2 : 1;
+    } else {
+      player = player;
+    }
+  }
+
+  function checkWinner(){
+    if (!hArray.includes(false) && !vArray.includes(false)){
+      if(score1 > score2){
+        $message.html('PLAYER ONE WINS!');
+        $playAgain.html('Play again?');
+      } else if(score1 < score2){
+        $message.html('PLAYER TWO WINS!');
+        $playAgain.html('Play again?');
+      } else if(score1===score2){
+        $message.html(`It's a tie!`);
+        $playAgain.html('Play again?');
+        console.log('aftering winning');
+        console.log(score1);
+        console.log(score2);
+      } else return;
+    }
+  }
+
+  function updateTurnMessage(){
+    if(player === 1){
+      $player1.css('text-decoration', 'underline');
+      $player2.css('text-decoration', 'none');
+    } else {
+      $player2.css('text-decoration', 'underline');
+      $player1.css('text-decoration', 'none');
+    }
+  }
+
+  function handleClick(evt){
+    if($(this).data('clicked')) return;
+    var cells = getAdjCells($(this).attr('id'));
+    cells.forEach(function(cell) {
+      var lineVals = getLineValsForCell(cell);
+      if (!lineVals.includes(false)) {
+        board[cell.row][cell.col] = player;
+        console.log(board);
+        boxMade = true;
+      }
+    });
+    switchPlayer();
+    render();
+    checkWinner();
+  }
+
+  function getLineValsForCell(cell) {
+    var row = cell.row;
+    var col = cell.col;
+    var t = row * board[row].length + col;
+    var b = t + board[row].length;
+    var l = col * board[col].length + row;
+    var r = l + board[col].length;
+    return [hArray[t], vArray[r], hArray[b], vArray[l]];
+  }
+
+    
+  const game_loop = () => {
+    console.log('game_dotsandboxes game_loop');
+    
+  };
+  
+  //initial watch
+  db.collection("games/"+gameId+"/moves")
+  .orderBy("createDate", "asc")
+  .onSnapshot(function(querySnapshot) {
+    
+    console.log('game_dotsandboxes loading moves');
+
+    var count = 0;
+    playerBeforeLastUid = '';
+    lastPlayerUid = '';
+
+    querySnapshot.forEach(function(doc) {
+
+      //player data
+      playerArray[count] = doc.data().uid;
+      playerBeforeLastUid = lastPlayerUid;
+      lastPlayerUid = doc.data().uid;
+
+      //game data
+      gameBoard[doc.data().move] = doc.data().game_unit;
+
+      count++;
+    });
+
+    $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
+    $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
+    
+    game_loop();
+
+  });
+
+}
 var ball_left = 0;
 var ball_top = 0;
 var ball = {};
@@ -1030,30 +1369,30 @@ var game_tictactoe = function(){
     const check_match = () => {
       for (i = 0; i < 9; i += 3) {
         if (check_line(i, i + 1, i + 2)) {
-          document.querySelector(`#block_${i}`).classList.add("tictactoe-win");
-          document.querySelector(`#block_${i + 1}`).classList.add("tictactoe-win");
-          document.querySelector(`#block_${i + 2}`).classList.add("tictactoe-win");
+          document.querySelector(`#tictactoe-block_${i}`).classList.add("tictactoe-win");
+          document.querySelector(`#tictactoe-block_${i + 1}`).classList.add("tictactoe-win");
+          document.querySelector(`#tictactoe-block_${i + 2}`).classList.add("tictactoe-win");
           return play_board[i];
         }
       }
       for (i = 0; i < 3; i++) {
         if (check_line(i, i + 3, i + 6)) {
-          document.querySelector(`#block_${i}`).classList.add("tictactoe-win");
-          document.querySelector(`#block_${i + 3}`).classList.add("tictactoe-win");
-          document.querySelector(`#block_${i + 6}`).classList.add("tictactoe-win");
+          document.querySelector(`#tictactoe-block_${i}`).classList.add("tictactoe-win");
+          document.querySelector(`#tictactoe-block_${i + 3}`).classList.add("tictactoe-win");
+          document.querySelector(`#tictactoe-block_${i + 6}`).classList.add("tictactoe-win");
           return play_board[i];
         }
       }
       if (check_line(0, 4, 8)) {
-        document.querySelector("#block_0").classList.add("tictactoe-win");
-        document.querySelector("#block_4").classList.add("tictactoe-win");
-        document.querySelector("#block_8").classList.add("tictactoe-win");
+        document.querySelector("#tictactoe-block_0").classList.add("tictactoe-win");
+        document.querySelector("#tictactoe-block_4").classList.add("tictactoe-win");
+        document.querySelector("#tictactoe-block_8").classList.add("tictactoe-win");
         return play_board[0];
       }
       if (check_line(2, 4, 6)) {
-        document.querySelector("#block_2").classList.add("tictactoe-win");
-        document.querySelector("#block_4").classList.add("tictactoe-win");
-        document.querySelector("#block_6").classList.add("tictactoe-win");
+        document.querySelector("#tictactoe-block_2").classList.add("tictactoe-win");
+        document.querySelector("#tictactoe-block_4").classList.add("tictactoe-win");
+        document.querySelector("#tictactoe-block_6").classList.add("tictactoe-win");
         return play_board[2];
       }
       return "";
@@ -1071,8 +1410,6 @@ var game_tictactoe = function(){
         database_setGameComplete('draw');
       }
     };
-
-    console.log("database_loadGamesList");
     
     const game_loop = () => {
 
@@ -1185,3 +1522,4 @@ var userLimit = 2;
 var playerBeforeLastUid = '';
 var lastPlayerUid = '';
 var playerArray = []; 
+var gameBoard = [];

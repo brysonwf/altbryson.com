@@ -34,30 +34,30 @@ var game_tictactoe = function(){
     const check_match = () => {
       for (i = 0; i < 9; i += 3) {
         if (check_line(i, i + 1, i + 2)) {
-          document.querySelector(`#block_${i}`).classList.add("tictactoe-win");
-          document.querySelector(`#block_${i + 1}`).classList.add("tictactoe-win");
-          document.querySelector(`#block_${i + 2}`).classList.add("tictactoe-win");
+          document.querySelector(`#tictactoe-block_${i}`).classList.add("tictactoe-win");
+          document.querySelector(`#tictactoe-block_${i + 1}`).classList.add("tictactoe-win");
+          document.querySelector(`#tictactoe-block_${i + 2}`).classList.add("tictactoe-win");
           return play_board[i];
         }
       }
       for (i = 0; i < 3; i++) {
         if (check_line(i, i + 3, i + 6)) {
-          document.querySelector(`#block_${i}`).classList.add("tictactoe-win");
-          document.querySelector(`#block_${i + 3}`).classList.add("tictactoe-win");
-          document.querySelector(`#block_${i + 6}`).classList.add("tictactoe-win");
+          document.querySelector(`#tictactoe-block_${i}`).classList.add("tictactoe-win");
+          document.querySelector(`#tictactoe-block_${i + 3}`).classList.add("tictactoe-win");
+          document.querySelector(`#tictactoe-block_${i + 6}`).classList.add("tictactoe-win");
           return play_board[i];
         }
       }
       if (check_line(0, 4, 8)) {
-        document.querySelector("#block_0").classList.add("tictactoe-win");
-        document.querySelector("#block_4").classList.add("tictactoe-win");
-        document.querySelector("#block_8").classList.add("tictactoe-win");
+        document.querySelector("#tictactoe-block_0").classList.add("tictactoe-win");
+        document.querySelector("#tictactoe-block_4").classList.add("tictactoe-win");
+        document.querySelector("#tictactoe-block_8").classList.add("tictactoe-win");
         return play_board[0];
       }
       if (check_line(2, 4, 6)) {
-        document.querySelector("#block_2").classList.add("tictactoe-win");
-        document.querySelector("#block_4").classList.add("tictactoe-win");
-        document.querySelector("#block_6").classList.add("tictactoe-win");
+        document.querySelector("#tictactoe-block_2").classList.add("tictactoe-win");
+        document.querySelector("#tictactoe-block_4").classList.add("tictactoe-win");
+        document.querySelector("#tictactoe-block_6").classList.add("tictactoe-win");
         return play_board[2];
       }
       return "";
@@ -75,8 +75,6 @@ var game_tictactoe = function(){
         database_setGameComplete('draw');
       }
     };
-
-    console.log("database_loadGamesList");
     
     const game_loop = () => {
 

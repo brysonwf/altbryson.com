@@ -1,5 +1,4 @@
 .userbank{ 
-    float: left;
 }
 
 .userbank .user {
@@ -26,4 +25,8 @@
 }
 .userbank .winner img {
     border-color: green;
+}
+
+.userbank .user.me{
+    float:right;
 }

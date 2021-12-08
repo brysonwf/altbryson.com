@@ -44,27 +44,27 @@
   background: #0ff30f;
 }
 
-#block_0,
-#block_1,
-#block_2 {
+#tictactoe-block_0,
+#tictactoe-block_1,
+#tictactoe-block_2 {
   border-top: none;
 }
 
-#block_0,
-#block_3,
-#block_6 {
+#tictactoe-block_0,
+#tictactoe-block_3,
+#tictactoe-block_6 {
   border-left: none;
 }
 
-#block_6,
-#block_7,
-#block_8 {
+#tictactoe-block_6,
+#tictactoe-block_7,
+#tictactoe-block_8 {
   border-bottom: none;
 }
 
-#block_2,
-#block_5,
-#block_8 {
+#tictactoe-block_2,
+#tictactoe-block_5,
+#tictactoe-block_8 {
   border-right: none;
 }
 
@@ -78,13 +78,6 @@
 
 .tictactoe-draw {
   color: orangered;
-}
-
-h2#tictactoe-winner {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  text-align: center;
 }
 .tictactoe-win {
   background-color: greenyellow;

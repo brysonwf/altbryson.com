@@ -6,3 +6,4 @@ var userLimit = 2;
 var playerBeforeLastUid = '';
 var lastPlayerUid = '';
 var playerArray = []; 
+var gameBoard = [];

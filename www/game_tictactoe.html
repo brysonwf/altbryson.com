@@ -29,45 +29,48 @@
   <meta property="og:description" content="altbryson.com sandbox" />
   <meta property="og:image" content="https://altbryson.com/images/ogimage.png" />
   <meta name="theme-color" content="#f1e2ba" />
-  <link rel="stylesheet" type="text/css" href="/base.css?v2021116175742" />
+  <link rel="stylesheet" type="text/css" href="/base.css?v2021118123734" />
 </head>
 
 <body>
   
 <div id="sidebar">
-    <div class="sidebarbg">            
-        <div class="ddmenu dropdown pull-right">
-            <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                <i class="fas fa-cog"></i>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li><a class="navbutton_home" href="/"><i class="fas fa-home"></i> Homepage</a></li>
-                <li><a class="button_login hidden" href="#">Login for Games</a></li>
-                <li><a class="button_create_game" href="#" data-type="tictactoe"><i class="fas fa-hashtag"></i> TicTacToe</a></li>
-                <li><a class="button_create_game" href="#" data-type="minigolf"><i class="fas fa-golf-ball"></i> minigolf</a></li>
-                <li><a class="button_logout hidden">Logout <span id="username"></span></a></li>
-            </ul>
-        </div>
-        <div class="userbank">
-            <div class="user nothere itsyourturn"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"></div>
+    <div class="container">
+        <div class="sidebarbg"> 
+            <div class="ddmenu dropdown pull-right">
+                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a class="navbutton_home" href="/"><i class="fas fa-home"></i> Homepage</a></li>
+                    <li><a class="button_login hidden" href="#">Login for Games</a></li>
+                    <li><a class="button_create_game" href="#" data-type="tictactoe"><i class="fas fa-hashtag"></i> TicTacToe</a></li>
+                    <li><a class="button_create_game" href="#" data-type="minigolf"><i class="fas fa-golf-ball"></i> minigolf</a></li>
+                    <li><a class="button_create_game" href="#" data-type="dotsandboxes"><i class="fas fa-border"></i> dotsandboxes</a></li>
+                    <li><a class="button_logout hidden">Logout <span id="username"></span></a></li>
+                </ul>
+            </div>  
+            <div class="userbank">
+                <div class="user nothere itsyourturn"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"></div>
+            </div>         
         </div>
     </div>
 </div>
 <div class="viewport">
     <div class="tictactoe-container">
         <div class="tictactoe-play-area">
-            <div id="block_0" class="tictactoe-block tictactoe-win"></div>
-            <div id="block_1" class="tictactoe-block" ></div>
-            <div id="block_2" class="tictactoe-block" ></div>
-            <div id="block_3" class="tictactoe-block" ></div>
-            <div id="block_4" class="tictactoe-block" ></div>
-            <div id="block_5" class="tictactoe-block" ></div>
-            <div id="block_6" class="tictactoe-block" ></div>
-            <div id="block_7" class="tictactoe-block" ></div>
-            <div id="block_8" class="tictactoe-block" ></div>
+            <div id="tictactoe-block_0" class="tictactoe-block tictactoe-win"></div>
+            <div id="tictactoe-block_1" class="tictactoe-block" ></div>
+            <div id="tictactoe-block_2" class="tictactoe-block" ></div>
+            <div id="tictactoe-block_3" class="tictactoe-block" ></div>
+            <div id="tictactoe-block_4" class="tictactoe-block" ></div>
+            <div id="tictactoe-block_5" class="tictactoe-block" ></div>
+            <div id="tictactoe-block_6" class="tictactoe-block" ></div>
+            <div id="tictactoe-block_7" class="tictactoe-block" ></div>
+            <div id="tictactoe-block_8" class="tictactoe-block" ></div>
         </div>
     </div>
-    <h2 id="tictactoe-winner" class="hidden"></h2>
+    <h2 id="tictactoe-winner" class="game-winner hidden"></h2>
   <div id="footer">
       <div class="container">
           Woot.
@@ -129,8 +132,8 @@
 <script type="text/javascript" src="/firebase-firestore.js"></script>
 <script type="text/javascript" src="/moment-with-locales.min.js"></script>
 <script type="text/javascript" src="/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="/lib.js?v2021116175742"></script>
-<script type="text/javascript" src="/app.js?v2021116175742"></script>
+<script type="text/javascript" src="/lib.js?v2021118123734"></script>
+<script type="text/javascript" src="/app.js?v2021118123734"></script>
 
 <script type="text/javascript">
   appManager.init();
