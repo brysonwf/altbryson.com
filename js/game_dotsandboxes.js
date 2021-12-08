@@ -3,7 +3,7 @@ var game_dotsandboxes = function(){
   console.log('game_dotsandboxes init');
   
   // VARIABLES //
-  var player, boxMade, score1, score2, boardSize, html, $line;
+  var player, boxMade, score1, score2, boardSize, $line;
   var p1Color = "#F60303";
   var p2Color = "#042AFF";
   var board = [];
@@ -14,7 +14,6 @@ var game_dotsandboxes = function(){
   var $score2 = $('div#s2');
   var $player1 = $('div#p1');
   var $player2 = $('div#p2');
-  var $html = $('html');
   var $table = $('#table');
 
   // CONSTANTS //
@@ -30,12 +29,11 @@ var game_dotsandboxes = function(){
 
   var buildRowPair = function(row, size) {
     var sRowPair = '';
-    sRowPair = buildRowOne(row, size);
-    sRowPair += buildRowTwo(row, size);
+    sRowPair = buildLineRow(row, size);
+    sRowPair += buildBoxRow(row, size);
     return sRowPair;
   }
-
-  var buildRowTwo = function(row, size) {
+  var buildBoxRow = function(row, size) {
     var s = '<tr>';
     for (var cellPair = 0; cellPair < size; cellPair++) {
       s += `<td><div id="v${row + (cellPair * size)}" class="line v"></div></td>`;
@@ -45,8 +43,7 @@ var game_dotsandboxes = function(){
     s += '</tr>\n';
     return s;
   }
-
-  var buildRowOne = function(row, size) {
+  var buildLineRow = function(row, size) {
     var s = '<tr>';
     for (var cellPair = 0; cellPair < size; cellPair++) {
       var tmp = `<td><div id="h${row * size + cellPair}" class="line h"></div></td>`;
@@ -58,15 +55,19 @@ var game_dotsandboxes = function(){
   }
 
   var createBoard = function(x){
-    html = '';
+    player = 1;
+
+    var html = '';
     for (var row = 0; row < x; row++) {
       html += buildRowPair(row, x);
     }
-    html += buildRowOne(row, x);
-
+    html += buildLineRow(row, x);
     $table.html(html);
 
-    initialize();
+    render();
+    updateTurnMessage();
+
+    $message.html('');
 
   }
 
@@ -82,13 +83,6 @@ var game_dotsandboxes = function(){
       hArray.push(false);
       vArray.push(false);
     }
-  }
-
-  var initialize = function(){
-    player = 1;
-    render();
-    updateTurnMessage();
-    $message.html('');
   }
 
   var lineHover = function(evt){
@@ -153,6 +147,7 @@ var game_dotsandboxes = function(){
       };
     };
     console.log(board);
+    
     boxMade = false;
     function lineColor(lnArray, i, line){
       if(lnArray[i] === 1){

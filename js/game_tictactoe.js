@@ -80,9 +80,9 @@ var game_tictactoe = function(){
 
       board_container.innerHTML = ""
       play_board.forEach((e, i) => {
-        board_container.innerHTML += `<div id="block_${i}" class="tictactoe-block" data-move="${i}">${play_board[i]}</div>`;
+        board_container.innerHTML += `<div id="tictactoe-block_${i}" class="tictactoe-block" data-move="${i}">${play_board[i]}</div>`;
         if (e == player || e == computer) {
-          document.querySelector(`#block_${i}`).classList.add("tictactoe-occupied");
+          document.querySelector(`#tictactoe-block_${i}`).classList.add("tictactoe-occupied");
         }
       });
 
