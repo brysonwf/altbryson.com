@@ -734,30 +734,13 @@ var game_dotsandboxes = function(){
   console.log('game_dotsandboxes init');
   
   // VARIABLES //
-  var player, boxMade, score1, score2, boardSize, $line;
+  var player, boxMade, score1, score2;
   var p1Color = "#F60303";
   var p2Color = "#042AFF";
   var board = [];
   var hArray = [];
   var vArray = [];
-  var $message = $('#message');
-  var $score1 = $('div#s1');
-  var $score2 = $('div#s2');
-  var $player1 = $('div#p1');
-  var $player2 = $('div#p2');
-  var $table = $('#table');
-
-  // CONSTANTS //
-  var dotTd = '<td>•</td>';
-
-  // EVENT LISTENERS //
-  var registerListeners = function() {
-    $line = $('div.line')
-    $line.on('click', handleClick);
-    $line.on('mouseenter', lineHover);
-    $line.on('mouseleave', lineUnhover);
-  }
-
+  
   var buildRowPair = function(row, size) {
     var sRowPair = '';
     sRowPair = buildLineRow(row, size);
@@ -778,14 +761,15 @@ var game_dotsandboxes = function(){
     var s = '<tr>';
     for (var cellPair = 0; cellPair < size; cellPair++) {
       var tmp = `<td><div id="h${row * size + cellPair}" class="line h"></div></td>`;
-      s += dotTd;
+      s += '<td>•</td>';
       s += tmp;
     }
-    s += dotTd + '</tr>\n';
+    s += '<td>•</td>' + '</tr>\n';
     return s;
   }
 
   var createBoard = function(x){
+
     player = 1;
 
     var html = '';
@@ -793,12 +777,13 @@ var game_dotsandboxes = function(){
       html += buildRowPair(row, x);
     }
     html += buildLineRow(row, x);
-    $table.html(html);
+    $('#table').html(html);
 
-    render();
-    updateTurnMessage();
+    game_loop();
 
-    $message.html('');
+    $('#message').html('');
+
+    createBoardArrays(x);
 
   }
 
@@ -858,7 +843,10 @@ var game_dotsandboxes = function(){
     return cells;
   }
 
-  var render = function(){
+  var game_loop = function(){
+    console.log('game_loop')
+    boxMade = false;
+
     score1 = 0;
     score2 = 0;
     for(i = 0; i<board.length; i++){
@@ -873,13 +861,12 @@ var game_dotsandboxes = function(){
         } else {
           $($bx).css('background-color', 'transparent');
         }
-        $score1.html(score1.toString());
-        $score2.html(score2.toString());
+        $('div#s1').html(score1.toString());
+        $('div#s2').html(score2.toString());
       };
     };
     console.log(board);
-    
-    boxMade = false;
+
     function lineColor(lnArray, i, line){
       if(lnArray[i] === 1){
         $(line).css('background-color', p1Color).data('clicked', true);
@@ -889,6 +876,7 @@ var game_dotsandboxes = function(){
         $(line).css('background-color', 'transparent');
       }
     }
+
     hArray.forEach(function(ln,idx){
       var $ln = $('#h' + idx);
       lineColor(hArray, idx, $ln);
@@ -897,44 +885,23 @@ var game_dotsandboxes = function(){
       var $ln = $('#v' + idx);
       lineColor(vArray, idx, $ln);
     });
-    updateTurnMessage();
-  }
-
-  var switchPlayer = function(){
-    if(!boxMade){
-      player = (player === 1) ? 2 : 1;
-    } else {
-      player = player;
-    }
-  }
-
-  var checkWinner = function(){
-    if (!hArray.includes(false) && !vArray.includes(false)){
-      if(score1 > score2){
-        $message.html('PLAYER ONE WINS!');
-      } else if(score1 < score2){
-        $message.html('PLAYER TWO WINS!');
-      } else if(score1===score2){
-        $message.html(`It's a tie!`);
-        console.log('aftering winning');
-        console.log(score1);
-        console.log(score2);
-      } else return;
-    }
-  }
-
-  var updateTurnMessage = function(){
+    
     if(player === 1){
-      $player1.css('text-decoration', 'underline');
-      $player2.css('text-decoration', 'none');
+      $('div#s1').addClass('active');
+      $('div#s2').removeClass('active');
     } else {
-      $player2.css('text-decoration', 'underline');
-      $player1.css('text-decoration', 'none');
+      $('div#s1').removeClass('active');
+      $('div#s2').addClass('active');
     }
+
   }
 
   var handleClick = function(evt){
+    console.log('handleClick');
+    console.log('player: ' + player);
+
     if($(this).data('clicked')) return;
+
     var cells = getAdjCells($(this).attr('id'));
     cells.forEach(function(cell) {
       var lineVals = getLineValsForCell(cell);
@@ -944,9 +911,31 @@ var game_dotsandboxes = function(){
         boxMade = true;
       }
     });
-    switchPlayer();
-    render();
-    checkWinner();
+
+    console.log('boxMade: ' + boxMade);
+
+    if(!boxMade){
+      player = (player === 1) ? 2 : 1;
+    } else {
+      player = player;
+    }
+
+    game_loop();
+    
+    //check winner
+    if (!hArray.includes(false) && !vArray.includes(false)){
+      if(score1 > score2){
+        $('#message').html('PLAYER ONE WINS!');
+      } else if(score1 < score2){
+        $('#message').html('PLAYER TWO WINS!');
+      } else if(score1===score2){
+        $('#message').html(`It's a tie!`);
+        console.log('aftering winning');
+        console.log(score1);
+        console.log(score2);
+      } else return;
+    }
+
   }
 
   var getLineValsForCell = function(cell) {
@@ -959,20 +948,18 @@ var game_dotsandboxes = function(){
     return [hArray[t], vArray[r], hArray[b], vArray[l]];
   }
 
-  $('#board').show();
   hArray=[];
   vArray=[];
-  boardSize = 8;
-  createBoard(boardSize);
-  createBoardArrays(boardSize);
-  registerListeners();
-  $line.data('clicked', false);
+  createBoard(8);
+  $('div.line').on('click', handleClick);
+  $('div.line').on('mouseenter', lineHover);
+  $('div.line').on('mouseleave', lineUnhover);
+  $('div.line').data('clicked', false);
   
   //initial watch
   db.collection("games/"+gameId+"/moves")
   .orderBy("createDate", "asc")
   .onSnapshot(function(querySnapshot) {
-    
     console.log('game_dotsandboxes loading moves');
 
     var count = 0;
@@ -994,7 +981,6 @@ var game_dotsandboxes = function(){
 
     $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
     $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
-
 
   });
 

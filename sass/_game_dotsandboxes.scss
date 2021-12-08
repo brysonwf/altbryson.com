@@ -89,6 +89,10 @@ div.player {
   margin: 10px;
 }
 
+.player .score.active{
+  background-color:green;
+}
+
 #p1, #s1 {
   color: #F60303;
 }
