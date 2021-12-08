@@ -81,15 +81,13 @@ main{
 }
 
 div.player {
-  display: inline-block;
-  font-family: 'Questrial', cursive;
-  letter-spacing: 1vw;
-  font-size: 3.5vw;
+  font-size: 2rem;
+  width: 50%;
+  float:left;
   text-align: center;
-  margin: 10px;
 }
 
-.player .score.active{
+.player_active{
   background-color:green;
 }
 

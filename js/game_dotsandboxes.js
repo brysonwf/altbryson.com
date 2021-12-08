@@ -70,24 +70,6 @@ var game_dotsandboxes = function(){
     }
   }
 
-  var lineHover = function(evt){
-    if($(this).data('clicked')){
-        return;
-    } else if (player === 1){
-      $(this).css('background-color', p1Color);
-    }else if (player === 2){
-      $(this).css('background-color', p2Color);
-    }
-  }
-
-  var lineUnhover = function(evt){
-    if($(this).data('clicked')){
-        return;
-    } else {
-      $(this).css('background-color', 'transparent');
-    }
-  }
-
   var getAdjCells = function(lineId){
     var lineNum = parseInt(lineId.substr(1));
     var cells = [];
@@ -130,8 +112,8 @@ var game_dotsandboxes = function(){
         } else {
           $($bx).css('background-color', 'transparent');
         }
-        $('div#s1').html(score1.toString());
-        $('div#s2').html(score2.toString());
+        $('div#s1 .score').html(score1.toString());
+        $('div#s2 .score').html(score2.toString());
       };
     };
     console.log(board);
@@ -156,11 +138,11 @@ var game_dotsandboxes = function(){
     });
     
     if(player === 1){
-      $('div#s1').addClass('active');
-      $('div#s2').removeClass('active');
+      $('div#s1').addClass('player_active');
+      $('div#s2').removeClass('player_active');
     } else {
-      $('div#s1').removeClass('active');
-      $('div#s2').addClass('active');
+      $('div#s1').removeClass('player_active');
+      $('div#s2').addClass('player_active');
     }
 
   }
@@ -221,8 +203,6 @@ var game_dotsandboxes = function(){
   vArray=[];
   createBoard(8);
   $('div.line').on('click', handleClick);
-  $('div.line').on('mouseenter', lineHover);
-  $('div.line').on('mouseleave', lineUnhover);
   $('div.line').data('clicked', false);
   
   //initial watch
