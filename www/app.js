@@ -107,7 +107,6 @@ var database_loadGame = function () {
                     case "dotsandboxes":
                         game_dotsandboxes(doc);
                         break;
-
                 }
                 
             } else {
@@ -319,9 +318,9 @@ var database_setGameMoveCount = function(moveCount){
 var database_setGameUser = function(){
     console.log('init database_setGameUser');
 
-
     newUserData = userData;
     newUserData.dateCreated = firebase.firestore.FieldValue.serverTimestamp();
+    
     //add my user to this game
     db.collection("games/"+gameId+"/gameUsers")
     .doc("" + firebase.auth().currentUser.uid)
@@ -771,11 +770,7 @@ var game_dotsandboxes = function(gameDoc){
   var createBoard = function(x){
 
     player = 1;
-
-    if (gameDoc.data().currentPlayer){
-      player = gameDoc.data().currentPlayer;
-    }
-
+    
     var html = '';
     for (var row = 0; row < x; row++) {
       html += buildRowPair(row, x);
@@ -855,9 +850,12 @@ var game_dotsandboxes = function(gameDoc){
 
     score1 = 0;
     score2 = 0;
+
     for(i = 0; i<board.length; i++){
       for(j = 0; j<board[i].length; j++){
+
         var $bx = $('#' + i + '-' + j);
+
         if(board[i][j] === 1){
           $($bx).css('background-color', p1Color);
           score1++;
@@ -867,10 +865,13 @@ var game_dotsandboxes = function(gameDoc){
         } else {
           $($bx).css('background-color', 'transparent');
         }
+
         $('div#s1 .score').html(score1.toString());
         $('div#s2 .score').html(score2.toString());
+
       };
     };
+
     console.log(board);
 
     function lineColor(lnArray, i, line){
@@ -892,7 +893,7 @@ var game_dotsandboxes = function(gameDoc){
       lineColor(vArray, idx, $ln);
     });
     
-    if(player === 1){
+    if(player == 1){
       $('div#s1').addClass('player_active');
       $('div#s2').removeClass('player_active');
     } else {
@@ -908,51 +909,125 @@ var game_dotsandboxes = function(gameDoc){
 
     if($(this).data('clicked')) return;
 
-    var cells = getAdjCells($(this).attr('id'));
-    cells.forEach(function(cell) {
-      var lineVals = getLineValsForCell(cell);
-      if (!lineVals.includes(false)) {
-        board[cell.row][cell.col] = player;
+    var isYourMove = false;
 
-        console.log(board);
-        boxMade = true;
-      }
+    db.collection("games")
+      .doc(gameId)
+      .get().then((doc) => {
+        if (doc.exists) {
+            var playerOneUid = doc.data().playerOne;
+            var playerTwoUid = doc.data().playerTwo;
+
+            if (playerOneUid == null){
+              console.log('init database_setPlayerOne');
+                      
+              db.collection("games")
+              .doc(gameId)
+              .set(
+                  {
+                    playerOne: uid
+                  },
+                  { merge: true }
+              );
+              playerOneUid = uid;
+              isYourMove = true;
+            }else if (playerOneUid != uid && playerTwoUid == null){
+              console.log('init database_setPlayerTwo');
+                      
+              db.collection("games")
+              .doc(gameId)
+              .set(
+                  {
+                    playerTwo: uid
+                  },
+                  { merge: true }
+              );
+              playerTwoUid = uid;
+              isYourMove = true;
+            }else if (doc.data().currentPlayer == null){
+              isYourMove = true;
+            }else if (doc.data().currentPlayer == 1 && doc.data().playerOne == uid){
+              isYourMove = true;
+            }else if (doc.data().currentPlayer == 2 && doc.data().playerTwo == uid){
+              isYourMove = true;
+            }
+
+            if (isYourMove){
+
+              var cells = getAdjCells($(this).attr('id'));
+              cells.forEach(function(cell) {
+                var lineVals = getLineValsForCell(cell);
+                if (!lineVals.includes(false)) {
+                  boxMade = true;
+                  console.log(board);
+        
+                  //set boardcell as used
+                  board[cell.row][cell.col] = player;
+        
+                  db.collection("games/"+gameId+"/moves")
+                  .add({
+                    array: 'board',
+                    row: cell.row,
+                    col: cell.col,
+                    player: player,
+                    createDate: firebase.firestore.FieldValue.serverTimestamp()
+                  })
+                  .then((docRef) => {
+                    console.log('boardcell move added');
+                  }).catch((error) => {
+                      console.error("Error adding document: " + error);
+                  });
+        
+                }
+              });
+        
+              console.log('boxMade: ' + boxMade);
+        
+              if(!boxMade){
+                player = (player === 1) ? 2 : 1;
+                console.log('init database_setLastPlayer');
+            
+                db.collection("games")
+                .doc(gameId)
+                .set(
+                    {
+                      currentPlayer: player
+                    },
+                    { merge: true }
+                );
+
+              } else {
+                player = player;
+              }
+              
+              //check winner
+              if (!hArray.includes(false) && !vArray.includes(false)){
+                if(score1 > score2){
+                  $('#message').html('PLAYER ONE WINS!');
+                } else if(score1 < score2){
+                  $('#message').html('PLAYER TWO WINS!');
+                } else if(score1===score2){
+                  $('#message').html(`It's a tie!`);
+                  console.log('aftering winning');
+                  console.log(score1);
+                  console.log(score2);
+                } else return;
+              }
+        
+              game_loop();
+              
+            }else{
+              console.log('not your move');
+            }
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+    }).catch((error) => {
+        console.log("Error getting document:", error);
     });
 
-    console.log('boxMade: ' + boxMade);
-
-    if(!boxMade){
-      player = (player === 1) ? 2 : 1;
-    } else {
-      player = player;
-    }
-
-    console.log('init database_setCurrentPlayer');
-  
-    db.collection("games")
-    .doc(gameId)
-    .set(
-        {
-            currentPlayer: player
-        },
-        { merge: true }
-    );
     
-    //check winner
-    if (!hArray.includes(false) && !vArray.includes(false)){
-      if(score1 > score2){
-        $('#message').html('PLAYER ONE WINS!');
-      } else if(score1 < score2){
-        $('#message').html('PLAYER TWO WINS!');
-      } else if(score1===score2){
-        $('#message').html(`It's a tie!`);
-        console.log('aftering winning');
-        console.log(score1);
-        console.log(score2);
-      } else return;
-    }
-
-    game_loop();
 
   }
 
@@ -971,6 +1046,10 @@ var game_dotsandboxes = function(gameDoc){
 
   createBoard(8);
 
+  if (gameDoc.data().currentPlayer == 2){
+    player = 2;
+  }
+
   $('div.line').on('click', handleClick);
   $('div.line').data('clicked', false);
   
@@ -980,34 +1059,56 @@ var game_dotsandboxes = function(gameDoc){
   .onSnapshot(function(querySnapshot) {
     console.log('game_dotsandboxes loading moves');
 
-    var count = 0;
-    playerBeforeLastUid = '';
-    lastPlayerUid = '';
+    //player data
+    db.collection("games")
+    .doc(gameId)
+    .get().then((innerDoc) => {
+      if (innerDoc.exists) {
+        console.log('confirming game player = ' + innerDoc.data().currentPlayer);
+    
+        if(innerDoc.data().currentPlayer == 1){
+          $('div#s1').addClass('player_active');
+          $('div#s2').removeClass('player_active');
+          player = 1;
+        } else {
+          $('div#s1').removeClass('player_active');
+          $('div#s2').addClass('player_active');
+          player = 2;
+        }
+        
+        var count = 0;
 
-    querySnapshot.forEach(function(doc) {
+        querySnapshot.forEach(function(doc) {
 
-      console.log(doc);
+          console.log(doc);
+          
+          //game data
+          switch(doc.data().array){
+            case 'h':
+              hArray[doc.data().lineNum] = doc.data().player;
+              break;
+            case 'v':
+              vArray[doc.data().lineNum] = doc.data().player;
+              break;
+            case 'board':
+              board[doc.data().row][doc.data().col] = doc.data().player;
+              break;  
+          }
+          count++;
+        });
 
-      //player data
-      playerArray[count] = doc.data().uid;
-      playerBeforeLastUid = lastPlayerUid;
-      lastPlayerUid = doc.data().uid;
+        $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
+        $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
 
-      
-      //game data
-      if(doc.data().array === 'h'){
-        hArray[doc.data().lineNum] = doc.data().player;
-      }else{
-        vArray[doc.data().lineNum] = doc.data().player;
+        game_loop();
+
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
       }
-
-      count++;
+    }).catch((error) => {
+        console.log("Error getting document:", error);
     });
-
-    $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
-    $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
-
-    game_loop();
 
   });
 
