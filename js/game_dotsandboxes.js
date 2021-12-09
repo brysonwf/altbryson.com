@@ -9,6 +9,7 @@ var game_dotsandboxes = function(gameDoc){
   var board = [];
   var hArray = [];
   var vArray = [];
+  var playerUid = [];
   
   var buildRowPair = function(row, size) {
     var sRowPair = '';
@@ -115,6 +116,8 @@ var game_dotsandboxes = function(gameDoc){
   }
 
   var game_loop = function(){
+    $('div.line').unbind( "click" ).on('click', handleClick);
+    
     console.log('game_loop')
     boxMade = false;
 
@@ -162,18 +165,11 @@ var game_dotsandboxes = function(gameDoc){
       var $ln = $('#v' + idx);
       lineColor(vArray, idx, $ln);
     });
-    
-    if(player == 1){
-      $('div#s1').addClass('player_active');
-      $('div#s2').removeClass('player_active');
-    } else {
-      $('div#s1').removeClass('player_active');
-      $('div#s2').addClass('player_active');
-    }
 
   }
 
   var handleClick = function(evt){
+    $('div.line').unbind( "click" );
     console.log('handleClick');
     console.log('player: ' + player);
 
@@ -185,10 +181,11 @@ var game_dotsandboxes = function(gameDoc){
       .doc(gameId)
       .get().then((doc) => {
         if (doc.exists) {
-            var playerOneUid = doc.data().playerOne;
-            var playerTwoUid = doc.data().playerTwo;
 
-            if (playerOneUid == null){
+            playerUid[1] = doc.data().playerOne;
+            playerUid[2] = doc.data().playerTwo;
+
+            if (playerUid[1] == null){
               console.log('init database_setPlayerOne');
                       
               db.collection("games")
@@ -199,9 +196,9 @@ var game_dotsandboxes = function(gameDoc){
                   },
                   { merge: true }
               );
-              playerOneUid = uid;
+              playerUid[1] = uid;
               isYourMove = true;
-            }else if (playerOneUid != uid && playerTwoUid == null){
+            }else if (playerUid[1] != uid && playerUid[2] == null){
               console.log('init database_setPlayerTwo');
                       
               db.collection("games")
@@ -212,13 +209,11 @@ var game_dotsandboxes = function(gameDoc){
                   },
                   { merge: true }
               );
-              playerTwoUid = uid;
+              playerUid[2] = uid;
               isYourMove = true;
-            }else if (doc.data().currentPlayer == null){
-              isYourMove = true;
-            }else if (doc.data().currentPlayer == 1 && doc.data().playerOne == uid){
-              isYourMove = true;
-            }else if (doc.data().currentPlayer == 2 && doc.data().playerTwo == uid){
+            }
+            
+            if (doc.data().currentPlayerUid == uid){
               isYourMove = true;
             }
 
@@ -255,20 +250,24 @@ var game_dotsandboxes = function(gameDoc){
         
               if(!boxMade){
                 player = (player === 1) ? 2 : 1;
-                console.log('init database_setLastPlayer');
-            
-                db.collection("games")
-                .doc(gameId)
-                .set(
-                    {
-                      currentPlayer: player
-                    },
-                    { merge: true }
-                );
 
               } else {
                 player = player;
               }
+
+              var playerUidString = ''+playerUid[player];
+
+              console.log('init database_setCurrentPlayer');
+          
+              db.collection("games")
+              .doc(gameId)
+              .set(
+                  {
+                    currentPlayer: player,
+                    currentPlayerUid: playerUidString
+                  },
+                  { merge: true }
+              );
               
               //check winner
               if (!hArray.includes(false) && !vArray.includes(false)){
@@ -315,12 +314,7 @@ var game_dotsandboxes = function(gameDoc){
   vArray=[];
 
   createBoard(8);
-
-  if (gameDoc.data().currentPlayer == 2){
-    player = 2;
-  }
-
-  $('div.line').on('click', handleClick);
+  
   $('div.line').data('clicked', false);
   
   //initial watch
@@ -334,18 +328,7 @@ var game_dotsandboxes = function(gameDoc){
     .doc(gameId)
     .get().then((innerDoc) => {
       if (innerDoc.exists) {
-        console.log('confirming game player = ' + innerDoc.data().currentPlayer);
-    
-        if(innerDoc.data().currentPlayer == 1){
-          $('div#s1').addClass('player_active');
-          $('div#s2').removeClass('player_active');
-          player = 1;
-        } else {
-          $('div#s1').removeClass('player_active');
-          $('div#s2').addClass('player_active');
-          player = 2;
-        }
-        
+
         var count = 0;
 
         querySnapshot.forEach(function(doc) {
@@ -366,6 +349,18 @@ var game_dotsandboxes = function(gameDoc){
           }
           count++;
         });
+        
+        console.log('ui set for game player = ' + innerDoc.data().currentPlayer);
+    
+        if(innerDoc.data().currentPlayer == 2){
+          $('div#s1').removeClass('player_active');
+          $('div#s2').addClass('player_active');
+          player = 2;
+        } else {
+          $('div#s1').addClass('player_active');
+          $('div#s2').removeClass('player_active');
+          player = 1;
+        }
 
         $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
         $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
