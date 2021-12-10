@@ -107,6 +107,9 @@ var database_loadGame = function () {
                     case "dotsandboxes":
                         game_dotsandboxes(doc);
                         break;
+                    case "chess":
+                        game_chess(doc);
+                        break;
                 }
                 
             } else {
@@ -727,6 +730,9 @@ var func_timeSince = function(start){
     var minutes = Math.floor(diff / 1000 / 60 );
     
     return  minutes;
+}
+var game_chess = function(gameDoc){
+    console.log('chess init');
 }
 var game_dotsandboxes = function(gameDoc){
 

@@ -72,6 +72,10 @@
         "destination": "/game_dotsandboxes.html"
       },
       {
+        "source": "/g/chess/**",
+        "destination": "/game_chess.html"
+      },
+      {
         "source": "*",
         "destination": "/404.html"
       }

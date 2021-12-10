@@ -34,6 +34,9 @@ var database_loadGame = function () {
                     case "dotsandboxes":
                         game_dotsandboxes(doc);
                         break;
+                    case "chess":
+                        game_chess(doc);
+                        break;
                 }
                 
             } else {
