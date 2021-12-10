@@ -1,4 +1,6 @@
 .userbank{ 
+    float: left;
+    width: 100%;
 }
 
 .userbank .user {
@@ -14,19 +16,19 @@
 }
 
 .userbank .nothere img {
+    opacity: .5;
     border-style: dashed;
 }  
 
 .userbank .itsyourturn img {
     border-color: red;
 }  
-.userbank .me img {
-    box-shadow: 1px 1px 9px black;
-}
 .userbank .winner img {
     border-color: green;
 }
 
 .userbank .user.me{
     float:right;
+}
+.userbank .me img {
 }

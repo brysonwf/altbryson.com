@@ -5,7 +5,8 @@ div#sidebar {
     right: 0;
     height: 48px;
     background-color: #bfcbbf;
-    border-bottom: 2px dashed #657637;
+    border-bottom: 1px dashed #ffffff;
+    box-shadow: inset 0px -2px 5px #4a624a;
     z-index: 11;
 }
 
@@ -24,8 +25,6 @@ div#sidebar {
 }
 
 .navbutton_home{
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
 }
 
 .ddmenu {
@@ -33,25 +32,13 @@ div#sidebar {
 }
 
 .ddmenu .dropdown-menu {
-    width: 300px;
     z-index: 13;
-    transform: translate(1px, -2px);
-    padding: 0;
-    border: 1px solid #c5e276;
-    border-top: 0;
-    background-color: #7a8e46;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
 }
 
 .ddmenu li>a {
     padding: 10px 20px;
     border-bottom: 1px solid #5a6833;
     border-top: 1px solid #a2bd5b;
-    color: #e9ffb5;
-    text-shadow: 1px 1px 0 #2f3a12;
-    font-weight: bold;
-    text-transform: uppercase;
 }
 
 .ddmenu li:first-child>a {
@@ -92,6 +79,4 @@ div#sidebar {
 }
 
 .ddmenu.open .dropdown-toggle {
-    background-color: rgb(123, 143, 71);
-    border-bottom-right-radius: 0;
 }
