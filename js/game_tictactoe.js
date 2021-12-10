@@ -67,11 +67,16 @@ var game_tictactoe = function(){
       let res = check_match()
       if (res == player) {
         board_full = true
+        winner.classList.remove("hidden");
         database_setGameComplete(playerArray[0]);
+        winner.innerText = 'Winner is:' + playerArray[0];
       } else if (res == computer) {
         board_full = true
+        winner.classList.remove("hidden");
         database_setGameComplete(playerArray[1]);
+        winner.innerText = 'Winner is:' + playerArray[1];
       } else if (board_full) {
+        winner.classList.remove("hidden");
         database_setGameComplete('draw');
       }
     };
