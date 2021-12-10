@@ -29,30 +29,34 @@
   <meta property="og:description" content="altbryson.com sandbox" />
   <meta property="og:image" content="https://altbryson.com/images/ogimage.png" />
   <meta name="theme-color" content="#f1e2ba" />
-  <link rel="stylesheet" type="text/css" href="/base.css?v2021119165535" />
+  <link rel="stylesheet" type="text/css" href="/base.css?v20211110111533" />
 </head>
 
 <body>
   
 <div id="sidebar">
     <div class="container">
-        <div class="sidebarbg"> 
-            <div class="ddmenu dropdown pull-right">
-                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    <i class="fas fa-cog"></i>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li><a class="navbutton_home" href="/"><i class="fas fa-home"></i> Homepage</a></li>
-                    <li><a class="button_login hidden" href="#">Login for Games</a></li>
-                    <li><a class="button_create_game" href="#" data-type="tictactoe"><i class="fas fa-hashtag"></i> TicTacToe</a></li>
-                    <li><a class="button_create_game" href="#" data-type="minigolf"><i class="fas fa-golf-ball"></i> minigolf</a></li>
-                    <li><a class="button_create_game" href="#" data-type="dotsandboxes"><i class="fas fa-border"></i> dotsandboxes</a></li>
-                    <li><a class="button_create_game" href="#" data-type="chess"><i class="fas fa-chess"></i> Chess</a></li>
-                    <li><a class="button_logout hidden">Logout <span id="username"></span></a></li>
-                </ul>
-            </div>  
+        <div class="sidebarbg">   
             <div class="userbank">
-                <div class="user nothere itsyourturn"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"></div>
+                <div class="user"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"></div>
+                <div class="user nothere"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"></div>
+                <div class="user itsyourturn"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"></div>
+                <div class="user itsyourturn">
+                    <div class="ddmenu dropdown pull-right">
+                        <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            <img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c">
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li><a class="navbutton_home" href="/"><i class="fas fa-home"></i> Homepage</a></li>
+                            <li><a class="button_login hidden" href="#">Login for Games</a></li>
+                            <li><a class="button_create_game" href="#" data-type="tictactoe"><i class="fas fa-hashtag"></i> TicTacToe</a></li>
+                            <li><a class="button_create_game" href="#" data-type="minigolf"><i class="fas fa-golf-ball"></i> minigolf</a></li>
+                            <li><a class="button_create_game" href="#" data-type="dotsandboxes"><i class="fas fa-border"></i> dotsandboxes</a></li>
+                            <li><a class="button_create_game" href="#" data-type="chess"><i class="fas fa-chess"></i> Chess</a></li>
+                            <li><a class="button_logout hidden">Logout <span id="username"></span></a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>         
         </div>
     </div>
@@ -138,8 +142,8 @@
 <script type="text/javascript" src="/firebase-firestore.js"></script>
 <script type="text/javascript" src="/moment-with-locales.min.js"></script>
 <script type="text/javascript" src="/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="/lib.js?v2021119165535"></script>
-<script type="text/javascript" src="/app.js?v2021119165535"></script>
+<script type="text/javascript" src="/lib.js?v20211110111533"></script>
+<script type="text/javascript" src="/app.js?v20211110111533"></script>
 
 <script type="text/javascript">
   appManager.init();

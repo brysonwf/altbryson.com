@@ -353,18 +353,22 @@ var game_dotsandboxes = function(gameDoc){
         console.log('ui set for game player = ' + innerDoc.data().currentPlayer);
     
         if(innerDoc.data().currentPlayer == 2){
-          $('div#s1').removeClass('player_active');
-          $('div#s2').addClass('player_active');
           player = 2;
+          
+          playerBeforeLastUid = playerUid[2];
+          lastPlayerUid = playerUid[1];
+
         } else {
-          $('div#s1').addClass('player_active');
-          $('div#s2').removeClass('player_active');
           player = 1;
+          
+          playerBeforeLastUid = playerUid[1];
+          lastPlayerUid = playerUid[2];
+
         }
 
         $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
         $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
-
+        
         game_loop();
 
       } else {

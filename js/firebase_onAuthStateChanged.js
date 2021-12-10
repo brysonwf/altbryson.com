@@ -8,8 +8,6 @@ var firebase_onAuthStateChanged = function () {
       uid = user.uid;
       database_setUserData(user);
       database_setLocation();
-      button_logout();
-      button_create_game();
 
       //route
       switch (path[1]) {

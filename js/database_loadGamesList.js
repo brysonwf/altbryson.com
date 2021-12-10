@@ -9,7 +9,6 @@ var database_loadGamesList = function(){
     .onSnapshot(function(querySnapshot) {
         console.log("database_loadGamesList querySnapshot");
 
-
         var userGameIdArray = [];
         var classString = '';
         

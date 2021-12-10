@@ -65,7 +65,7 @@ var button_login = function(){
     });
 }
 var button_logout = function(){
-    $(".button_logout").removeClass('hidden').click(function () {
+    $(".button_logout").on('click', function () {
         console.log('button_logout');
         firebase_signOut();
         location.reload();
@@ -130,7 +130,6 @@ var database_loadGamesList = function(){
     // .where("type", "==", 'tictactoe')
     .onSnapshot(function(querySnapshot) {
         console.log("database_loadGamesList querySnapshot");
-
 
         var userGameIdArray = [];
         var classString = '';
@@ -203,7 +202,7 @@ var database_loadGameUsers = function(){
         console.log("database_loadGameUsers onSnapshot");
 
         var userArray = [];
-
+        var count = 0 ;
         var classNames = '';
         var html = '';
         html += '';
@@ -222,38 +221,49 @@ var database_loadGameUsers = function(){
                 userLastActiveDate = doc.data().dateUpdated.toDate();
             }
             var userTime = new Date(userLastActiveDate);
+            
+            if (uid == lastPlayerUid){
+                classNames = ' lastPlayer';
+            }else if(uid == playerBeforeLastUid){
+                classNames = ' itsyourturn';
+            }
+            
             classNames = ' user';
             if (doc.data().uid == uid){
                 classNames += ' me';
+                html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'">';
+                html += '<div class="ddmenu dropdown pull-right">';
+                html += '<button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
+                html += '    <img src="' + doc.data().photoUrl + '" />';
+                html += '</button>';
+                html += '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
+                html += '    <li><a class="navbutton_home" href="/"><i class="fas fa-home"></i> Homepage</a></li>';
+                html += '    <li><a class="button_login hidden" href="#">Login for Games</a></li>';
+                html += '    <li><a class="button_create_game" href="#" data-type="tictactoe"><i class="fas fa-hashtag"></i> TicTacToe</a></li>';
+                html += '    <li><a class="button_create_game" href="#" data-type="minigolf"><i class="fas fa-golf-ball"></i> minigolf</a></li>';
+                html += '    <li><a class="button_create_game" href="#" data-type="dotsandboxes"><i class="fas fa-border"></i> dotsandboxes</a></li>';
+                html += '    <li><a class="button_create_game" href="#" data-type="chess"><i class="fas fa-chess"></i> Chess</a></li>';
+                html += '    <li><a class="button_logout">Logout <span id="username"></span></a></li>';
+                html += '</ul>';
+                html += '</div>';
+                html += '</div>';
+            }else{
+                if (userTime <= elevenSecondsAgo){
+                    classNames += ' nothere';
+                }
+                html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'"><img src="' + doc.data().photoUrl + '" /></div>';
             }
-            if (userTime <= elevenSecondsAgo){
-                classNames += ' nothere';
-            }
-            if(
-                userTime <= oneMinuteAgo 
-                && doc.data().uid != playerArray[0]
-                && doc.data().uid != playerArray[1]
-                && null != playerArray[0]
-                && null != playerArray[1]
-            ){
-                console.log('want to delete ' + doc.id);
-                // doc.ref.delete();
-            }
-            if (
-                doc.data().type = 'page'
-                && userTime <= oneMinuteAgo 
-            ){
-                doc.ref.delete();
-            }
-            html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'"><img src="' + doc.data().photoUrl + '" /></div>';
-            
+            count++;
         });
         html += '';
 
+        if (count == 0){
+            html +='<p>No users</p>'
+        }
+
         $('.userbank').html(html);
-        
-        $('#uid-' + lastPlayerUid).addClass('lastPlayer');
-        $('#uid-' + playerBeforeLastUid).addClass('itsyourturn');
+        button_logout();
+        button_create_game();
 
     });
 
@@ -435,8 +445,6 @@ var firebase_onAuthStateChanged = function () {
       uid = user.uid;
       database_setUserData(user);
       database_setLocation();
-      button_logout();
-      button_create_game();
 
       //route
       switch (path[1]) {
@@ -1089,18 +1097,22 @@ var game_dotsandboxes = function(gameDoc){
         console.log('ui set for game player = ' + innerDoc.data().currentPlayer);
     
         if(innerDoc.data().currentPlayer == 2){
-          $('div#s1').removeClass('player_active');
-          $('div#s2').addClass('player_active');
           player = 2;
+          
+          playerBeforeLastUid = playerUid[2];
+          lastPlayerUid = playerUid[1];
+
         } else {
-          $('div#s1').addClass('player_active');
-          $('div#s2').removeClass('player_active');
           player = 1;
+          
+          playerBeforeLastUid = playerUid[1];
+          lastPlayerUid = playerUid[2];
+
         }
 
         $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
         $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
-
+        
         game_loop();
 
       } else {
