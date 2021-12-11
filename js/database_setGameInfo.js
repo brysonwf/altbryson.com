@@ -1,5 +1,5 @@
 var database_setGameInfo = function(){
-    console.log('init database_setGameUser');
+    console.log('init database_setGameInfo');
 
     db.collection("games")
     .doc(gameId)

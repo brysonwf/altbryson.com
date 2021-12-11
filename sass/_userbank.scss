@@ -8,6 +8,8 @@
     margin-top: 2px;
     float: left;
     position: relative;
+    transition: all 0.5s ease;
+    border-radius: 100%;
 }
 
 .userbank .user img {
@@ -15,15 +17,22 @@
     height: 40px;
     border: 1px solid #b6c198;
     box-shadow: 1px 1px 0px #5a745a;
+    transition: all 0.5s ease;
 }
 
-.userbank .nothere img {
+.userbank .oneMinuteAgo img {
     opacity: .5;
     border-style: dashed;
 }  
 
+.userbank .itsyourturn {
+    box-shadow: -4px -4px 0px #266626;
+    border-color: #266626;
+    transform: translate(4px, 4px);
+}
+
 .userbank .itsyourturn img {
-    border-color: red;
+    box-shadow: -4px -4px 10px #000;
 }  
 .userbank .winner img {
     border-color: green;

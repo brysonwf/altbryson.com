@@ -8,7 +8,9 @@ var database_loadGameUsers = function(){
     var oneMinuteAgo = new Date(now - oneMinute * MS_PER_MINUTE);
     var elevenSecondsAgo = new Date(now - elevenSeconds * MS_PER_MINUTE);
 
-    db.collection("games/"+gameId+"/gameUsers").onSnapshot(function(querySnapshot) {
+    db.collection("games/"+gameId+"/gameUsers")
+    .get().then(function(querySnapshot) {
+    // .onSnapshot(function(querySnapshot) {
         console.log("database_loadGameUsers onSnapshot");
 
         var userArray = [];
@@ -41,25 +43,28 @@ var database_loadGameUsers = function(){
             classNames = ' user';
             if (doc.data().uid == uid){
                 classNames += ' me';
-                html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'">';
                 html += '<div class="ddmenu dropdown pull-right">';
-                html += '<button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
-                html += '    <img src="' + doc.data().photoUrl + '" /><span class="score hidden"></span>';
-                html += '</button>';
-                html += '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
-                html += '    <li><a class="navbutton_home" href="/"><i class="fas fa-home"></i> Homepage</a></li>';
-                html += '    <li><a class="button_login hidden" href="#">Login for Games</a></li>';
-                html += '    <li><a class="button_create_game" href="#" data-type="tictactoe"><i class="fas fa-hashtag"></i> TicTacToe</a></li>';
-                html += '    <li><a class="button_create_game" href="#" data-type="minigolf"><i class="fas fa-golf-ball"></i> minigolf</a></li>';
-                html += '    <li><a class="button_create_game" href="#" data-type="dotsandboxes"><i class="fas fa-border"></i> dotsandboxes</a></li>';
-                html += '    <li><a class="button_create_game" href="#" data-type="chess"><i class="fas fa-chess"></i> Chess</a></li>';
-                html += '    <li><a class="button_logout">Logout <span id="username"></span></a></li>';
-                html += '</ul>';
-                html += '</div>';
+                    html += '<button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
+                        html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'">';
+                        html += '    <img src="' + doc.data().photoUrl + '" /><span class="score hidden"></span>';
+                        html += '</div>';
+                    html += '</button>';
+                    html += '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
+                    html += '    <li><a class="navbutton_home" href="/"><i class="fas fa-home"></i> Homepage</a></li>';
+                    html += '    <li><a class="button_login hidden" href="#">Login for Games</a></li>';
+                    html += '    <li><a class="button_create_game" href="#" data-type="tictactoe"><i class="fas fa-hashtag"></i> TicTacToe</a></li>';
+                    html += '    <li><a class="button_create_game" href="#" data-type="minigolf"><i class="fas fa-golf-ball"></i> minigolf</a></li>';
+                    html += '    <li><a class="button_create_game" href="#" data-type="dotsandboxes"><i class="fas fa-border"></i> dotsandboxes</a></li>';
+                    html += '    <li><a class="button_create_game" href="#" data-type="chess"><i class="fas fa-chess"></i> Chess</a></li>';
+                    html += '    <li><a class="button_logout">Logout <span id="username"></span></a></li>';
+                    html += '</ul>';
                 html += '</div>';
             }else{
+                if (userTime <= oneMinuteAgo){
+                    classNames += ' oneMinuteAgo';
+                }
                 if (userTime <= elevenSecondsAgo){
-                    classNames += ' nothere';
+                    classNames += ' elevenSecondsAgo';
                 }
                 html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'"><img src="' + doc.data().photoUrl + '" /><span class="score hidden"></span></div>';
             }
@@ -72,6 +77,8 @@ var database_loadGameUsers = function(){
         }
 
         $('.userbank').html(html).removeClass('hidden');
+        
+        console.log('userbank added');
         button_logout();
         button_create_game();
 

@@ -341,9 +341,7 @@ var game_dotsandboxes = function(gameDoc){
         var count = 0;
 
         querySnapshot.forEach(function(doc) {
-
-          console.log(doc);
-          
+          console.log('loading game data on demand');
           //game data
           switch(doc.data().array){
             case 'h':
@@ -358,6 +356,8 @@ var game_dotsandboxes = function(gameDoc){
           }
           count++;
         });
+        
+        game_loop();
         
         console.log('ui set for game player = ' + innerDoc.data().currentPlayer);
     
@@ -378,7 +378,6 @@ var game_dotsandboxes = function(gameDoc){
         $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
         $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
         
-        game_loop();
 
       } else {
         // doc.data() will be undefined in this case
