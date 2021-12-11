@@ -29,7 +29,7 @@
   <meta property="og:description" content="altbryson.com sandbox" />
   <meta property="og:image" content="https://altbryson.com/images/ogimage.png" />
   <meta name="theme-color" content="#f1e2ba" />
-  <link rel="stylesheet" type="text/css" href="/base.css?v20211110161210" />
+  <link rel="stylesheet" type="text/css" href="/base.css?v20211111122316" />
 </head>
 
 <body>
@@ -37,18 +37,18 @@
 <div id="sidebar">
     <div class="container">
         <div class="sidebarbg">   
-            <div class="userbank">
-                <div class="user"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"></div>
-                <div class="user nothere"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"></div>
-                <div class="user itsyourturn"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"></div>
+            <a class="navbutton btn btn-primary button_login hidden" href="#">Login for Games</a>
+            <div class="userbank hidden">
+                <div class="user"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"><span class="score">1</span></div>
+                <div class="user nothere"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"><span class="score">2</span></div>
+                <div class="user itsyourturn"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"><span class="score">3</span></div>
                 <div class="user me itsyourturn">
                     <div class="ddmenu dropdown pull-right">
                         <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            <img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c">
+                            <img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"><span class="score">4</span>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li><a class="navbutton_home" href="/"><i class="fas fa-home"></i> Homepage</a></li>
-                            <li><a class="button_login hidden" href="#">Login for Games</a></li>
                             <li><a class="button_create_game" href="#" data-type="tictactoe"><i class="fas fa-hashtag"></i> TicTacToe</a></li>
                             <li><a class="button_create_game" href="#" data-type="minigolf"><i class="fas fa-golf-ball"></i> minigolf</a></li>
                             <li><a class="button_create_game" href="#" data-type="dotsandboxes"><i class="fas fa-border"></i> dotsandboxes</a></li>
@@ -80,6 +80,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-body">
+          <a href="https://altbryson.com/">Go Home</a>
           <div id="firebaseui-auth-container" lang="en">
             <div
               class="firebaseui-container firebaseui-page-provider-sign-in firebaseui-id-page-provider-sign-in firebaseui-use-spinner">
@@ -126,8 +127,8 @@
 <script type="text/javascript" src="/firebase-firestore.js"></script>
 <script type="text/javascript" src="/moment-with-locales.min.js"></script>
 <script type="text/javascript" src="/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="/lib.js?v20211110161210"></script>
-<script type="text/javascript" src="/app.js?v20211110161210"></script>
+<script type="text/javascript" src="/lib.js?v20211111122316"></script>
+<script type="text/javascript" src="/app.js?v20211111122316"></script>
 
 <script type="text/javascript">
   appManager.init();

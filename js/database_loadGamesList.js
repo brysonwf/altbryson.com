@@ -62,7 +62,7 @@ var database_loadGamesList = function(){
                 });
             html += '</tbody>';
         html += '</table>';
-        $('#loadGamesHere').html(html).find('table').DataTable();
+        $('#loadGamesHere').html(html).removeClass('hidden').find('table').DataTable();
 
     });
 }

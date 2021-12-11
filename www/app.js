@@ -184,7 +184,7 @@ var database_loadGamesList = function(){
                 });
             html += '</tbody>';
         html += '</table>';
-        $('#loadGamesHere').html(html).find('table').DataTable();
+        $('#loadGamesHere').html(html).removeClass('hidden').find('table').DataTable();
 
     });
 }
@@ -234,7 +234,7 @@ var database_loadGameUsers = function(){
                 html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'">';
                 html += '<div class="ddmenu dropdown pull-right">';
                 html += '<button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
-                html += '    <img src="' + doc.data().photoUrl + '" /><span class="score"></span>';
+                html += '    <img src="' + doc.data().photoUrl + '" /><span class="score hidden"></span>';
                 html += '</button>';
                 html += '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
                 html += '    <li><a class="navbutton_home" href="/"><i class="fas fa-home"></i> Homepage</a></li>';
@@ -251,7 +251,7 @@ var database_loadGameUsers = function(){
                 if (userTime <= elevenSecondsAgo){
                     classNames += ' nothere';
                 }
-                html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'"><img src="' + doc.data().photoUrl + '" /><span class="score"></span></div>';
+                html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'"><img src="' + doc.data().photoUrl + '" /><span class="score hidden"></span></div>';
             }
             count++;
         });
@@ -261,7 +261,7 @@ var database_loadGameUsers = function(){
             html +='<p>No users</p>'
         }
 
-        $('.userbank').html(html);
+        $('.userbank').html(html).removeClass('hidden');
         button_logout();
         button_create_game();
 
@@ -381,9 +381,9 @@ var database_setUserData = function (user) {
 
     userData = {
         name: user.displayName,
-        email: user.email,
+        // email: user.email,
         photoUrl: user.photoURL,
-        emailVerified: user.emailVerified,
+        // emailVerified: user.emailVerified,
         uid: user.uid,
         dateCreated: firebase.firestore.FieldValue.serverTimestamp(),
         dateUpdated: firebase.firestore.FieldValue.serverTimestamp()
@@ -892,8 +892,8 @@ var game_dotsandboxes = function(gameDoc){
         }
 
         
-        $('#uid-' + playerUid[1] +' .score').html(score1.toString());
-        $('#uid-' + playerUid[2] +' .score').html(score2.toString());
+        $('#uid-' + playerUid[1] +' .score').html(score1.toString()).removeClass('hidden');
+        $('#uid-' + playerUid[2] +' .score').html(score2.toString()).removeClass('hidden');
 
       };
     };

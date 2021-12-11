@@ -10,9 +10,9 @@ var database_setUserData = function (user) {
 
     userData = {
         name: user.displayName,
-        email: user.email,
+        // email: user.email,
         photoUrl: user.photoURL,
-        emailVerified: user.emailVerified,
+        // emailVerified: user.emailVerified,
         uid: user.uid,
         dateCreated: firebase.firestore.FieldValue.serverTimestamp(),
         dateUpdated: firebase.firestore.FieldValue.serverTimestamp()
