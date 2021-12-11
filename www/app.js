@@ -1069,24 +1069,29 @@ var game_dotsandboxes = function(gameDoc){
     .doc(gameId)
     .get().then((innerDoc) => {
       if (innerDoc.exists) {
+        console.log('loading game data on demand');
 
         var count = 0;
 
         querySnapshot.forEach(function(doc) {
-          console.log('loading game data on demand');
+
           //game data
           switch(doc.data().array){
             case 'h':
               hArray[doc.data().lineNum] = doc.data().player;
+              console.log('processing move ' + doc.data().array + '['+doc.data().lineNum+'] =' + doc.data().player);
               break;
             case 'v':
               vArray[doc.data().lineNum] = doc.data().player;
+              console.log('processing move ' + doc.data().array + '['+doc.data().lineNum+'] =' + doc.data().player);
               break;
             case 'board':
               board[doc.data().row][doc.data().col] = doc.data().player;
+              console.log('processing move ' + doc.data().array + '['+doc.data().row+']['+doc.data().col+'] =' + doc.data().player);
               break;  
           }
           count++;
+
         });
         
         game_loop();
@@ -1427,12 +1432,12 @@ var game_tictactoe = function(){
         board_full = true
         winner.classList.remove("hidden");
         database_setGameComplete(playerArray[0]);
-        winner.innerText = 'Winner is:' + $('#uid-'+playerArray[2]).html());
+        winner.innerText = 'Winner is:' + playerArray[0];
       } else if (res == computer) {
         board_full = true
         winner.classList.remove("hidden");
         database_setGameComplete(playerArray[1]);
-        winner.innerText = 'Winner is:' + $('#uid-'+playerArray[1]).html());
+        winner.innerText = 'Winner is:' + playerArray[1];
       } else if (board_full) {
         winner.classList.remove("hidden");
         database_setGameComplete('draw');

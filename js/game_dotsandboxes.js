@@ -340,24 +340,29 @@ var game_dotsandboxes = function(gameDoc){
     .doc(gameId)
     .get().then((innerDoc) => {
       if (innerDoc.exists) {
+        console.log('loading game data on demand');
 
         var count = 0;
 
         querySnapshot.forEach(function(doc) {
-          console.log('loading game data on demand');
+
           //game data
           switch(doc.data().array){
             case 'h':
               hArray[doc.data().lineNum] = doc.data().player;
+              console.log('processing move ' + doc.data().array + '['+doc.data().lineNum+'] =' + doc.data().player);
               break;
             case 'v':
               vArray[doc.data().lineNum] = doc.data().player;
+              console.log('processing move ' + doc.data().array + '['+doc.data().lineNum+'] =' + doc.data().player);
               break;
             case 'board':
               board[doc.data().row][doc.data().col] = doc.data().player;
+              console.log('processing move ' + doc.data().array + '['+doc.data().row+']['+doc.data().col+'] =' + doc.data().player);
               break;  
           }
           count++;
+
         });
         
         game_loop();
