@@ -234,7 +234,7 @@ var database_loadGameUsers = function(){
                 html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'">';
                 html += '<div class="ddmenu dropdown pull-right">';
                 html += '<button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
-                html += '    <img src="' + doc.data().photoUrl + '" />';
+                html += '    <img src="' + doc.data().photoUrl + '" /><span class="score"></span>';
                 html += '</button>';
                 html += '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
                 html += '    <li><a class="navbutton_home" href="/"><i class="fas fa-home"></i> Homepage</a></li>';
@@ -251,7 +251,7 @@ var database_loadGameUsers = function(){
                 if (userTime <= elevenSecondsAgo){
                     classNames += ' nothere';
                 }
-                html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'"><img src="' + doc.data().photoUrl + '" /></div>';
+                html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'"><img src="' + doc.data().photoUrl + '" /><span class="score"></span></div>';
             }
             count++;
         });
@@ -860,6 +860,14 @@ var game_dotsandboxes = function(gameDoc){
   }
 
   var game_loop = function(){
+    
+    if (playerUid[1] == null){
+      playerUid[1] = gameDoc.data().playerOne;
+    }
+    if (playerUid[2] == null){
+      playerUid[2] = gameDoc.data().playerTwo;
+    }
+    
     $('div.line').unbind( "click" ).on('click', handleClick);
     
     console.log('game_loop')
@@ -883,8 +891,9 @@ var game_dotsandboxes = function(gameDoc){
           $($bx).css('background-color', 'transparent');
         }
 
-        $('div#s1 .score').html(score1.toString());
-        $('div#s2 .score').html(score2.toString());
+        
+        $('#uid-' + playerUid[1] +' .score').html(score1.toString());
+        $('#uid-' + playerUid[2] +' .score').html(score2.toString());
 
       };
     };

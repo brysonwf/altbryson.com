@@ -116,6 +116,14 @@ var game_dotsandboxes = function(gameDoc){
   }
 
   var game_loop = function(){
+    
+    if (playerUid[1] == null){
+      playerUid[1] = gameDoc.data().playerOne;
+    }
+    if (playerUid[2] == null){
+      playerUid[2] = gameDoc.data().playerTwo;
+    }
+    
     $('div.line').unbind( "click" ).on('click', handleClick);
     
     console.log('game_loop')
@@ -139,8 +147,9 @@ var game_dotsandboxes = function(gameDoc){
           $($bx).css('background-color', 'transparent');
         }
 
-        $('div#s1 .score').html(score1.toString());
-        $('div#s2 .score').html(score2.toString());
+        
+        $('#uid-' + playerUid[1] +' .score').html(score1.toString());
+        $('#uid-' + playerUid[2] +' .score').html(score2.toString());
 
       };
     };
