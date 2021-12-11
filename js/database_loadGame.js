@@ -14,16 +14,6 @@ var database_loadGame = function () {
                     userLimit = doc.data().userLimit;
                 }
                 
-                database_setGameActive();
-                database_setGameUser();
-                database_setGameInfo();
-                database_loadGameUsers();
-                
-                // setInterval(function() {
-                //     database_setGameActive();
-                //     database_setGameUser();
-                // }, 10000);
-
                 switch(doc.data().type){
                     case "minigolf":
                         game_minigolf();

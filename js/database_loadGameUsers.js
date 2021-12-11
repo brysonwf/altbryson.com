@@ -1,32 +1,22 @@
 var database_loadGameUsers = function(){
     console.log('database_loadGameUsers');
 
-    var now = new Date();
-    var oneMinute = 15;
-    var elevenSeconds = (1/60)*11;
-    var MS_PER_MINUTE = 60000;
-    var oneMinuteAgo = new Date(now - oneMinute * MS_PER_MINUTE);
-    var elevenSecondsAgo = new Date(now - elevenSeconds * MS_PER_MINUTE);
-
+    
     db.collection("games/"+gameId+"/gameUsers")
-    // .get().then(function(querySnapshot) {
     .onSnapshot(function(querySnapshot) {
         console.log("database_loadGameUsers onSnapshot");
-
-        var userArray = [];
-        var count = 0 ;
-        var classNames = '';
+    
+        var now = new Date();
+        var oneMinute = 15;
+        var elevenSeconds = (1/60)*11;
+        var MS_PER_MINUTE = 60000;
+        var oneMinuteAgo = new Date(now - oneMinute * MS_PER_MINUTE);
+        var elevenSecondsAgo = new Date(now - elevenSeconds * MS_PER_MINUTE);
+        
         var html = '';
-        html += '';
         querySnapshot.forEach(function(doc) {
-
-            var uniqueUserString = (doc.data().name).charAt(0);
-            var charAtCount = 1;
-            while (userArray[uniqueUserString]){
-                uniqueUserString = uniqueUserString + '' + (doc.data().name).charAt(charAtCount);
-                charAtCount++;
-            }
-            userArray[uniqueUserString] = true;
+            
+            var classNames = ' user';
 
             var userLastActiveDate = new Date();
             if (doc.data().dateUpdated != null){
@@ -34,13 +24,14 @@ var database_loadGameUsers = function(){
             }
             var userTime = new Date(userLastActiveDate);
             
-            if (uid == lastPlayerUid){
-                classNames = ' lastPlayer';
-            }else if(uid == playerBeforeLastUid){
-                classNames = ' itsyourturn';
+            if (doc.data().uid == lastPlayerUid){
+                classNames += ' lastPlayer';
+            }else if(doc.data().uid == playerBeforeLastUid){
+                classNames += ' itsyourturn';
             }
+
+            console.log('inserting ' + doc.data().uid + ' with ' + classNames);
             
-            classNames = ' user';
             if (doc.data().uid == uid){
                 classNames += ' me';
                 html += '<div class="ddmenu dropdown pull-right">';
@@ -68,11 +59,9 @@ var database_loadGameUsers = function(){
                 }
                 html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'"><img src="' + doc.data().photoUrl + '" /><span class="score hidden"></span></div>';
             }
-            count++;
         });
-        html += '';
 
-        if (count == 0){
+        if (html == ''){
             html +='<p>No users</p>'
         }
 
@@ -81,7 +70,6 @@ var database_loadGameUsers = function(){
         console.log('userbank added');
         button_logout();
         button_create_game();
-
     });
 
 }

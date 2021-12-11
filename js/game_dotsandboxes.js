@@ -326,6 +326,9 @@ var game_dotsandboxes = function(gameDoc){
   
   $('div.line').data('clicked', false);
   
+  database_setGameUser();
+  database_setGameInfo();
+
   //initial watch
   db.collection("games/"+gameId+"/moves")
   .orderBy("createDate", "asc")
@@ -374,10 +377,9 @@ var game_dotsandboxes = function(gameDoc){
           lastPlayerUid = playerUid[2];
 
         }
-
-        $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
-        $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
         
+        database_setGameActive();
+        database_loadGameUsers();
 
       } else {
         // doc.data() will be undefined in this case

@@ -87,16 +87,6 @@ var database_loadGame = function () {
                     userLimit = doc.data().userLimit;
                 }
                 
-                database_setGameActive();
-                database_setGameUser();
-                database_setGameInfo();
-                database_loadGameUsers();
-                
-                // setInterval(function() {
-                //     database_setGameActive();
-                //     database_setGameUser();
-                // }, 10000);
-
                 switch(doc.data().type){
                     case "minigolf":
                         game_minigolf();
@@ -191,32 +181,22 @@ var database_loadGamesList = function(){
 var database_loadGameUsers = function(){
     console.log('database_loadGameUsers');
 
-    var now = new Date();
-    var oneMinute = 15;
-    var elevenSeconds = (1/60)*11;
-    var MS_PER_MINUTE = 60000;
-    var oneMinuteAgo = new Date(now - oneMinute * MS_PER_MINUTE);
-    var elevenSecondsAgo = new Date(now - elevenSeconds * MS_PER_MINUTE);
-
+    
     db.collection("games/"+gameId+"/gameUsers")
-    // .get().then(function(querySnapshot) {
     .onSnapshot(function(querySnapshot) {
         console.log("database_loadGameUsers onSnapshot");
-
-        var userArray = [];
-        var count = 0 ;
-        var classNames = '';
+    
+        var now = new Date();
+        var oneMinute = 15;
+        var elevenSeconds = (1/60)*11;
+        var MS_PER_MINUTE = 60000;
+        var oneMinuteAgo = new Date(now - oneMinute * MS_PER_MINUTE);
+        var elevenSecondsAgo = new Date(now - elevenSeconds * MS_PER_MINUTE);
+        
         var html = '';
-        html += '';
         querySnapshot.forEach(function(doc) {
-
-            var uniqueUserString = (doc.data().name).charAt(0);
-            var charAtCount = 1;
-            while (userArray[uniqueUserString]){
-                uniqueUserString = uniqueUserString + '' + (doc.data().name).charAt(charAtCount);
-                charAtCount++;
-            }
-            userArray[uniqueUserString] = true;
+            
+            var classNames = ' user';
 
             var userLastActiveDate = new Date();
             if (doc.data().dateUpdated != null){
@@ -224,13 +204,14 @@ var database_loadGameUsers = function(){
             }
             var userTime = new Date(userLastActiveDate);
             
-            if (uid == lastPlayerUid){
-                classNames = ' lastPlayer';
-            }else if(uid == playerBeforeLastUid){
-                classNames = ' itsyourturn';
+            if (doc.data().uid == lastPlayerUid){
+                classNames += ' lastPlayer';
+            }else if(doc.data().uid == playerBeforeLastUid){
+                classNames += ' itsyourturn';
             }
+
+            console.log('inserting ' + doc.data().uid + ' with ' + classNames);
             
-            classNames = ' user';
             if (doc.data().uid == uid){
                 classNames += ' me';
                 html += '<div class="ddmenu dropdown pull-right">';
@@ -258,11 +239,9 @@ var database_loadGameUsers = function(){
                 }
                 html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'"><img src="' + doc.data().photoUrl + '" /><span class="score hidden"></span></div>';
             }
-            count++;
         });
-        html += '';
 
-        if (count == 0){
+        if (html == ''){
             html +='<p>No users</p>'
         }
 
@@ -271,7 +250,6 @@ var database_loadGameUsers = function(){
         console.log('userbank added');
         button_logout();
         button_create_game();
-
     });
 
 }
@@ -381,7 +359,7 @@ var database_setUserData = function (user) {
 
     // var gravatarImage = func_getGravatar(user.email);
     
-    $('#username').html(user.email);
+    // $('#username').html(user.email);
     // $('#usernameShort').html((user.email).charAt(0) + (user.email).charAt(1) + (user.email).charAt(2));
 
     // $('#userimage').html('<img src="' + gravatarImage + '" />');
@@ -1077,6 +1055,9 @@ var game_dotsandboxes = function(gameDoc){
   
   $('div.line').data('clicked', false);
   
+  database_setGameUser();
+  database_setGameInfo();
+
   //initial watch
   db.collection("games/"+gameId+"/moves")
   .orderBy("createDate", "asc")
@@ -1125,10 +1106,9 @@ var game_dotsandboxes = function(gameDoc){
           lastPlayerUid = playerUid[2];
 
         }
-
-        $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
-        $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
         
+        database_setGameActive();
+        database_loadGameUsers();
 
       } else {
         // doc.data() will be undefined in this case
@@ -1447,12 +1427,12 @@ var game_tictactoe = function(){
         board_full = true
         winner.classList.remove("hidden");
         database_setGameComplete(playerArray[0]);
-        winner.innerText = 'Winner is:' + playerArray[0];
+        winner.innerText = 'Winner is:' + $('#uid-'+playerArray[2]).html());
       } else if (res == computer) {
         board_full = true
         winner.classList.remove("hidden");
         database_setGameComplete(playerArray[1]);
-        winner.innerText = 'Winner is:' + playerArray[1];
+        winner.innerText = 'Winner is:' + $('#uid-'+playerArray[1]).html());
       } else if (board_full) {
         winner.classList.remove("hidden");
         database_setGameComplete('draw');
@@ -1527,40 +1507,8 @@ var game_tictactoe = function(){
       }
     }
     
-    const playerTwoMove = () => {
-      console.log('playerTwoMove');
-
-      if (!board_full) {
-
-        do {
-          selected = Math.floor(Math.random() * 9);
-        } while (play_board[selected] != "");
-        play_board[selected] = computer;
-
-        db.collection("games/"+gameId+"/moves").doc('move_'+selected).set({
-          move : selected,
-          user : computer
-        }).then((docRef) => {
-            console.log("Document written with ID: " + 'move_'+selected);
-            game_loop();
-        }).catch((error) => {
-            console.error("Error adding document: " + error);
-        });
-
-      }
-
-    };
-    
-    const reset_board = () => {
-      play_board = ["", "", "", "", "", "", "", "", ""];
-      board_full = false;
-      winner.classList.add("hidden");
-      winner.classList.remove("tictactoe-playerWin");
-      winner.classList.remove("tictactoe-computerWin");
-      winner.classList.remove("tictactoe-draw");
-      winner.innerText = "";
-      game_loop();
-    };
+    database_setGameUser();
+    database_setGameInfo();
     
     //initial render
     db.collection("games/"+gameId+"/moves")
@@ -1571,26 +1519,26 @@ var game_tictactoe = function(){
       var count = 0;
       playerBeforeLastUid = '';
       lastPlayerUid = '';
+      
+      database_setGameActive();
 
       querySnapshot.forEach(function(doc) {
-
-        playerArray[count] = doc.data().uid;
-
         console.log(doc.data().user + ' played by ' + doc.data().uid);
-        console.log('playerBeforeLastUid: ' + lastPlayerUid);
 
-        playerBeforeLastUid = lastPlayerUid;
-        count++;
         play_board[doc.data().move] = doc.data().user;
+        playerArray[count] = doc.data().uid;
+        playerBeforeLastUid = lastPlayerUid;
         lastPlayerUid = doc.data().uid;
-        console.log('lastPlayerUid: ' + doc.data().uid);
+
+        count++;
       });
 
-      $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
-      $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
+      console.log('playerBeforeLastUid: ' + playerBeforeLastUid);
+      console.log('lastPlayerUid: ' + lastPlayerUid);
 
       turn = (count % 2) ? "X" : "O"; 
       
+      database_loadGameUsers();
       game_loop();
 
     });

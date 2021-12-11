@@ -69,12 +69,12 @@ var game_tictactoe = function(){
         board_full = true
         winner.classList.remove("hidden");
         database_setGameComplete(playerArray[0]);
-        winner.innerText = 'Winner is:' + playerArray[0];
+        winner.innerText = 'Winner is:' + $('#uid-'+playerArray[2]).html());
       } else if (res == computer) {
         board_full = true
         winner.classList.remove("hidden");
         database_setGameComplete(playerArray[1]);
-        winner.innerText = 'Winner is:' + playerArray[1];
+        winner.innerText = 'Winner is:' + $('#uid-'+playerArray[1]).html());
       } else if (board_full) {
         winner.classList.remove("hidden");
         database_setGameComplete('draw');
@@ -149,40 +149,8 @@ var game_tictactoe = function(){
       }
     }
     
-    const playerTwoMove = () => {
-      console.log('playerTwoMove');
-
-      if (!board_full) {
-
-        do {
-          selected = Math.floor(Math.random() * 9);
-        } while (play_board[selected] != "");
-        play_board[selected] = computer;
-
-        db.collection("games/"+gameId+"/moves").doc('move_'+selected).set({
-          move : selected,
-          user : computer
-        }).then((docRef) => {
-            console.log("Document written with ID: " + 'move_'+selected);
-            game_loop();
-        }).catch((error) => {
-            console.error("Error adding document: " + error);
-        });
-
-      }
-
-    };
-    
-    const reset_board = () => {
-      play_board = ["", "", "", "", "", "", "", "", ""];
-      board_full = false;
-      winner.classList.add("hidden");
-      winner.classList.remove("tictactoe-playerWin");
-      winner.classList.remove("tictactoe-computerWin");
-      winner.classList.remove("tictactoe-draw");
-      winner.innerText = "";
-      game_loop();
-    };
+    database_setGameUser();
+    database_setGameInfo();
     
     //initial render
     db.collection("games/"+gameId+"/moves")
@@ -193,26 +161,26 @@ var game_tictactoe = function(){
       var count = 0;
       playerBeforeLastUid = '';
       lastPlayerUid = '';
+      
+      database_setGameActive();
 
       querySnapshot.forEach(function(doc) {
-
-        playerArray[count] = doc.data().uid;
-
         console.log(doc.data().user + ' played by ' + doc.data().uid);
-        console.log('playerBeforeLastUid: ' + lastPlayerUid);
 
-        playerBeforeLastUid = lastPlayerUid;
-        count++;
         play_board[doc.data().move] = doc.data().user;
+        playerArray[count] = doc.data().uid;
+        playerBeforeLastUid = lastPlayerUid;
         lastPlayerUid = doc.data().uid;
-        console.log('lastPlayerUid: ' + doc.data().uid);
+
+        count++;
       });
 
-      $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
-      $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
+      console.log('playerBeforeLastUid: ' + playerBeforeLastUid);
+      console.log('lastPlayerUid: ' + lastPlayerUid);
 
       turn = (count % 2) ? "X" : "O"; 
       
+      database_loadGameUsers();
       game_loop();
 
     });

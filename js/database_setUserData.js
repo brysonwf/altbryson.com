@@ -3,7 +3,7 @@ var database_setUserData = function (user) {
 
     // var gravatarImage = func_getGravatar(user.email);
     
-    $('#username').html(user.email);
+    // $('#username').html(user.email);
     // $('#usernameShort').html((user.email).charAt(0) + (user.email).charAt(1) + (user.email).charAt(2));
 
     // $('#userimage').html('<img src="' + gravatarImage + '" />');
