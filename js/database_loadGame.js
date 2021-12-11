@@ -15,6 +15,10 @@ var database_loadGame = function () {
                 }
                 
                 switch(doc.data().type){
+                    case "page":
+                        database_loadGameUsers();
+                        database_loadGamesList();
+                        break;
                     case "minigolf":
                         game_minigolf();
                         break;

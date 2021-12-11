@@ -88,6 +88,10 @@ var database_loadGame = function () {
                 }
                 
                 switch(doc.data().type){
+                    case "page":
+                        database_loadGameUsers();
+                        database_loadGamesList();
+                        break;
                     case "minigolf":
                         game_minigolf();
                         break;
@@ -428,53 +432,19 @@ var firebase_onAuthStateChanged = function () {
 
       // User logged in already or has just logged in.
       uid = user.uid;
+      gameId = path[3];
+      if (gameId == null){
+        gameId = 'home';
+      }
       database_setUserData(user);
       database_setLocation();
-
-      //route
-      switch (path[1]) {
-
-        case "":
-          console.log("home");
-          gameId = path[3];
-          gameId = "home";
-          database_loadGame();
-          database_loadGamesList();
-          break;
-        case "g":
-          gameId = path[3];
-          database_loadGame();
-          switch (path[3]) {
-            case "home":
-              console.log("home");
-              database_loadGamesList();
-              break;
-          }
-          break;
-        default:
-          console.log("404");
-          
-      }
+      database_loadGame();
 
     } else {
 
       // User not logged in or has just logged out.
       uid = null;
       button_login();
-
-      
-      //route
-      switch (path[1]) {
-  
-        case "games":
-        case "g":
-          gameId = path[3];
-          $(".button_login").click();
-          break;
-        default:
-          console.log("404 / home");
-          
-      }
 
     }
 
