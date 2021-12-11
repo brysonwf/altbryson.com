@@ -9,8 +9,8 @@ var database_loadGameUsers = function(){
     var elevenSecondsAgo = new Date(now - elevenSeconds * MS_PER_MINUTE);
 
     db.collection("games/"+gameId+"/gameUsers")
-    .get().then(function(querySnapshot) {
-    // .onSnapshot(function(querySnapshot) {
+    // .get().then(function(querySnapshot) {
+    .onSnapshot(function(querySnapshot) {
         console.log("database_loadGameUsers onSnapshot");
 
         var userArray = [];
