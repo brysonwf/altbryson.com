@@ -147,12 +147,11 @@ var game_dotsandboxes = function(gameDoc){
           $($bx).css('background-color', 'transparent');
         }
 
-        
-        $('#uid-' + playerUid[1] +' .score').html(score1.toString()).removeClass('hidden');
-        $('#uid-' + playerUid[2] +' .score').html(score2.toString()).removeClass('hidden');
-
       };
     };
+        
+    $('#uid-' + playerUid[1] +' .score').html(score1.toString()).removeClass('hidden');
+    $('#uid-' + playerUid[2] +' .score').html(score2.toString()).removeClass('hidden');
 
     console.log(board);
 

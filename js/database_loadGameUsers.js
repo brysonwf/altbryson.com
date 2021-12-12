@@ -23,12 +23,6 @@ var database_loadGameUsers = function(){
                 userLastActiveDate = doc.data().dateUpdated.toDate();
             }
             var userTime = new Date(userLastActiveDate);
-            
-            if (doc.data().uid == lastPlayerUid){
-                classNames += ' lastPlayer';
-            }else if(doc.data().uid == playerBeforeLastUid){
-                classNames += ' itsyourturn';
-            }
 
             console.log('inserting ' + doc.data().uid + ' with ' + classNames);
             
@@ -66,6 +60,9 @@ var database_loadGameUsers = function(){
         }
 
         $('.userbank').html(html).removeClass('hidden');
+
+        $('#uid-' + lastPlayerUid).removeClass('itsyourturn').addClass('lastPlayer');
+        $('#uid-' + playerBeforeLastUid).removeClass('lastPlayer').addClass('itsyourturn');
         
         console.log('userbank added');
         button_logout();
