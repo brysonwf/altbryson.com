@@ -29,7 +29,7 @@
   <meta property="og:description" content="altbryson.com sandbox" />
   <meta property="og:image" content="https://altbryson.com/images/ogimage.png" />
   <meta name="theme-color" content="#f1e2ba" />
-  <link rel="stylesheet" type="text/css" href="/base.css?v2021111394226" />
+  <link rel="stylesheet" type="text/css" href="/base.css?v2021112013453" />
 </head>
 
 <body>
@@ -64,149 +64,16 @@
 <div class="viewport">
     <div class="chess-container">
         <div class="chess-play-area">
-            <div class="row">
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-            </div>
-            <div class="row">
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-            </div>
-            <div class="row">
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-            </div>
-            <div class="row">
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-            </div>
-            <div class="row">
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-                <div class="cell">
-                    <img src="/img/bp.png" />
-                </div>
-            </div>
+            <div id="myBoard" class="chessBoard"></div>
+            <label>Status:</label>
+            <div id="status"></div>
+            <label>FEN:</label>
+            <div id="fen"></div>
+            <label>PGN:</label>
+            <div id="pgn"></div>
         </div>
     </div>
-    <h2 id="tictactoe-winner" class="game-winner hidden"></h2>
+    <h2 id="chess-winner" class="game-winner hidden"></h2>
   <div id="footer">
       <div class="container">
           Woot.
@@ -269,8 +136,8 @@
 <script type="text/javascript" src="/firebase-firestore.js"></script>
 <script type="text/javascript" src="/moment-with-locales.min.js"></script>
 <script type="text/javascript" src="/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="/lib.js?v2021111394226"></script>
-<script type="text/javascript" src="/app.js?v2021111394226"></script>
+<script type="text/javascript" src="/lib.js?v2021112013453"></script>
+<script type="text/javascript" src="/app.js?v2021112013453"></script>
 
 <script type="text/javascript">
   appManager.init();
