@@ -76,6 +76,10 @@
         "destination": "/game_chess.html"
       },
       {
+        "source": "/g/pool/**",
+        "destination": "/game_pool.html"
+      },
+      {
         "source": "*",
         "destination": "/404.html"
       }

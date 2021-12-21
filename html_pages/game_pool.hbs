@@ -1,0 +1,90 @@
+{{#> layouts/base title="Games" }}
+
+{{#*inline "sectionApp-block"}}
+    <div id="overlay">
+      <div id="loading">
+        <h1>Loading, please wait...</h1>
+        <div class="progress">
+          <div id="prog-bar" class="progress-bar" role="progressbar" aria-valuenow="0"
+            aria-valuemin="0" aria-valuemax="100">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="mainMenu" class="hide">
+        <div>
+          <h1>3D Billiards</h1>
+          <button type="button" onclick="gui.play8BallClicked()" class="btn btn-primary btn-lg btn-block">Play 8-ball</button>
+        </div>
+      </div>
+
+      <div id="controlsHud" class="hide">
+        <div class="player player1 unknown">
+          <h5>Player 1 (<span></span>)</h5>
+
+          <ul>
+            <li>?</li>
+            <li>?</li>
+            <li>?</li>
+            <li>?</li>
+            <li>?</li>
+            <li>?</li>
+            <li>?</li>
+          </ul>
+        </div>
+
+        <div class="player player2 unknown">
+          <h5>Player 2 (<span></span>)</h5>
+
+          <ul>
+            <li>?</li>
+            <li>?</li>
+            <li>?</li>
+            <li>?</li>
+            <li>?</li>
+            <li>?</li>
+            <li>?</li>
+          </ul>
+        </div>
+
+        <div class="shootControls">
+          <div class="power">
+            Strength:
+            <form>
+              <input id="range_strength" type="range" name="strength" min="10" max="100">
+            </form>
+          </div>
+
+          <button id="btn_ball" type="button" class="btn btn-success">Hit</button>
+        </div>
+
+        <ul class="gamelog list-unstyled">
+
+        </ul>
+
+        <div class="timer">
+          30
+        </div>
+        <div id="fps_stats_container"></div>
+      </div>
+
+      <div id="gameover" class="hide">
+        <h1>Player won!</h1>
+        <h2>Thank you for playing.</h2>
+      </div>
+
+      <div id="canvas"></div>
+    </div>
+
+    <div class="jumbotron guide">
+      <p>Use the mouse to look around, click on the button to make the white ball move.</p>
+    </div>
+    <div id="status"></div>
+
+{{/inline}}
+
+{{#*inline "modal-block"}}
+{{/inline}}
+
+{{/layouts/base}}

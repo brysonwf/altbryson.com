@@ -41,6 +41,7 @@ var database_loadGameUsers = function(){
                     html += '    <li><a class="button_create_game" href="#" data-type="minigolf"><i class="fas fa-golf-ball"></i> minigolf</a></li>';
                     html += '    <li><a class="button_create_game" href="#" data-type="dotsandboxes"><i class="fas fa-border"></i> dotsandboxes</a></li>';
                     html += '    <li><a class="button_create_game" href="#" data-type="chess"><i class="fas fa-chess"></i> Chess</a></li>';
+                    html += '    <li><a class="button_create_game" href="#" data-type="pool"><i class="fas fa-pool"></i> pool</a></li>';
                     html += '    <li><a class="button_logout">Logout <span id="username"></span></a></li>';
                     html += '</ul>';
                 html += '</div>';

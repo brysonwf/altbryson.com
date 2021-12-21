@@ -31,6 +31,9 @@ var database_loadGame = function () {
                     case "chess":
                         game_chess(doc);
                         break;
+                    case "pool":
+                        game_pool(doc);
+                        break;
                 }
                 
             } else {
