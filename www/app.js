@@ -5941,6 +5941,42 @@ var game_pool = function(){
     // make the background void a grey color instead of black.
     renderer.setClearColor(0x262626, 1);
 
+    
+    
+    database_setGameUser();
+    database_setGameInfo();
+
+    
+    //initial render
+    db.collection("games/"+gameId+"/moves")
+    .orderBy("createDate", "asc")
+    .onSnapshot(function(querySnapshot) {
+      console.log('game_pool loading moves');
+
+      var count = 0;
+      playerBeforeLastUid = '';
+      lastPlayerUid = '';
+      
+      database_setGameActive();
+
+      querySnapshot.forEach(function(doc) {
+        console.log(doc.data().user + ' played by ' + doc.data().uid);
+
+        play_board[doc.data().move] = doc.data().user;
+        playerArray[count] = doc.data().uid;
+        playerBeforeLastUid = lastPlayerUid;
+        lastPlayerUid = doc.data().uid;
+
+        count++;
+      });
+
+      console.log('playerBeforeLastUid: ' + playerBeforeLastUid);
+      console.log('lastPlayerUid: ' + lastPlayerUid);
+      
+      database_loadGameUsers();
+
+    });
+
 }
 // constructor function
 var game_pool_constructor = function () {
@@ -5985,7 +6021,7 @@ var game_pool_constructor = function () {
 
 game_pool_constructor.prototype.tick = function (dt) {
     for (var i in this.balls) {
-    this.balls[i].tick(dt);
+        this.balls[i].tick(dt);
     }
 };
 
@@ -5993,8 +6029,10 @@ game_pool_constructor.prototype.tick = function (dt) {
  will make the ball move towards it's current "forward" direction, which
 is determined by the camera position / angle */
 game_pool_constructor.prototype.ballHit = function (strength) {
+    console.log('ballhit init');
+    
     if (this.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING) {
-    this.balls[0].hitForward(strength);
+        this.balls[0].hitForward(strength);
     }
 }; 
 var game_pool_table = function () {

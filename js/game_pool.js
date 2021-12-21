@@ -165,4 +165,40 @@ var game_pool = function(){
     // make the background void a grey color instead of black.
     renderer.setClearColor(0x262626, 1);
 
+    
+    
+    database_setGameUser();
+    database_setGameInfo();
+
+    
+    //initial render
+    db.collection("games/"+gameId+"/moves")
+    .orderBy("createDate", "asc")
+    .onSnapshot(function(querySnapshot) {
+      console.log('game_pool loading moves');
+
+      var count = 0;
+      playerBeforeLastUid = '';
+      lastPlayerUid = '';
+      
+      database_setGameActive();
+
+      querySnapshot.forEach(function(doc) {
+        console.log(doc.data().user + ' played by ' + doc.data().uid);
+
+        play_board[doc.data().move] = doc.data().user;
+        playerArray[count] = doc.data().uid;
+        playerBeforeLastUid = lastPlayerUid;
+        lastPlayerUid = doc.data().uid;
+
+        count++;
+      });
+
+      console.log('playerBeforeLastUid: ' + playerBeforeLastUid);
+      console.log('lastPlayerUid: ' + lastPlayerUid);
+      
+      database_loadGameUsers();
+
+    });
+
 }
