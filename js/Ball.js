@@ -4,6 +4,7 @@ var Ball = function (x, y, z, name, color) {
 
   this.mesh = this.createMesh(x,y,z);
   this.sphere = new THREE.Sphere(this.mesh.position, Ball.RADIUS); //used for guiding line intersection detecting
+  
   scene.add(this.mesh);
 
   this.rigidBody = this.createBody(x,y,z);
