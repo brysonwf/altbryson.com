@@ -107,7 +107,7 @@ EightBallGame.prototype.hitButtonClicked = function (strength) {
     eightballgame.state = 'turnwaiting';
     var x = setInterval(function() {
       if (poolgame.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
-      for (var i=1;i<game.balls.length;i++) {
+      for (var i=1;i<poolgame.balls.length;i++) {
         if (poolgame.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(poolgame.balls[i].name.split('ball')[0])) > -1) {
           return;
         }

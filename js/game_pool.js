@@ -70,17 +70,17 @@ var game_pool = function(){
         stats.end();
         requestAnimationFrame(draw);
         renderer.render(scene, camera); // We render our scene with our camera
-        }
+    }
 
-        // Adds an ambient light and two spotlights above the table
-        function addLights() {
+    // Adds an ambient light and two spotlights above the table
+    function addLights() {
         var light = new THREE.AmbientLight(0x0d0d0d); // soft white ambient light
         scene.add(light);
         var tableLight1 = new TableLight( game_pool_table.LEN_X / 4, 150, 0);
         var tableLight2 = new TableLight(-game_pool_table.LEN_X / 4, 150, 0);
     }
     
-    var WIDTH  = 960,
+    var WIDTH  = 360,
     HEIGHT = 480;
 
     var stats = new Stats();

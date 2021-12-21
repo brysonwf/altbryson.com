@@ -4608,7 +4608,7 @@ EightBallGame.prototype.hitButtonClicked = function (strength) {
     eightballgame.state = 'turnwaiting';
     var x = setInterval(function() {
       if (poolgame.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
-      for (var i=1;i<game.balls.length;i++) {
+      for (var i=1;i<poolgame.balls.length;i++) {
         if (poolgame.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(poolgame.balls[i].name.split('ball')[0])) > -1) {
           return;
         }
@@ -5846,17 +5846,17 @@ var game_pool = function(){
         stats.end();
         requestAnimationFrame(draw);
         renderer.render(scene, camera); // We render our scene with our camera
-        }
+    }
 
-        // Adds an ambient light and two spotlights above the table
-        function addLights() {
+    // Adds an ambient light and two spotlights above the table
+    function addLights() {
         var light = new THREE.AmbientLight(0x0d0d0d); // soft white ambient light
         scene.add(light);
         var tableLight1 = new TableLight( game_pool_table.LEN_X / 4, 150, 0);
         var tableLight2 = new TableLight(-game_pool_table.LEN_X / 4, 150, 0);
     }
     
-    var WIDTH  = 960,
+    var WIDTH  = 360,
     HEIGHT = 480;
 
     var stats = new Stats();
