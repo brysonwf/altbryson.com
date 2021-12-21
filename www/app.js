@@ -4602,14 +4602,14 @@ EightBallGame.prototype.endGame = function () {
 }
 
 EightBallGame.prototype.hitButtonClicked = function (strength) {
-  if (game.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING && eightballgame.state == 'turn') {
-    game.ballHit(strength);
+  if (poolgame.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING && eightballgame.state == 'turn') {
+    poolgame.ballHit(strength);
     clearTimeout(eightballgame.ticker);
     eightballgame.state = 'turnwaiting';
     var x = setInterval(function() {
-      if (game.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
+      if (poolgame.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
       for (var i=1;i<game.balls.length;i++) {
-        if (game.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(game.balls[i].name.split('ball')[0])) > -1) {
+        if (poolgame.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(poolgame.balls[i].name.split('ball')[0])) > -1) {
           return;
         }
       }
@@ -4938,7 +4938,7 @@ var func_timeSince = function(start){
 }
 
 
-var game = null;
+var chessgame = null;
 var board = null;
 var game_chess = function(gameDoc){
   console.log('init game_chess');
@@ -4949,7 +4949,7 @@ var game_chess = function(gameDoc){
   // https://github.com/jhlywa/chess.js
 
   board = null
-  game = new Chess()
+  chessgame = new Chess()
   var $status = $('#status')
   var $fen = $('#fen')
   var $pgn = $('#pgn')
@@ -4959,12 +4959,12 @@ var game_chess = function(gameDoc){
   var playerArray = [];
 
   function onDragStart (source, piece, position, orientation) {
-    // do not pick up pieces if the game is over
-    if (game.game_over()) return false
+    // do not pick up pieces if the chessgame is over
+    if (chessgame.game_over()) return false
 
     // only pick up pieces for the side to move
-    if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-        (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+    if ((chessgame.turn() === 'w' && piece.search(/^b/) !== -1) ||
+        (chessgame.turn() === 'b' && piece.search(/^w/) !== -1)) {
       return false
     }
   }
@@ -4972,40 +4972,40 @@ var game_chess = function(gameDoc){
   // update the board position after the piece snap
   // for castling, en passant, pawn promotion
   function onSnapEnd () {
-    board.position(game.fen())
+    board.position(chessgame.fen())
   }
 
   function updateStatus () {
     var status = ''
 
     var moveColor = 'White'
-    if (game.turn() === 'b') {
+    if (chessgame.turn() === 'b') {
       moveColor = 'Black'
     }
 
     // checkmate?
-    if (game.in_checkmate()) {
+    if (chessgame.in_checkmate()) {
       status = 'Game over, ' + moveColor + ' is in checkmate.'
     }
 
     // draw?
-    else if (game.in_draw()) {
+    else if (chessgame.in_draw()) {
       status = 'Game over, drawn position'
     }
 
-    // game still on
+    // chessgame still on
     else {
       status = moveColor + ' to move'
 
       // check?
-      if (game.in_check()) {
+      if (chessgame.in_check()) {
         status += ', ' + moveColor + ' is in check'
       }
     }
     
     $status.html(status)
-    $fen.html(game.fen())
-    $pgn.html(game.pgn())
+    $fen.html(chessgame.fen())
+    $pgn.html(chessgame.pgn())
 
     console.log('game_chess update');
   }
@@ -5026,12 +5026,12 @@ var game_chess = function(gameDoc){
   }
 
   function onDragStart (source, piece) {
-    // do not pick up pieces if the game is over
-    if (game.game_over()) return false
+    // do not pick up pieces if the chessgame is over
+    if (chessgame.game_over()) return false
 
     // or if it's not that side's turn
-    if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-        (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+    if ((chessgame.turn() === 'w' && piece.search(/^b/) !== -1) ||
+        (chessgame.turn() === 'b' && piece.search(/^w/) !== -1)) {
       return false
     }
   }
@@ -5039,7 +5039,7 @@ var game_chess = function(gameDoc){
   function onDrop (source, target) {
 
     // see if the move is legal
-    var move = game.move({
+    var move = chessgame.move({
       from: source,
       to: target,
       promotion: 'q' // NOTE: always promote to a queen for example simplicity
@@ -5054,8 +5054,8 @@ var game_chess = function(gameDoc){
     
     var docJson = {
       status: $status.html(),
-      fen: game.fen(),
-      pgn: game.pgn()
+      fen: chessgame.fen(),
+      pgn: chessgame.pgn()
     }
 
     database_setMove('count_'+moveCount, docJson, moveCount);
@@ -5063,7 +5063,7 @@ var game_chess = function(gameDoc){
 
   function onMouseoverSquare (square, piece) {
     // get list of possible moves for this square
-    var moves = game.moves({
+    var moves = chessgame.moves({
       square: square,
       verbose: true
     })
@@ -5116,7 +5116,7 @@ var game_chess = function(gameDoc){
 
     });
 
-    game.setTurn((moveCount % 2) ? "w" : "b")
+    chessgame.setTurn((moveCount % 2) ? "w" : "b")
 
     console.log('playerBeforeLastUid: ' + playerBeforeLastUid);
     console.log('lastPlayerUid: ' + lastPlayerUid);
@@ -5134,7 +5134,7 @@ var game_chess = function(gameDoc){
     }
     
     board = Chessboard('myBoard', config);
-    game.load_pgn(current_pgn);
+    chessgame.load_pgn(current_pgn);
 
     updateStatus();
 
@@ -5776,7 +5776,7 @@ var game_minigolf = function(){
 }
 
 // Globals
-var renderer, scene, camera, game, controls, keyboard, lightsConfig, world, gui, eightballgame;
+var renderer, scene, camera, poolgame, controls, keyboard, lightsConfig, world, gui, eightballgame;
 var debug = false; // if true then collision wireframes are drawn
 
 var textureLoader = null;
@@ -5833,7 +5833,7 @@ var game_pool = function(){
         stats.begin();
         
         // Controls
-        controls.target.copy(game.balls[0].mesh.position);
+        controls.target.copy(poolgame.balls[0].mesh.position);
         controls.update();
 
         // Physics world
@@ -5841,7 +5841,7 @@ var game_pool = function(){
 
         // THREE objects
         var dt = clock.getDelta();
-        game.tick(dt);
+        poolgame.tick(dt);
 
         stats.end();
         requestAnimationFrame(draw);
@@ -5919,7 +5919,7 @@ var game_pool = function(){
     // Setup our cannon.js world for physics
     world = createPhysicsWorld();
     // Populate meshes and physics bodies:
-    game = new game_pool_constructor();
+    poolgame = new game_pool_constructor();
     // Define how different objects interect physics-wise:
     setCollisionBehaviour();
     // Configure lighting:
@@ -5990,32 +5990,32 @@ var game_pool_constructor = function () {
     var X_offset_2 = 1.72; // this controls how tightly the balls are packed together on the x-axis
 
     this.balls = [
-    new WhiteBall(),
+        new WhiteBall(),
 
-    // First row
-    new Ball(X_offset, Ball.RADIUS, 4 * Ball.RADIUS, '4ball'),
-    new Ball(X_offset, Ball.RADIUS, 2 * Ball.RADIUS, '3ball'),
-    new Ball(X_offset, Ball.RADIUS, 0, '14ball'),
-    new Ball(X_offset, Ball.RADIUS, -2 * Ball.RADIUS, '2ball'),
-    new Ball(X_offset, Ball.RADIUS, -4 * Ball.RADIUS, '15ball'),
+        // First row
+        new Ball(X_offset, Ball.RADIUS, 4 * Ball.RADIUS, '4ball'),
+        new Ball(X_offset, Ball.RADIUS, 2 * Ball.RADIUS, '3ball'),
+        new Ball(X_offset, Ball.RADIUS, 0, '14ball'),
+        new Ball(X_offset, Ball.RADIUS, -2 * Ball.RADIUS, '2ball'),
+        new Ball(X_offset, Ball.RADIUS, -4 * Ball.RADIUS, '15ball'),
 
-    // 2nd row
-    new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, 3 * Ball.RADIUS, '13ball'),
-    new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, Ball.RADIUS, '7ball'),
-    new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, -1 * Ball.RADIUS, '12ball'),
-    new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, -3 * Ball.RADIUS, '5ball'),
+        // 2nd row
+        new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, 3 * Ball.RADIUS, '13ball'),
+        new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, Ball.RADIUS, '7ball'),
+        new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, -1 * Ball.RADIUS, '12ball'),
+        new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, -3 * Ball.RADIUS, '5ball'),
 
-    // 3rd row
-    new Ball(X_offset - X_offset_2 * 2 * Ball.RADIUS, Ball.RADIUS, 2 * Ball.RADIUS, '6ball'),
-    new Ball(X_offset - X_offset_2 * 2 * Ball.RADIUS, Ball.RADIUS, 0, '8ball'),
-    new Ball(X_offset - X_offset_2 * 2 * Ball.RADIUS, Ball.RADIUS, -2 * Ball.RADIUS, '9ball'),
+        // 3rd row
+        new Ball(X_offset - X_offset_2 * 2 * Ball.RADIUS, Ball.RADIUS, 2 * Ball.RADIUS, '6ball'),
+        new Ball(X_offset - X_offset_2 * 2 * Ball.RADIUS, Ball.RADIUS, 0, '8ball'),
+        new Ball(X_offset - X_offset_2 * 2 * Ball.RADIUS, Ball.RADIUS, -2 * Ball.RADIUS, '9ball'),
 
-    //4th row
-    new Ball(X_offset - X_offset_2 * 3 * Ball.RADIUS, Ball.RADIUS, Ball.RADIUS, '10ball'),
-    new Ball(X_offset - X_offset_2 * 3 * Ball.RADIUS, Ball.RADIUS, -1 * Ball.RADIUS, '11ball'),
+        //4th row
+        new Ball(X_offset - X_offset_2 * 3 * Ball.RADIUS, Ball.RADIUS, Ball.RADIUS, '10ball'),
+        new Ball(X_offset - X_offset_2 * 3 * Ball.RADIUS, Ball.RADIUS, -1 * Ball.RADIUS, '11ball'),
 
-    //5th row
-    new Ball(X_offset - X_offset_2 * 4 * Ball.RADIUS, Ball.RADIUS, 0, '1ball')
+        //5th row
+        new Ball(X_offset - X_offset_2 * 4 * Ball.RADIUS, Ball.RADIUS, 0, '1ball')
     ];
 }
 
@@ -6023,6 +6023,7 @@ game_pool_constructor.prototype.tick = function (dt) {
     for (var i in this.balls) {
         this.balls[i].tick(dt);
     }
+
 };
 
 /** Hit the ball with the given strength. This
@@ -6030,10 +6031,11 @@ game_pool_constructor.prototype.tick = function (dt) {
 is determined by the camera position / angle */
 game_pool_constructor.prototype.ballHit = function (strength) {
     console.log('ballhit init');
-    
+
     if (this.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING) {
         this.balls[0].hitForward(strength);
     }
+    
 }; 
 var game_pool_table = function () {
   
@@ -6787,11 +6789,11 @@ WhiteBall.prototype.updateGuideLine = function () {
 
   // Go through each ball
   var distances = [];
-  for (var i = 1; i < game.balls.length; i++) {
+  for (var i = 1; i < poolgame.balls.length; i++) {
     // find the distance to that ball
     distances.push({
       index: i,
-      dist: Math.abs(this.mesh.position.distanceTo(game.balls[i].mesh.position))
+      dist: Math.abs(this.mesh.position.distanceTo(poolgame.balls[i].mesh.position))
     });
   }
 
@@ -6802,7 +6804,7 @@ WhiteBall.prototype.updateGuideLine = function () {
   var intersectingBallIndex = -1;
   for (var j = 0; j < distances.length; j++) {
     var ballIndex = distances[j].index;
-    var curBall = game.balls[ballIndex];
+    var curBall = poolgame.balls[ballIndex];
     if (this.forwardLine.ray.isIntersectionSphere(curBall.sphere)) {
       intersectingBallIndex = ballIndex;
       break;
@@ -6815,7 +6817,7 @@ WhiteBall.prototype.updateGuideLine = function () {
     this.intersectionPoint = this.forwardLine.ray.intersectBox(this.forwardLine.box);
   } else {
     // Otherwise we are aiming at some ball
-    this.intersectionPoint = this.forwardLine.ray.intersectSphere(game.balls[intersectingBallIndex].sphere);
+    this.intersectionPoint = this.forwardLine.ray.intersectSphere(poolgame.balls[intersectingBallIndex].sphere);
   }
 
   var distance = Math.sqrt(this.mesh.position.distanceToSquared(this.intersectionPoint));

@@ -1,6 +1,6 @@
 
 
-var game = null;
+var chessgame = null;
 var board = null;
 var game_chess = function(gameDoc){
   console.log('init game_chess');
@@ -11,7 +11,7 @@ var game_chess = function(gameDoc){
   // https://github.com/jhlywa/chess.js
 
   board = null
-  game = new Chess()
+  chessgame = new Chess()
   var $status = $('#status')
   var $fen = $('#fen')
   var $pgn = $('#pgn')
@@ -21,12 +21,12 @@ var game_chess = function(gameDoc){
   var playerArray = [];
 
   function onDragStart (source, piece, position, orientation) {
-    // do not pick up pieces if the game is over
-    if (game.game_over()) return false
+    // do not pick up pieces if the chessgame is over
+    if (chessgame.game_over()) return false
 
     // only pick up pieces for the side to move
-    if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-        (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+    if ((chessgame.turn() === 'w' && piece.search(/^b/) !== -1) ||
+        (chessgame.turn() === 'b' && piece.search(/^w/) !== -1)) {
       return false
     }
   }
@@ -34,40 +34,40 @@ var game_chess = function(gameDoc){
   // update the board position after the piece snap
   // for castling, en passant, pawn promotion
   function onSnapEnd () {
-    board.position(game.fen())
+    board.position(chessgame.fen())
   }
 
   function updateStatus () {
     var status = ''
 
     var moveColor = 'White'
-    if (game.turn() === 'b') {
+    if (chessgame.turn() === 'b') {
       moveColor = 'Black'
     }
 
     // checkmate?
-    if (game.in_checkmate()) {
+    if (chessgame.in_checkmate()) {
       status = 'Game over, ' + moveColor + ' is in checkmate.'
     }
 
     // draw?
-    else if (game.in_draw()) {
+    else if (chessgame.in_draw()) {
       status = 'Game over, drawn position'
     }
 
-    // game still on
+    // chessgame still on
     else {
       status = moveColor + ' to move'
 
       // check?
-      if (game.in_check()) {
+      if (chessgame.in_check()) {
         status += ', ' + moveColor + ' is in check'
       }
     }
     
     $status.html(status)
-    $fen.html(game.fen())
-    $pgn.html(game.pgn())
+    $fen.html(chessgame.fen())
+    $pgn.html(chessgame.pgn())
 
     console.log('game_chess update');
   }
@@ -88,12 +88,12 @@ var game_chess = function(gameDoc){
   }
 
   function onDragStart (source, piece) {
-    // do not pick up pieces if the game is over
-    if (game.game_over()) return false
+    // do not pick up pieces if the chessgame is over
+    if (chessgame.game_over()) return false
 
     // or if it's not that side's turn
-    if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-        (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+    if ((chessgame.turn() === 'w' && piece.search(/^b/) !== -1) ||
+        (chessgame.turn() === 'b' && piece.search(/^w/) !== -1)) {
       return false
     }
   }
@@ -101,7 +101,7 @@ var game_chess = function(gameDoc){
   function onDrop (source, target) {
 
     // see if the move is legal
-    var move = game.move({
+    var move = chessgame.move({
       from: source,
       to: target,
       promotion: 'q' // NOTE: always promote to a queen for example simplicity
@@ -116,8 +116,8 @@ var game_chess = function(gameDoc){
     
     var docJson = {
       status: $status.html(),
-      fen: game.fen(),
-      pgn: game.pgn()
+      fen: chessgame.fen(),
+      pgn: chessgame.pgn()
     }
 
     database_setMove('count_'+moveCount, docJson, moveCount);
@@ -125,7 +125,7 @@ var game_chess = function(gameDoc){
 
   function onMouseoverSquare (square, piece) {
     // get list of possible moves for this square
-    var moves = game.moves({
+    var moves = chessgame.moves({
       square: square,
       verbose: true
     })
@@ -178,7 +178,7 @@ var game_chess = function(gameDoc){
 
     });
 
-    game.setTurn((moveCount % 2) ? "w" : "b")
+    chessgame.setTurn((moveCount % 2) ? "w" : "b")
 
     console.log('playerBeforeLastUid: ' + playerBeforeLastUid);
     console.log('lastPlayerUid: ' + lastPlayerUid);
@@ -196,7 +196,7 @@ var game_chess = function(gameDoc){
     }
     
     board = Chessboard('myBoard', config);
-    game.load_pgn(current_pgn);
+    chessgame.load_pgn(current_pgn);
 
     updateStatus();
 

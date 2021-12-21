@@ -101,14 +101,14 @@ EightBallGame.prototype.endGame = function () {
 }
 
 EightBallGame.prototype.hitButtonClicked = function (strength) {
-  if (game.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING && eightballgame.state == 'turn') {
-    game.ballHit(strength);
+  if (poolgame.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING && eightballgame.state == 'turn') {
+    poolgame.ballHit(strength);
     clearTimeout(eightballgame.ticker);
     eightballgame.state = 'turnwaiting';
     var x = setInterval(function() {
-      if (game.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
+      if (poolgame.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
       for (var i=1;i<game.balls.length;i++) {
-        if (game.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(game.balls[i].name.split('ball')[0])) > -1) {
+        if (poolgame.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(poolgame.balls[i].name.split('ball')[0])) > -1) {
           return;
         }
       }

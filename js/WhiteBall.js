@@ -103,11 +103,11 @@ WhiteBall.prototype.updateGuideLine = function () {
 
   // Go through each ball
   var distances = [];
-  for (var i = 1; i < game.balls.length; i++) {
+  for (var i = 1; i < poolgame.balls.length; i++) {
     // find the distance to that ball
     distances.push({
       index: i,
-      dist: Math.abs(this.mesh.position.distanceTo(game.balls[i].mesh.position))
+      dist: Math.abs(this.mesh.position.distanceTo(poolgame.balls[i].mesh.position))
     });
   }
 
@@ -118,7 +118,7 @@ WhiteBall.prototype.updateGuideLine = function () {
   var intersectingBallIndex = -1;
   for (var j = 0; j < distances.length; j++) {
     var ballIndex = distances[j].index;
-    var curBall = game.balls[ballIndex];
+    var curBall = poolgame.balls[ballIndex];
     if (this.forwardLine.ray.isIntersectionSphere(curBall.sphere)) {
       intersectingBallIndex = ballIndex;
       break;
@@ -131,7 +131,7 @@ WhiteBall.prototype.updateGuideLine = function () {
     this.intersectionPoint = this.forwardLine.ray.intersectBox(this.forwardLine.box);
   } else {
     // Otherwise we are aiming at some ball
-    this.intersectionPoint = this.forwardLine.ray.intersectSphere(game.balls[intersectingBallIndex].sphere);
+    this.intersectionPoint = this.forwardLine.ray.intersectSphere(poolgame.balls[intersectingBallIndex].sphere);
   }
 
   var distance = Math.sqrt(this.mesh.position.distanceToSquared(this.intersectionPoint));

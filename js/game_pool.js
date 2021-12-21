@@ -1,6 +1,6 @@
 
 // Globals
-var renderer, scene, camera, game, controls, keyboard, lightsConfig, world, gui, eightballgame;
+var renderer, scene, camera, poolgame, controls, keyboard, lightsConfig, world, gui, eightballgame;
 var debug = false; // if true then collision wireframes are drawn
 
 var textureLoader = null;
@@ -57,7 +57,7 @@ var game_pool = function(){
         stats.begin();
         
         // Controls
-        controls.target.copy(game.balls[0].mesh.position);
+        controls.target.copy(poolgame.balls[0].mesh.position);
         controls.update();
 
         // Physics world
@@ -65,7 +65,7 @@ var game_pool = function(){
 
         // THREE objects
         var dt = clock.getDelta();
-        game.tick(dt);
+        poolgame.tick(dt);
 
         stats.end();
         requestAnimationFrame(draw);
@@ -143,7 +143,7 @@ var game_pool = function(){
     // Setup our cannon.js world for physics
     world = createPhysicsWorld();
     // Populate meshes and physics bodies:
-    game = new game_pool_constructor();
+    poolgame = new game_pool_constructor();
     // Define how different objects interect physics-wise:
     setCollisionBehaviour();
     // Configure lighting:
