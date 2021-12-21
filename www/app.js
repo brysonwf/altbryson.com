@@ -4523,7 +4523,7 @@ EightBallGame.prototype.startTurn = function () {
     return;
   }
   // enable movement
-  eightballgame.timer = 30;
+  eightballgame.timer = 300;
   eightballgame.state = 'turn';
   gui.updateTurn(eightballgame.turn);
   gui.updateBalls(eightballgame.numbered_balls_on_table, eightballgame.sides.player1, eightballgame.sides.player2);
@@ -5783,6 +5783,8 @@ var textureLoader = null;
 
 var progressBar;
 
+var moveCount = 0;
+
 var game_pool = function(){
 
     console.log('game_pool init');
@@ -5940,8 +5942,6 @@ var game_pool = function(){
 
     // make the background void a grey color instead of black.
     renderer.setClearColor(0x262626, 1);
-
-    
     
     database_setGameUser();
     database_setGameInfo();
@@ -5953,7 +5953,7 @@ var game_pool = function(){
     .onSnapshot(function(querySnapshot) {
       console.log('game_pool loading moves');
 
-      var count = 0;
+      var moveCount = 0;
       playerBeforeLastUid = '';
       lastPlayerUid = '';
       
@@ -5962,12 +5962,11 @@ var game_pool = function(){
       querySnapshot.forEach(function(doc) {
         console.log(doc.data().user + ' played by ' + doc.data().uid);
 
-        play_board[doc.data().move] = doc.data().user;
-        playerArray[count] = doc.data().uid;
+        playerArray[moveCount] = doc.data().uid;
         playerBeforeLastUid = lastPlayerUid;
         lastPlayerUid = doc.data().uid;
 
-        count++;
+        moveCount++;
       });
 
       console.log('playerBeforeLastUid: ' + playerBeforeLastUid);
@@ -6030,8 +6029,6 @@ game_pool_constructor.prototype.tick = function (dt) {
  will make the ball move towards it's current "forward" direction, which
 is determined by the camera position / angle */
 game_pool_constructor.prototype.ballHit = function (strength) {
-    console.log('ballhit init');
-
     if (this.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING) {
         this.balls[0].hitForward(strength);
     }
@@ -6412,10 +6409,13 @@ var GameGui = function () {
   console.log('GameGui init');
 
   var btn_ball = document.getElementById('btn_ball');
+
   btn_ball.onclick = function () {
     eightballgame.hitButtonClicked(Number(document.getElementById('range_strength').value));
   };
+
   if (debug) document.getElementById('fps_stats_container').appendChild( stats.domElement );
+  
 };
 
 GameGui.prototype.setupGameHud = function() {
@@ -6462,9 +6462,20 @@ GameGui.prototype.log = function(str) {
 };
 
 GameGui.prototype.updateTurn = function(str) {
+
   GameGui.removeClass(document.getElementsByClassName('player1')[0], 'active');
   GameGui.removeClass(document.getElementsByClassName('player2')[0], 'active');
   GameGui.addClass(document.getElementsByClassName(str)[0], 'active');
+  
+  console.log('poolgame.balls[0].defaultPosition: ' + poolgame.balls[0].defaultPosition);
+
+  // var docJson = {
+  //   str: str,
+  //   scene: scene.toString()
+  // }
+
+  // database_setMove('count_'+moveCount, docJson, moveCount);
+
 };
 
 GameGui.prototype.updateBalls = function(ballArr, p1side, p2side) {

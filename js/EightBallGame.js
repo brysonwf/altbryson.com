@@ -22,7 +22,7 @@ EightBallGame.prototype.startTurn = function () {
     return;
   }
   // enable movement
-  eightballgame.timer = 30;
+  eightballgame.timer = 300;
   eightballgame.state = 'turn';
   gui.updateTurn(eightballgame.turn);
   gui.updateBalls(eightballgame.numbered_balls_on_table, eightballgame.sides.player1, eightballgame.sides.player2);

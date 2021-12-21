@@ -3,10 +3,13 @@ var GameGui = function () {
   console.log('GameGui init');
 
   var btn_ball = document.getElementById('btn_ball');
+
   btn_ball.onclick = function () {
     eightballgame.hitButtonClicked(Number(document.getElementById('range_strength').value));
   };
+
   if (debug) document.getElementById('fps_stats_container').appendChild( stats.domElement );
+  
 };
 
 GameGui.prototype.setupGameHud = function() {
@@ -53,9 +56,13 @@ GameGui.prototype.log = function(str) {
 };
 
 GameGui.prototype.updateTurn = function(str) {
+
   GameGui.removeClass(document.getElementsByClassName('player1')[0], 'active');
   GameGui.removeClass(document.getElementsByClassName('player2')[0], 'active');
   GameGui.addClass(document.getElementsByClassName(str)[0], 'active');
+  
+  console.log('poolgame.balls[0].defaultPosition: ' + poolgame.balls[0].defaultPosition);
+
 };
 
 GameGui.prototype.updateBalls = function(ballArr, p1side, p2side) {

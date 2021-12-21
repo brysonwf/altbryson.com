@@ -7,6 +7,8 @@ var textureLoader = null;
 
 var progressBar;
 
+var moveCount = 0;
+
 var game_pool = function(){
 
     console.log('game_pool init');
@@ -142,10 +144,13 @@ var game_pool = function(){
 
     // Setup our cannon.js world for physics
     world = createPhysicsWorld();
+
     // Populate meshes and physics bodies:
     poolgame = new game_pool_constructor();
+
     // Define how different objects interect physics-wise:
     setCollisionBehaviour();
+    
     // Configure lighting:
     addLights();
 
@@ -164,8 +169,6 @@ var game_pool = function(){
 
     // make the background void a grey color instead of black.
     renderer.setClearColor(0x262626, 1);
-
-    
     
     database_setGameUser();
     database_setGameInfo();
@@ -177,7 +180,7 @@ var game_pool = function(){
     .onSnapshot(function(querySnapshot) {
       console.log('game_pool loading moves');
 
-      var count = 0;
+      var moveCount = 0;
       playerBeforeLastUid = '';
       lastPlayerUid = '';
       
@@ -186,12 +189,11 @@ var game_pool = function(){
       querySnapshot.forEach(function(doc) {
         console.log(doc.data().user + ' played by ' + doc.data().uid);
 
-        play_board[doc.data().move] = doc.data().user;
-        playerArray[count] = doc.data().uid;
+        playerArray[moveCount] = doc.data().uid;
         playerBeforeLastUid = lastPlayerUid;
         lastPlayerUid = doc.data().uid;
 
-        count++;
+        moveCount++;
       });
 
       console.log('playerBeforeLastUid: ' + playerBeforeLastUid);
