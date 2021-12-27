@@ -49,6 +49,7 @@ var Arch = function (params) {
   this.no_of_boxes = params.no_of_boxes || 5;
 
   this.body.position.set(this.position.x, this.position.y, this.position.z);
+  console.log('x ' + this.position.x);
   var y_axis = new CANNON.Vec3(0, 1, 0);
   this.body.quaternion.setFromAxisAngle(y_axis, Math.PI);
 
@@ -78,17 +79,24 @@ var Arch = function (params) {
 };
 
 var Ball = function (x, y, z, name, color) {
+  console.log('ball init');
   this.color = typeof color === 'undefined' ? 0xcc0000 : color; //default color
   this.texture = '/images/balls/' + name + '.png';
 
   this.mesh = this.createMesh(x,y,z);
   this.sphere = new THREE.Sphere(this.mesh.position, Ball.RADIUS); //used for guiding line intersection detecting
+
+  this.isMoving = false;
+  
   scene.add(this.mesh);
 
   this.rigidBody = this.createBody(x,y,z);
   world.addBody(this.rigidBody);
   this.name = name;
   this.fallen = false;
+
+  ballPositionArray[name] = '' + JSON.stringify(this.rigidBody.position);
+
 };
 
 Ball.RADIUS = 5.715 / 2; // cm
@@ -167,6 +175,18 @@ Ball.prototype.createMesh = function (x,y,z) {
 };
 
 Ball.prototype.tick = function (dt) {
+
+  if (ballPositionArray[this.name] == '' + JSON.stringify(this.rigidBody.position)){
+    if (this.isMoving){
+      console.log(this.name + ' has stopped moving');
+      this.isMoving = false;
+    }
+  }else{
+    this.isMoving = true;
+    // console.log('moving to ' + JSON.stringify(this.rigidBody.position));
+    ballPositionArray[this.name] = '' + JSON.stringify(this.rigidBody.position);
+  }
+
   this.mesh.position.copy(this.rigidBody.position);
   this.mesh.quaternion.copy(this.rigidBody.quaternion);
 
@@ -175,6 +195,8 @@ Ball.prototype.tick = function (dt) {
     this.fallen = true;
     this.onEnterHole();
   }
+
+
 };
 
 var btn_hide = function(){
@@ -4578,20 +4600,23 @@ EightBallGame.prototype.coloredBallEnteredHole = function (name) {
 
 EightBallGame.prototype.tickTimer = function () {
   gui.UpdateTimer(eightballgame.timer);
-  if (eightballgame.timer == 0) {
-    gui.log(eightballgame.turn + " ran out of time");
-    eightballgame.state = "outoftime";
-    eightballgame.switchSides();
-  } else {
-    eightballgame.timer--;
-    eightballgame.ticker = setTimeout(eightballgame.tickTimer, 1000);
-  }
+  // if (eightballgame.timer == 0) {
+  //   gui.log(eightballgame.turn + " ran out of time");
+  //   eightballgame.state = "outoftime";
+  //   // eightballgame.switchSides();
+  // } else {
+  //   eightballgame.timer--;
+  //   eightballgame.ticker = setTimeout(eightballgame.tickTimer, 1000);
+  // }
 }
 
 EightBallGame.prototype.switchSides = function () {
   eightballgame.turn = eightballgame.turn == 'player1' ? 'player2': 'player1';
 
   setTimeout(eightballgame.startTurn, 1000);
+
+  database_setMove('cords_'+moveCount, ballPositionArray, moveCount);
+  moveCount++;
 }
 
 EightBallGame.prototype.endGame = function () {
@@ -4602,29 +4627,69 @@ EightBallGame.prototype.endGame = function () {
 }
 
 EightBallGame.prototype.hitButtonClicked = function (strength) {
-  if (poolgame.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING && eightballgame.state == 'turn') {
-    poolgame.ballHit(strength);
-    clearTimeout(eightballgame.ticker);
-    eightballgame.state = 'turnwaiting';
-    var x = setInterval(function() {
-      if (poolgame.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
-      for (var i=1;i<poolgame.balls.length;i++) {
-        if (poolgame.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(poolgame.balls[i].name.split('ball')[0])) > -1) {
-          return;
+  
+  var currentPlayerUid = [];
+  var alreadyOnTheBoard = [];
+
+  var count = 1;
+  db.collection("games/"+gameId+"/moves")
+  .orderBy("createDate", "desc")
+  .limit(userLimit)
+  .get()
+  .then((querySnapshot) => {
+      userCanPlay = false;
+      console.log("func_confirmMove querySnapshot");
+      querySnapshot.forEach((doc) => {
+          console.log('count ' + count + ': ' + doc.data().uid + ' ' + doc.data().user + ' at ' + doc.data().createDate)
+          alreadyOnTheBoard[doc.data().uid] = true;
+          currentPlayerUid[count] = doc.data().uid;
+          count++;
+      });
+      //if we havn't had enough plays yet
+      if (count <= userLimit){
+          console.log('not enough players allowing move');
+          if (alreadyOnTheBoard[uid]){
+              console.log('user on the board already: ' + uid);
+          }else{
+            userCanPlay = true;
+          }
+      }else if (currentPlayerUid[userLimit] == uid){
+          console.log('you are allowed to move');
+          userCanPlay = true;
+      }else{
+          console.log('not your turn player: ' + uid);
+      }
+      
+      if (userCanPlay){
+        if (poolgame.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING && eightballgame.state == 'turn') {
+          poolgame.ballHit(strength);
+          clearTimeout(eightballgame.ticker);
+          eightballgame.state = 'turnwaiting';
+          var x = setInterval(function() {
+            if (poolgame.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
+            for (var i=1;i<poolgame.balls.length;i++) {
+              if (poolgame.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(poolgame.balls[i].name.split('ball')[0])) > -1) {
+                return;
+              }
+            }
+
+            if (eightballgame.pocketingOccurred) {
+              setTimeout(eightballgame.startTurn, 1000);
+            } else {
+              eightballgame.switchSides();
+            }
+
+            eightballgame.pocketingOccurred = false;
+
+            clearInterval(x);
+          }, 30);
         }
       }
 
-      if (eightballgame.pocketingOccurred) {
-        setTimeout(eightballgame.startTurn, 1000);
-      } else {
-        eightballgame.switchSides();
-      }
-
-      eightballgame.pocketingOccurred = false;
-
-      clearInterval(x);
-    }, 30);
-  }
+  })
+  .catch((error) => {
+      console.log("Error getting documents: ", error);
+  });
 }
 
 var firebase_init = function() {
@@ -5777,6 +5842,7 @@ var game_minigolf = function(){
 
 // Globals
 var renderer, scene, camera, poolgame, controls, keyboard, lightsConfig, world, gui, eightballgame;
+var ballPositionArray = {};
 var debug = false; // if true then collision wireframes are drawn
 
 var textureLoader = null;
@@ -5920,10 +5986,13 @@ var game_pool = function(){
 
     // Setup our cannon.js world for physics
     world = createPhysicsWorld();
+
     // Populate meshes and physics bodies:
     poolgame = new game_pool_constructor();
+
     // Define how different objects interect physics-wise:
     setCollisionBehaviour();
+    
     // Configure lighting:
     addLights();
 
@@ -5945,6 +6014,7 @@ var game_pool = function(){
     
     database_setGameUser();
     database_setGameInfo();
+    database_loadGameUsers();
 
     
     //initial render
@@ -5960,7 +6030,6 @@ var game_pool = function(){
       database_setGameActive();
 
       querySnapshot.forEach(function(doc) {
-        console.log(doc.data().user + ' played by ' + doc.data().uid);
 
         playerArray[moveCount] = doc.data().uid;
         playerBeforeLastUid = lastPlayerUid;
@@ -5971,8 +6040,6 @@ var game_pool = function(){
 
       console.log('playerBeforeLastUid: ' + playerBeforeLastUid);
       console.log('lastPlayerUid: ' + lastPlayerUid);
-      
-      database_loadGameUsers();
 
     });
 
@@ -6466,15 +6533,6 @@ GameGui.prototype.updateTurn = function(str) {
   GameGui.removeClass(document.getElementsByClassName('player1')[0], 'active');
   GameGui.removeClass(document.getElementsByClassName('player2')[0], 'active');
   GameGui.addClass(document.getElementsByClassName(str)[0], 'active');
-  
-  console.log('poolgame.balls[0].defaultPosition: ' + poolgame.balls[0].defaultPosition);
-
-  // var docJson = {
-  //   str: str,
-  //   scene: scene.toString()
-  // }
-
-  // database_setMove('count_'+moveCount, docJson, moveCount);
 
 };
 

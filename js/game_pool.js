@@ -1,6 +1,7 @@
 
 // Globals
 var renderer, scene, camera, poolgame, controls, keyboard, lightsConfig, world, gui, eightballgame;
+var ballPositionArray = {};
 var debug = false; // if true then collision wireframes are drawn
 
 var textureLoader = null;
@@ -172,6 +173,7 @@ var game_pool = function(){
     
     database_setGameUser();
     database_setGameInfo();
+    database_loadGameUsers();
 
     
     //initial render
@@ -187,7 +189,6 @@ var game_pool = function(){
       database_setGameActive();
 
       querySnapshot.forEach(function(doc) {
-        console.log(doc.data().user + ' played by ' + doc.data().uid);
 
         playerArray[moveCount] = doc.data().uid;
         playerBeforeLastUid = lastPlayerUid;
@@ -198,8 +199,6 @@ var game_pool = function(){
 
       console.log('playerBeforeLastUid: ' + playerBeforeLastUid);
       console.log('lastPlayerUid: ' + lastPlayerUid);
-      
-      database_loadGameUsers();
 
     });
 

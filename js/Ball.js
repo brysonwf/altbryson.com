@@ -1,9 +1,12 @@
 var Ball = function (x, y, z, name, color) {
+  console.log('ball init');
   this.color = typeof color === 'undefined' ? 0xcc0000 : color; //default color
   this.texture = '/images/balls/' + name + '.png';
 
   this.mesh = this.createMesh(x,y,z);
   this.sphere = new THREE.Sphere(this.mesh.position, Ball.RADIUS); //used for guiding line intersection detecting
+
+  this.isMoving = false;
   
   scene.add(this.mesh);
 
@@ -11,6 +14,9 @@ var Ball = function (x, y, z, name, color) {
   world.addBody(this.rigidBody);
   this.name = name;
   this.fallen = false;
+
+  ballPositionArray[name] = '' + JSON.stringify(this.rigidBody.position);
+
 };
 
 Ball.RADIUS = 5.715 / 2; // cm
@@ -89,6 +95,18 @@ Ball.prototype.createMesh = function (x,y,z) {
 };
 
 Ball.prototype.tick = function (dt) {
+
+  if (ballPositionArray[this.name] == '' + JSON.stringify(this.rigidBody.position)){
+    if (this.isMoving){
+      console.log(this.name + ' has stopped moving');
+      this.isMoving = false;
+    }
+  }else{
+    this.isMoving = true;
+    // console.log('moving to ' + JSON.stringify(this.rigidBody.position));
+    ballPositionArray[this.name] = '' + JSON.stringify(this.rigidBody.position);
+  }
+
   this.mesh.position.copy(this.rigidBody.position);
   this.mesh.quaternion.copy(this.rigidBody.quaternion);
 
@@ -97,4 +115,6 @@ Ball.prototype.tick = function (dt) {
     this.fallen = true;
     this.onEnterHole();
   }
+
+
 };

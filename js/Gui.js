@@ -60,8 +60,6 @@ GameGui.prototype.updateTurn = function(str) {
   GameGui.removeClass(document.getElementsByClassName('player1')[0], 'active');
   GameGui.removeClass(document.getElementsByClassName('player2')[0], 'active');
   GameGui.addClass(document.getElementsByClassName(str)[0], 'active');
-  
-  console.log('poolgame.balls[0].defaultPosition: ' + poolgame.balls[0].defaultPosition);
 
 };
 

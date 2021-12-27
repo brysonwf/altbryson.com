@@ -77,20 +77,23 @@ EightBallGame.prototype.coloredBallEnteredHole = function (name) {
 
 EightBallGame.prototype.tickTimer = function () {
   gui.UpdateTimer(eightballgame.timer);
-  if (eightballgame.timer == 0) {
-    gui.log(eightballgame.turn + " ran out of time");
-    eightballgame.state = "outoftime";
-    eightballgame.switchSides();
-  } else {
-    eightballgame.timer--;
-    eightballgame.ticker = setTimeout(eightballgame.tickTimer, 1000);
-  }
+  // if (eightballgame.timer == 0) {
+  //   gui.log(eightballgame.turn + " ran out of time");
+  //   eightballgame.state = "outoftime";
+  //   // eightballgame.switchSides();
+  // } else {
+  //   eightballgame.timer--;
+  //   eightballgame.ticker = setTimeout(eightballgame.tickTimer, 1000);
+  // }
 }
 
 EightBallGame.prototype.switchSides = function () {
   eightballgame.turn = eightballgame.turn == 'player1' ? 'player2': 'player1';
 
   setTimeout(eightballgame.startTurn, 1000);
+
+  database_setMove('cords_'+moveCount, ballPositionArray, moveCount);
+  moveCount++;
 }
 
 EightBallGame.prototype.endGame = function () {
@@ -101,27 +104,67 @@ EightBallGame.prototype.endGame = function () {
 }
 
 EightBallGame.prototype.hitButtonClicked = function (strength) {
-  if (poolgame.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING && eightballgame.state == 'turn') {
-    poolgame.ballHit(strength);
-    clearTimeout(eightballgame.ticker);
-    eightballgame.state = 'turnwaiting';
-    var x = setInterval(function() {
-      if (poolgame.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
-      for (var i=1;i<poolgame.balls.length;i++) {
-        if (poolgame.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(poolgame.balls[i].name.split('ball')[0])) > -1) {
-          return;
+  
+  var currentPlayerUid = [];
+  var alreadyOnTheBoard = [];
+
+  var count = 1;
+  db.collection("games/"+gameId+"/moves")
+  .orderBy("createDate", "desc")
+  .limit(userLimit)
+  .get()
+  .then((querySnapshot) => {
+      userCanPlay = false;
+      console.log("func_confirmMove querySnapshot");
+      querySnapshot.forEach((doc) => {
+          console.log('count ' + count + ': ' + doc.data().uid + ' ' + doc.data().user + ' at ' + doc.data().createDate)
+          alreadyOnTheBoard[doc.data().uid] = true;
+          currentPlayerUid[count] = doc.data().uid;
+          count++;
+      });
+      //if we havn't had enough plays yet
+      if (count <= userLimit){
+          console.log('not enough players allowing move');
+          if (alreadyOnTheBoard[uid]){
+              console.log('user on the board already: ' + uid);
+          }else{
+            userCanPlay = true;
+          }
+      }else if (currentPlayerUid[userLimit] == uid){
+          console.log('you are allowed to move');
+          userCanPlay = true;
+      }else{
+          console.log('not your turn player: ' + uid);
+      }
+      
+      if (userCanPlay){
+        if (poolgame.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING && eightballgame.state == 'turn') {
+          poolgame.ballHit(strength);
+          clearTimeout(eightballgame.ticker);
+          eightballgame.state = 'turnwaiting';
+          var x = setInterval(function() {
+            if (poolgame.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
+            for (var i=1;i<poolgame.balls.length;i++) {
+              if (poolgame.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(poolgame.balls[i].name.split('ball')[0])) > -1) {
+                return;
+              }
+            }
+
+            if (eightballgame.pocketingOccurred) {
+              setTimeout(eightballgame.startTurn, 1000);
+            } else {
+              eightballgame.switchSides();
+            }
+
+            eightballgame.pocketingOccurred = false;
+
+            clearInterval(x);
+          }, 30);
         }
       }
 
-      if (eightballgame.pocketingOccurred) {
-        setTimeout(eightballgame.startTurn, 1000);
-      } else {
-        eightballgame.switchSides();
-      }
-
-      eightballgame.pocketingOccurred = false;
-
-      clearInterval(x);
-    }, 30);
-  }
+  })
+  .catch((error) => {
+      console.log("Error getting documents: ", error);
+  });
 }
