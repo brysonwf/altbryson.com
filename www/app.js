@@ -79,11 +79,14 @@ var Arch = function (params) {
 };
 
 var Ball = function (x, y, z, name, color) {
+
   console.log('ball init');
+
   this.color = typeof color === 'undefined' ? 0xcc0000 : color; //default color
   this.texture = '/images/balls/' + name + '.png';
 
   this.mesh = this.createMesh(x,y,z);
+  
   this.sphere = new THREE.Sphere(this.mesh.position, Ball.RADIUS); //used for guiding line intersection detecting
 
   this.isMoving = false;
@@ -178,7 +181,7 @@ Ball.prototype.tick = function (dt) {
 
   if (ballPositionArray[this.name] == '' + JSON.stringify(this.rigidBody.position)){
     if (this.isMoving){
-      console.log(this.name + ' has stopped moving');
+      console.log(this.name + ' is not moving');
       this.isMoving = false;
     }
   }else{
@@ -4524,7 +4527,9 @@ var database_setUserData = function (user) {
 var EightBallGame = function()
 {
   this.numbered_balls_on_table = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+   
   this.turn = 'player1';
+
   this.sides = {
     'player1': '?',
     'player2': '?'
@@ -4628,62 +4633,78 @@ EightBallGame.prototype.endGame = function () {
 
 EightBallGame.prototype.hitButtonClicked = function (strength) {
   
-  var currentPlayerUid = [];
-  var alreadyOnTheBoard = [];
+  var isYourMove = false;
 
-  var count = 1;
-  db.collection("games/"+gameId+"/moves")
-  .orderBy("createDate", "desc")
-  .limit(userLimit)
-  .get()
-  .then((querySnapshot) => {
-      userCanPlay = false;
-      console.log("func_confirmMove querySnapshot");
-      querySnapshot.forEach((doc) => {
-          console.log('count ' + count + ': ' + doc.data().uid + ' ' + doc.data().user + ' at ' + doc.data().createDate)
-          alreadyOnTheBoard[doc.data().uid] = true;
-          currentPlayerUid[count] = doc.data().uid;
-          count++;
-      });
-      //if we havn't had enough plays yet
-      if (count <= userLimit){
-          console.log('not enough players allowing move');
-          if (alreadyOnTheBoard[uid]){
-              console.log('user on the board already: ' + uid);
-          }else{
-            userCanPlay = true;
+  db.collection("games")
+    .doc(gameId)
+    .get().then((doc) => {
+      if (doc.exists) {
+
+          playerUid[1] = doc.data().playerOne;
+          playerUid[2] = doc.data().playerTwo;
+
+          if (playerUid[1] == null){
+            console.log('init database_setPlayerOne');
+                    
+            db.collection("games")
+            .doc(gameId)
+            .set(
+                {
+                  playerOne: uid
+                },
+                { merge: true }
+            );
+            playerUid[1] = uid;
+            isYourMove = true;
+          }else if (playerUid[1] != uid && playerUid[2] == null){
+            console.log('init database_setPlayerTwo');
+                    
+            db.collection("games")
+            .doc(gameId)
+            .set(
+                {
+                  playerTwo: uid
+                },
+                { merge: true }
+            );
+            playerUid[2] = uid;
+            isYourMove = true;
           }
-      }else if (currentPlayerUid[userLimit] == uid){
-          console.log('you are allowed to move');
-          userCanPlay = true;
-      }else{
-          console.log('not your turn player: ' + uid);
-      }
-      
-      if (userCanPlay){
-        if (poolgame.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING && eightballgame.state == 'turn') {
-          poolgame.ballHit(strength);
-          clearTimeout(eightballgame.ticker);
-          eightballgame.state = 'turnwaiting';
-          var x = setInterval(function() {
-            if (poolgame.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
-            for (var i=1;i<poolgame.balls.length;i++) {
-              if (poolgame.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(poolgame.balls[i].name.split('ball')[0])) > -1) {
-                return;
-              }
+          
+          if (doc.data().currentPlayerUid == uid){
+            isYourMove = true;
+          }
+
+          if (isYourMove){
+            if (poolgame.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING && eightballgame.state == 'turn') {
+              poolgame.ballHit(strength);
+              clearTimeout(eightballgame.ticker);
+              eightballgame.state = 'turnwaiting';
+              var x = setInterval(function() {
+                if (poolgame.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
+                for (var i=1;i<poolgame.balls.length;i++) {
+                  if (poolgame.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(poolgame.balls[i].name.split('ball')[0])) > -1) {
+                    return;
+                  }
+                }
+    
+                if (eightballgame.pocketingOccurred) {
+                  setTimeout(eightballgame.startTurn, 1000);
+                } else {
+                  eightballgame.switchSides();
+                }
+    
+                eightballgame.pocketingOccurred = false;
+    
+                clearInterval(x);
+              }, 30);
             }
-
-            if (eightballgame.pocketingOccurred) {
-              setTimeout(eightballgame.startTurn, 1000);
-            } else {
-              eightballgame.switchSides();
-            }
-
-            eightballgame.pocketingOccurred = false;
-
-            clearInterval(x);
-          }, 30);
-        }
+          }else{
+            console.log('not your move');
+          }
+      } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
       }
 
   })
@@ -5850,10 +5871,20 @@ var textureLoader = null;
 var progressBar;
 
 var moveCount = 0;
+var playerUid = [];
 
-var game_pool = function(){
+var game_pool = function(gameDoc){
 
     console.log('game_pool init');
+
+    
+    if (playerUid[1] == null){
+        playerUid[1] = gameDoc.data().playerOne;
+    }
+    if (playerUid[2] == null){
+        playerUid[2] = gameDoc.data().playerTwo;
+    }
+
 
     function createPhysicsWorld () {
         console.log('createPhysicsWorld init');
@@ -5954,6 +5985,73 @@ var game_pool = function(){
             var canvasContainer = document.getElementById('canvas');
             canvasContainer.appendChild(renderer.domElement);
             draw();
+
+            
+            database_setGameUser();
+            database_setGameInfo();
+            database_loadGameUsers();
+            
+            //initial render
+            db.collection("games/"+gameId+"/moves")
+            .orderBy("createDate", "asc")
+            .onSnapshot(function(querySnapshot) {
+                console.log('game_pool loading moves');
+
+                var moveCount = 0;
+                lastPlayerUid = '';
+                
+                database_setGameActive();
+
+                var jsonBallData = {};
+
+                querySnapshot.forEach(function(doc) {
+                    console.log('game_pool loading moves on snapshot');
+
+                    playerArray[moveCount] = doc.data().uid;
+                    lastPlayerUid = doc.data().uid;
+
+                    jsonBallData[0] = JSON.parse(doc.data().whiteball);
+                    jsonBallData[1] = JSON.parse(doc.data().ball_1);
+                    jsonBallData[2] = JSON.parse(doc.data().ball_2);
+                    jsonBallData[3] = JSON.parse(doc.data().ball_3);
+                    jsonBallData[4] = JSON.parse(doc.data().ball_4);
+                    jsonBallData[5] = JSON.parse(doc.data().ball_5);
+                    jsonBallData[6] = JSON.parse(doc.data().ball_6);
+                    jsonBallData[7] = JSON.parse(doc.data().ball_7);
+                    jsonBallData[8] = JSON.parse(doc.data().ball_8);
+                    jsonBallData[9] = JSON.parse(doc.data().ball_9);
+                    jsonBallData[10] = JSON.parse(doc.data().ball_10);
+                    jsonBallData[11] = JSON.parse(doc.data().ball_11);
+                    jsonBallData[12] = JSON.parse(doc.data().ball_12);
+                    jsonBallData[13] = JSON.parse(doc.data().ball_13);
+                    jsonBallData[14] = JSON.parse(doc.data().ball_14);
+                    jsonBallData[15] = JSON.parse(doc.data().ball_15);
+
+                    moveCount++;
+                });
+
+                if (moveCount > 0){                    
+                    poolgame.balls[0].rigidBody.position.set(jsonBallData[0].x, jsonBallData[0].y, jsonBallData[0].z);
+                    poolgame.balls[1].rigidBody.position.set(jsonBallData[4].x, jsonBallData[4].y, jsonBallData[4].z);
+                    poolgame.balls[2].rigidBody.position.set(jsonBallData[3].x, jsonBallData[3].y, jsonBallData[3].z);
+                    poolgame.balls[3].rigidBody.position.set(jsonBallData[14].x, jsonBallData[14].y, jsonBallData[14].z);
+                    poolgame.balls[4].rigidBody.position.set(jsonBallData[2].x, jsonBallData[2].y, jsonBallData[2].z);
+                    poolgame.balls[5].rigidBody.position.set(jsonBallData[15].x, jsonBallData[15].y, jsonBallData[15].z);
+                    poolgame.balls[6].rigidBody.position.set(jsonBallData[13].x, jsonBallData[13].y, jsonBallData[13].z);
+                    poolgame.balls[7].rigidBody.position.set(jsonBallData[5].x, jsonBallData[5].y, jsonBallData[5].z);
+                    poolgame.balls[8].rigidBody.position.set(jsonBallData[12].x, jsonBallData[12].y, jsonBallData[12].z);
+                    poolgame.balls[9].rigidBody.position.set(jsonBallData[7].x, jsonBallData[7].y, jsonBallData[7].z);
+                    poolgame.balls[10].rigidBody.position.set(jsonBallData[6].x, jsonBallData[6].y, jsonBallData[6].z);
+                    poolgame.balls[11].rigidBody.position.set(jsonBallData[8].x, jsonBallData[8].y, jsonBallData[8].z);
+                    poolgame.balls[12].rigidBody.position.set(jsonBallData[9].x, jsonBallData[9].y, jsonBallData[9].z);
+                    poolgame.balls[13].rigidBody.position.set(jsonBallData[10].x, jsonBallData[10].y, jsonBallData[10].z);
+                    poolgame.balls[14].rigidBody.position.set(jsonBallData[11].x, jsonBallData[11].y, jsonBallData[11].z);
+                    poolgame.balls[15].rigidBody.position.set(jsonBallData[1].x, jsonBallData[1].y, jsonBallData[1].z);
+                }
+                
+                console.log('lastPlayerUid: ' + lastPlayerUid);
+            });
+
         }
     };
 
@@ -6011,37 +6109,6 @@ var game_pool = function(){
 
     // make the background void a grey color instead of black.
     renderer.setClearColor(0x262626, 1);
-    
-    database_setGameUser();
-    database_setGameInfo();
-    database_loadGameUsers();
-
-    
-    //initial render
-    db.collection("games/"+gameId+"/moves")
-    .orderBy("createDate", "asc")
-    .onSnapshot(function(querySnapshot) {
-      console.log('game_pool loading moves');
-
-      var moveCount = 0;
-      playerBeforeLastUid = '';
-      lastPlayerUid = '';
-      
-      database_setGameActive();
-
-      querySnapshot.forEach(function(doc) {
-
-        playerArray[moveCount] = doc.data().uid;
-        playerBeforeLastUid = lastPlayerUid;
-        lastPlayerUid = doc.data().uid;
-
-        moveCount++;
-      });
-
-      console.log('playerBeforeLastUid: ' + playerBeforeLastUid);
-      console.log('lastPlayerUid: ' + lastPlayerUid);
-
-    });
 
 }
 // constructor function
@@ -6054,34 +6121,35 @@ var game_pool_constructor = function () {
     //TODO write a nice thing for automatically positioning the balls instead of this hardcoded crap?
     var X_offset = game_pool_table.LEN_X / 4;
     var X_offset_2 = 1.72; // this controls how tightly the balls are packed together on the x-axis
+    
 
     this.balls = [
         new WhiteBall(),
 
         // First row
-        new Ball(X_offset, Ball.RADIUS, 4 * Ball.RADIUS, '4ball'),
-        new Ball(X_offset, Ball.RADIUS, 2 * Ball.RADIUS, '3ball'),
-        new Ball(X_offset, Ball.RADIUS, 0, '14ball'),
-        new Ball(X_offset, Ball.RADIUS, -2 * Ball.RADIUS, '2ball'),
-        new Ball(X_offset, Ball.RADIUS, -4 * Ball.RADIUS, '15ball'),
+        new Ball(X_offset, Ball.RADIUS, 4 * Ball.RADIUS, 'ball_4'),
+        new Ball(X_offset, Ball.RADIUS, 2 * Ball.RADIUS, 'ball_3'),
+        new Ball(X_offset, Ball.RADIUS, 0, 'ball_14'),
+        new Ball(X_offset, Ball.RADIUS, -2 * Ball.RADIUS, 'ball_2'),
+        new Ball(X_offset, Ball.RADIUS, -4 * Ball.RADIUS, 'ball_15'),
 
         // 2nd row
-        new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, 3 * Ball.RADIUS, '13ball'),
-        new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, Ball.RADIUS, '7ball'),
-        new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, -1 * Ball.RADIUS, '12ball'),
-        new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, -3 * Ball.RADIUS, '5ball'),
+        new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, 3 * Ball.RADIUS, 'ball_13'),
+        new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, Ball.RADIUS, 'ball_5'),
+        new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, -1 * Ball.RADIUS, 'ball_12'),
+        new Ball(X_offset - X_offset_2 * Ball.RADIUS, Ball.RADIUS, -3 * Ball.RADIUS, 'ball_7'),
 
         // 3rd row
-        new Ball(X_offset - X_offset_2 * 2 * Ball.RADIUS, Ball.RADIUS, 2 * Ball.RADIUS, '6ball'),
-        new Ball(X_offset - X_offset_2 * 2 * Ball.RADIUS, Ball.RADIUS, 0, '8ball'),
-        new Ball(X_offset - X_offset_2 * 2 * Ball.RADIUS, Ball.RADIUS, -2 * Ball.RADIUS, '9ball'),
+        new Ball(X_offset - X_offset_2 * 2 * Ball.RADIUS, Ball.RADIUS, 2 * Ball.RADIUS, 'ball_6'),
+        new Ball(X_offset - X_offset_2 * 2 * Ball.RADIUS, Ball.RADIUS, 0, 'ball_8'),
+        new Ball(X_offset - X_offset_2 * 2 * Ball.RADIUS, Ball.RADIUS, -2 * Ball.RADIUS, 'ball_9'),
 
         //4th row
-        new Ball(X_offset - X_offset_2 * 3 * Ball.RADIUS, Ball.RADIUS, Ball.RADIUS, '10ball'),
-        new Ball(X_offset - X_offset_2 * 3 * Ball.RADIUS, Ball.RADIUS, -1 * Ball.RADIUS, '11ball'),
+        new Ball(X_offset - X_offset_2 * 3 * Ball.RADIUS, Ball.RADIUS, Ball.RADIUS, 'ball_10'),
+        new Ball(X_offset - X_offset_2 * 3 * Ball.RADIUS, Ball.RADIUS, -1 * Ball.RADIUS, 'ball_11'),
 
         //5th row
-        new Ball(X_offset - X_offset_2 * 4 * Ball.RADIUS, Ball.RADIUS, 0, '1ball')
+        new Ball(X_offset - X_offset_2 * 4 * Ball.RADIUS, Ball.RADIUS, 0, 'ball_1')
     ];
 }
 

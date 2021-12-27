@@ -1,9 +1,12 @@
 var Ball = function (x, y, z, name, color) {
+
   console.log('ball init');
+
   this.color = typeof color === 'undefined' ? 0xcc0000 : color; //default color
   this.texture = '/images/balls/' + name + '.png';
 
   this.mesh = this.createMesh(x,y,z);
+  
   this.sphere = new THREE.Sphere(this.mesh.position, Ball.RADIUS); //used for guiding line intersection detecting
 
   this.isMoving = false;
@@ -98,7 +101,7 @@ Ball.prototype.tick = function (dt) {
 
   if (ballPositionArray[this.name] == '' + JSON.stringify(this.rigidBody.position)){
     if (this.isMoving){
-      console.log(this.name + ' has stopped moving');
+      console.log(this.name + ' is not moving');
       this.isMoving = false;
     }
   }else{

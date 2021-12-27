@@ -1,7 +1,9 @@
 var EightBallGame = function()
 {
   this.numbered_balls_on_table = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+   
   this.turn = 'player1';
+
   this.sides = {
     'player1': '?',
     'player2': '?'
@@ -105,62 +107,78 @@ EightBallGame.prototype.endGame = function () {
 
 EightBallGame.prototype.hitButtonClicked = function (strength) {
   
-  var currentPlayerUid = [];
-  var alreadyOnTheBoard = [];
+  var isYourMove = false;
 
-  var count = 1;
-  db.collection("games/"+gameId+"/moves")
-  .orderBy("createDate", "desc")
-  .limit(userLimit)
-  .get()
-  .then((querySnapshot) => {
-      userCanPlay = false;
-      console.log("func_confirmMove querySnapshot");
-      querySnapshot.forEach((doc) => {
-          console.log('count ' + count + ': ' + doc.data().uid + ' ' + doc.data().user + ' at ' + doc.data().createDate)
-          alreadyOnTheBoard[doc.data().uid] = true;
-          currentPlayerUid[count] = doc.data().uid;
-          count++;
-      });
-      //if we havn't had enough plays yet
-      if (count <= userLimit){
-          console.log('not enough players allowing move');
-          if (alreadyOnTheBoard[uid]){
-              console.log('user on the board already: ' + uid);
-          }else{
-            userCanPlay = true;
+  db.collection("games")
+    .doc(gameId)
+    .get().then((doc) => {
+      if (doc.exists) {
+
+          playerUid[1] = doc.data().playerOne;
+          playerUid[2] = doc.data().playerTwo;
+
+          if (playerUid[1] == null){
+            console.log('init database_setPlayerOne');
+                    
+            db.collection("games")
+            .doc(gameId)
+            .set(
+                {
+                  playerOne: uid
+                },
+                { merge: true }
+            );
+            playerUid[1] = uid;
+            isYourMove = true;
+          }else if (playerUid[1] != uid && playerUid[2] == null){
+            console.log('init database_setPlayerTwo');
+                    
+            db.collection("games")
+            .doc(gameId)
+            .set(
+                {
+                  playerTwo: uid
+                },
+                { merge: true }
+            );
+            playerUid[2] = uid;
+            isYourMove = true;
           }
-      }else if (currentPlayerUid[userLimit] == uid){
-          console.log('you are allowed to move');
-          userCanPlay = true;
-      }else{
-          console.log('not your turn player: ' + uid);
-      }
-      
-      if (userCanPlay){
-        if (poolgame.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING && eightballgame.state == 'turn') {
-          poolgame.ballHit(strength);
-          clearTimeout(eightballgame.ticker);
-          eightballgame.state = 'turnwaiting';
-          var x = setInterval(function() {
-            if (poolgame.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
-            for (var i=1;i<poolgame.balls.length;i++) {
-              if (poolgame.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(poolgame.balls[i].name.split('ball')[0])) > -1) {
-                return;
-              }
+          
+          if (doc.data().currentPlayerUid == uid){
+            isYourMove = true;
+          }
+
+          if (isYourMove){
+            if (poolgame.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING && eightballgame.state == 'turn') {
+              poolgame.ballHit(strength);
+              clearTimeout(eightballgame.ticker);
+              eightballgame.state = 'turnwaiting';
+              var x = setInterval(function() {
+                if (poolgame.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
+                for (var i=1;i<poolgame.balls.length;i++) {
+                  if (poolgame.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(poolgame.balls[i].name.split('ball')[0])) > -1) {
+                    return;
+                  }
+                }
+    
+                if (eightballgame.pocketingOccurred) {
+                  setTimeout(eightballgame.startTurn, 1000);
+                } else {
+                  eightballgame.switchSides();
+                }
+    
+                eightballgame.pocketingOccurred = false;
+    
+                clearInterval(x);
+              }, 30);
             }
-
-            if (eightballgame.pocketingOccurred) {
-              setTimeout(eightballgame.startTurn, 1000);
-            } else {
-              eightballgame.switchSides();
-            }
-
-            eightballgame.pocketingOccurred = false;
-
-            clearInterval(x);
-          }, 30);
-        }
+          }else{
+            console.log('not your move');
+          }
+      } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
       }
 
   })
