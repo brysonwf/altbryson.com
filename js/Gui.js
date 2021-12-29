@@ -41,10 +41,6 @@ GameGui.prototype.hide = function (node) {
   GameGui.addClass(node, 'hide');
 };
 
-GameGui.prototype.play8BallClicked = function () {
-  eightballgame = new EightBallGame();
-};
-
 GameGui.prototype.UpdateTimer = function(timerVal) {
   document.getElementsByClassName('timer')[0].textContent = timerVal;
 };
@@ -53,14 +49,6 @@ GameGui.prototype.log = function(str) {
   var node = document.createElement('li');
   node.textContent = str;
   document.getElementsByClassName('gamelog')[0].appendChild(node);
-};
-
-GameGui.prototype.updateTurn = function(str) {
-
-  GameGui.removeClass(document.getElementsByClassName('player1')[0], 'active');
-  GameGui.removeClass(document.getElementsByClassName('player2')[0], 'active');
-  GameGui.addClass(document.getElementsByClassName(str)[0], 'active');
-
 };
 
 GameGui.prototype.updateBalls = function(ballArr, p1side, p2side) {

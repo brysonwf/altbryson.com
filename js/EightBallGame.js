@@ -14,6 +14,37 @@ var EightBallGame = function()
 
       playerSlug = doc.data().currentPlayerUid;
 
+      if (playerSlug == null){
+        console.log('EightBallGame init setting currentPlayerUid as player1');
+      
+        db.collection("games")
+        .doc(gameId)
+        .set(
+            {
+              currentPlayerUid: 'player1'
+            },
+            { merge: true }
+        );
+      }
+    
+      console.log('EightBallGame init playerslug : ' + playerSlug);
+    
+      this.turn = playerSlug;
+    
+      this.sides = {
+        'player1': '?',
+        'player2': '?'
+      };
+    
+      this.pocketingOccurred = false;
+    
+      this.state = 'notstarted';
+    
+      this.ticker = undefined;
+    
+      gui.setupGameHud();
+      setTimeout(this.startTurn, 2000);
+
     } else {
         // doc.data() will be undefined in this case
         console.log("No such document!");
@@ -23,50 +54,84 @@ var EightBallGame = function()
   .catch((error) => {
       console.log("Error getting documents: ", error);
   });
-
-  if (playerSlug == null){
-    console.log('EightBallGame init setting currentPlayerUid as player1');
-  
-    db.collection("games")
-    .doc(gameId)
-    .set(
-        {
-          currentPlayerUid: 'player1'
-        },
-        { merge: true }
-    );
-  }
-
-  console.log('EightBallGame init playerslug : ' + playerSlug);
-
-  this.turn = playerSlug;
-
-  this.sides = {
-    'player1': '?',
-    'player2': '?'
-  };
-
-  this.pocketingOccurred = false;
-
-  this.state = 'notstarted';
-
-  this.ticker = undefined;
-
-  gui.setupGameHud();
-  setTimeout(this.startTurn, 2000);
 }
 
 EightBallGame.prototype.startTurn = function () {
   if (eightballgame.state == 'gameover') {
     return;
   }
-  // enable movement
-  eightballgame.timer = 300;
-  eightballgame.state = 'turn';
-  gui.updateTurn(eightballgame.turn);
-  gui.updateBalls(eightballgame.numbered_balls_on_table, eightballgame.sides.player1, eightballgame.sides.player2);
+  
+  //initial render
+  db.collection("games/"+gameId+"/moves")
+  .orderBy("createDate", "asc")
+  .onSnapshot(function(querySnapshot) {
+      console.log('game_pool loading moves');
 
-  eightballgame.tickTimer();
+      moveCount = 0;
+      
+      database_setGameActive();
+
+      var jsonBallData = {};
+
+      querySnapshot.forEach(function(doc) {
+
+          playerArray[moveCount] = doc.data().uid;
+
+          jsonBallData[0] = JSON.parse(doc.data().whiteball);
+          jsonBallData[1] = JSON.parse(doc.data().ball_1);
+          jsonBallData[2] = JSON.parse(doc.data().ball_2);
+          jsonBallData[3] = JSON.parse(doc.data().ball_3);
+          jsonBallData[4] = JSON.parse(doc.data().ball_4);
+          jsonBallData[5] = JSON.parse(doc.data().ball_5);
+          jsonBallData[6] = JSON.parse(doc.data().ball_6);
+          jsonBallData[7] = JSON.parse(doc.data().ball_7);
+          jsonBallData[8] = JSON.parse(doc.data().ball_8);
+          jsonBallData[9] = JSON.parse(doc.data().ball_9);
+          jsonBallData[10] = JSON.parse(doc.data().ball_10);
+          jsonBallData[11] = JSON.parse(doc.data().ball_11);
+          jsonBallData[12] = JSON.parse(doc.data().ball_12);
+          jsonBallData[13] = JSON.parse(doc.data().ball_13);
+          jsonBallData[14] = JSON.parse(doc.data().ball_14);
+          jsonBallData[15] = JSON.parse(doc.data().ball_15);
+
+          moveCount++;
+      });
+
+      if (moveCount > 0){                    
+          poolgame.balls[0].rigidBody.position.set(jsonBallData[0].x, jsonBallData[0].y, jsonBallData[0].z);
+          poolgame.balls[1].rigidBody.position.set(jsonBallData[4].x, jsonBallData[4].y, jsonBallData[4].z);
+          poolgame.balls[2].rigidBody.position.set(jsonBallData[3].x, jsonBallData[3].y, jsonBallData[3].z);
+          poolgame.balls[3].rigidBody.position.set(jsonBallData[14].x, jsonBallData[14].y, jsonBallData[14].z);
+          poolgame.balls[4].rigidBody.position.set(jsonBallData[2].x, jsonBallData[2].y, jsonBallData[2].z);
+          poolgame.balls[5].rigidBody.position.set(jsonBallData[15].x, jsonBallData[15].y, jsonBallData[15].z);
+          poolgame.balls[6].rigidBody.position.set(jsonBallData[13].x, jsonBallData[13].y, jsonBallData[13].z);
+          poolgame.balls[7].rigidBody.position.set(jsonBallData[5].x, jsonBallData[5].y, jsonBallData[5].z);
+          poolgame.balls[8].rigidBody.position.set(jsonBallData[12].x, jsonBallData[12].y, jsonBallData[12].z);
+          poolgame.balls[9].rigidBody.position.set(jsonBallData[7].x, jsonBallData[7].y, jsonBallData[7].z);
+          poolgame.balls[10].rigidBody.position.set(jsonBallData[6].x, jsonBallData[6].y, jsonBallData[6].z);
+          poolgame.balls[11].rigidBody.position.set(jsonBallData[8].x, jsonBallData[8].y, jsonBallData[8].z);
+          poolgame.balls[12].rigidBody.position.set(jsonBallData[9].x, jsonBallData[9].y, jsonBallData[9].z);
+          poolgame.balls[13].rigidBody.position.set(jsonBallData[10].x, jsonBallData[10].y, jsonBallData[10].z);
+          poolgame.balls[14].rigidBody.position.set(jsonBallData[11].x, jsonBallData[11].y, jsonBallData[11].z);
+          poolgame.balls[15].rigidBody.position.set(jsonBallData[1].x, jsonBallData[1].y, jsonBallData[1].z);
+      }
+
+      // enable movement
+      eightballgame.timer = 300;
+      eightballgame.state = 'turn';
+
+      $('.player1').removeClass('active');
+      $('.player2').removeClass('active');
+
+      console.log('eightballgame.turn: '+ eightballgame.turn);
+
+      $('.'+eightballgame.turn).addClass('active');
+
+      gui.updateBalls(eightballgame.numbered_balls_on_table, eightballgame.sides.player1, eightballgame.sides.player2);
+
+      eightballgame.tickTimer();
+  
+  });
 }
 
 EightBallGame.prototype.whiteBallEnteredHole = function () {
