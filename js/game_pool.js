@@ -103,7 +103,7 @@ var game_pool = function(gameDoc){
     
     THREE.DefaultLoadingManager.onProgress = function (item, loaded, total) {
 
-        console.log('DefaultLoadingManager.onProgress init ' + item + ' : ' + loaded + ' : ' + total);
+        // console.log('DefaultLoadingManager.onProgress init ' + item + ' : ' + loaded + ' : ' + total);
 
         if (typeof progressBar !== 'undefined') {
             progressBar.style.width = (loaded / total * 100) + '%';
@@ -123,7 +123,6 @@ var game_pool = function(gameDoc){
             var canvasContainer = document.getElementById('canvas');
             canvasContainer.appendChild(renderer.domElement);
             draw();
-
             
             database_setGameUser();
             database_setGameInfo();
@@ -135,8 +134,7 @@ var game_pool = function(gameDoc){
             .onSnapshot(function(querySnapshot) {
                 console.log('game_pool loading moves');
 
-                var moveCount = 0;
-                lastPlayerUid = '';
+                moveCount = 0;
                 
                 database_setGameActive();
 
@@ -146,7 +144,6 @@ var game_pool = function(gameDoc){
                     console.log('game_pool loading moves on snapshot');
 
                     playerArray[moveCount] = doc.data().uid;
-                    lastPlayerUid = doc.data().uid;
 
                     jsonBallData[0] = JSON.parse(doc.data().whiteball);
                     jsonBallData[1] = JSON.parse(doc.data().ball_1);
@@ -186,8 +183,7 @@ var game_pool = function(gameDoc){
                     poolgame.balls[14].rigidBody.position.set(jsonBallData[11].x, jsonBallData[11].y, jsonBallData[11].z);
                     poolgame.balls[15].rigidBody.position.set(jsonBallData[1].x, jsonBallData[1].y, jsonBallData[1].z);
                 }
-                
-                console.log('lastPlayerUid: ' + lastPlayerUid);
+            
             });
 
         }

@@ -61,6 +61,15 @@ GameGui.prototype.updateTurn = function(str) {
   GameGui.removeClass(document.getElementsByClassName('player2')[0], 'active');
   GameGui.addClass(document.getElementsByClassName(str)[0], 'active');
 
+  db.collection("games")
+  .doc(gameId)
+  .set(
+      {
+        currentPlayerUid: str
+      },
+      { merge: true }
+  );
+
 };
 
 GameGui.prototype.updateBalls = function(ballArr, p1side, p2side) {

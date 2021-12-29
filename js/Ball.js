@@ -1,6 +1,6 @@
 var Ball = function (x, y, z, name, color) {
 
-  console.log('ball init');
+  // console.log('ball init');
 
   this.color = typeof color === 'undefined' ? 0xcc0000 : color; //default color
   this.texture = '/images/balls/' + name + '.png';
@@ -101,7 +101,7 @@ Ball.prototype.tick = function (dt) {
 
   if (ballPositionArray[this.name] == '' + JSON.stringify(this.rigidBody.position)){
     if (this.isMoving){
-      console.log(this.name + ' is not moving');
+      // console.log(this.name + ' is not moving');
       this.isMoving = false;
     }
   }else{

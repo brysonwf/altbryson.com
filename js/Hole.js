@@ -1,6 +1,6 @@
 var Hole = function (x, y, z, rotation) {
 
-  console.log('Hole init');
+  // console.log('Hole init');
 
   //z = z -4.8;
   // The "wall" arch

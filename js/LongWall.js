@@ -1,7 +1,7 @@
 /** This is the wall segment  that is parallel to the x-axis */
 var LongWall = function (x, y, z, width) {
 
-  console.log('LongWall init');
+  // console.log('LongWall init');
 
   var height = 2;
   var thickness = 2.5;

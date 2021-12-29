@@ -181,7 +181,7 @@ Ball.prototype.tick = function (dt) {
 
   if (ballPositionArray[this.name] == '' + JSON.stringify(this.rigidBody.position)){
     if (this.isMoving){
-      console.log(this.name + ' is not moving');
+      // console.log(this.name + ' is not moving');
       this.isMoving = false;
     }
   }else{
@@ -4670,10 +4670,17 @@ EightBallGame.prototype.hitButtonClicked = function (strength) {
             playerUid[2] = uid;
             isYourMove = true;
           }
-          
-          if (doc.data().currentPlayerUid == uid){
-            isYourMove = true;
+
+          if (doc.data().currentPlayerUid == 'player1'){
+            if (doc.data().playerOne == uid){
+              isYourMove = true;
+            }
+          }else{
+            if (doc.data().playerTwo == uid){
+              isYourMove = true;
+            }
           }
+          
 
           if (isYourMove){
             if (poolgame.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING && eightballgame.state == 'turn') {
@@ -4699,6 +4706,7 @@ EightBallGame.prototype.hitButtonClicked = function (strength) {
                 clearInterval(x);
               }, 30);
             }
+
           }else{
             console.log('not your move');
           }
@@ -5985,7 +5993,6 @@ var game_pool = function(gameDoc){
             var canvasContainer = document.getElementById('canvas');
             canvasContainer.appendChild(renderer.domElement);
             draw();
-
             
             database_setGameUser();
             database_setGameInfo();
@@ -5997,8 +6004,7 @@ var game_pool = function(gameDoc){
             .onSnapshot(function(querySnapshot) {
                 console.log('game_pool loading moves');
 
-                var moveCount = 0;
-                lastPlayerUid = '';
+                moveCount = 0;
                 
                 database_setGameActive();
 
@@ -6008,7 +6014,6 @@ var game_pool = function(gameDoc){
                     console.log('game_pool loading moves on snapshot');
 
                     playerArray[moveCount] = doc.data().uid;
-                    lastPlayerUid = doc.data().uid;
 
                     jsonBallData[0] = JSON.parse(doc.data().whiteball);
                     jsonBallData[1] = JSON.parse(doc.data().ball_1);
@@ -6048,8 +6053,7 @@ var game_pool = function(gameDoc){
                     poolgame.balls[14].rigidBody.position.set(jsonBallData[11].x, jsonBallData[11].y, jsonBallData[11].z);
                     poolgame.balls[15].rigidBody.position.set(jsonBallData[1].x, jsonBallData[1].y, jsonBallData[1].z);
                 }
-                
-                console.log('lastPlayerUid: ' + lastPlayerUid);
+            
             });
 
         }
@@ -6601,6 +6605,15 @@ GameGui.prototype.updateTurn = function(str) {
   GameGui.removeClass(document.getElementsByClassName('player1')[0], 'active');
   GameGui.removeClass(document.getElementsByClassName('player2')[0], 'active');
   GameGui.addClass(document.getElementsByClassName(str)[0], 'active');
+
+  db.collection("games")
+  .doc(gameId)
+  .set(
+      {
+        currentPlayerUid: str
+      },
+      { merge: true }
+  );
 
 };
 

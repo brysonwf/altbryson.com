@@ -1,5 +1,5 @@
 var TableLight = function (x,y,z) {
-  console.log('TableLight init');
+  // console.log('TableLight init');
 
   this.spotlight = new THREE.SpotLight(0xffffe5, 1);
 

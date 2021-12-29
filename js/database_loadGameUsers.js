@@ -24,7 +24,7 @@ var database_loadGameUsers = function(){
             }
             var userTime = new Date(userLastActiveDate);
 
-            console.log('inserting ' + doc.data().uid + ' with ' + classNames);
+            // console.log('inserting ' + doc.data().uid + ' with ' + classNames);
             
             if (doc.data().uid == uid){
                 classNames += ' me';

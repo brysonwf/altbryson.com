@@ -1,6 +1,6 @@
 /** This is the wall segment  that is parallel to the z-axis */
 var ShortWall = function (x, y, z, width) {
-  console.log('ShortWall init');
+  // console.log('ShortWall init');
 
   var height = 2;
   var thickness = 4;

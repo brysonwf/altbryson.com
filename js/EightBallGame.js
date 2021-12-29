@@ -144,10 +144,17 @@ EightBallGame.prototype.hitButtonClicked = function (strength) {
             playerUid[2] = uid;
             isYourMove = true;
           }
-          
-          if (doc.data().currentPlayerUid == uid){
-            isYourMove = true;
+
+          if (doc.data().currentPlayerUid == 'player1'){
+            if (doc.data().playerOne == uid){
+              isYourMove = true;
+            }
+          }else{
+            if (doc.data().playerTwo == uid){
+              isYourMove = true;
+            }
           }
+          
 
           if (isYourMove){
             if (poolgame.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING && eightballgame.state == 'turn') {
@@ -173,6 +180,7 @@ EightBallGame.prototype.hitButtonClicked = function (strength) {
                 clearInterval(x);
               }, 30);
             }
+
           }else{
             console.log('not your move');
           }

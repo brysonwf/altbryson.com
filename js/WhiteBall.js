@@ -1,6 +1,6 @@
 var WhiteBall = function (x, y, z) {
   
-  console.log('WhiteBall init');
+  // console.log('WhiteBall init');
 
   this.color = 0xffffff;
   this.defaultPosition = new CANNON.Vec3(-game_pool_table.LEN_X / 4, Ball.RADIUS, 0);
