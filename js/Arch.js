@@ -18,7 +18,7 @@ var Arch = function (params) {
   this.no_of_boxes = params.no_of_boxes || 5;
 
   this.body.position.set(this.position.x, this.position.y, this.position.z);
-  console.log('x ' + this.position.x);
+  // console.log('x ' + this.position.x);
   var y_axis = new CANNON.Vec3(0, 1, 0);
   this.body.quaternion.setFromAxisAngle(y_axis, Math.PI);
 

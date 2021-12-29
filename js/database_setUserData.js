@@ -1,5 +1,5 @@
 var database_setUserData = function (user) {
-    console.log("database_setUserData");
+    // console.log("database_setUserData");
 
     // var gravatarImage = func_getGravatar(user.email);
     

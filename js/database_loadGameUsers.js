@@ -1,5 +1,5 @@
 var database_loadGameUsers = function(){
-    console.log('database_loadGameUsers');
+    console.log('database_loadGameUsers -- change this to not watch');
 
     
     db.collection("games/"+gameId+"/gameUsers")

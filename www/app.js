@@ -49,7 +49,7 @@ var Arch = function (params) {
   this.no_of_boxes = params.no_of_boxes || 5;
 
   this.body.position.set(this.position.x, this.position.y, this.position.z);
-  console.log('x ' + this.position.x);
+  // console.log('x ' + this.position.x);
   var y_axis = new CANNON.Vec3(0, 1, 0);
   this.body.quaternion.setFromAxisAngle(y_axis, Math.PI);
 
@@ -80,7 +80,7 @@ var Arch = function (params) {
 
 var Ball = function (x, y, z, name, color) {
 
-  console.log('ball init');
+  // console.log('ball init');
 
   this.color = typeof color === 'undefined' ? 0xcc0000 : color; //default color
   this.texture = '/images/balls/' + name + '.png';
@@ -4324,7 +4324,7 @@ var database_loadGamesList = function(){
     });
 }
 var database_loadGameUsers = function(){
-    console.log('database_loadGameUsers');
+    console.log('database_loadGameUsers -- change this to not watch');
 
     
     db.collection("games/"+gameId+"/gameUsers")
@@ -4349,7 +4349,7 @@ var database_loadGameUsers = function(){
             }
             var userTime = new Date(userLastActiveDate);
 
-            console.log('inserting ' + doc.data().uid + ' with ' + classNames);
+            // console.log('inserting ' + doc.data().uid + ' with ' + classNames);
             
             if (doc.data().uid == uid){
                 classNames += ' me';
@@ -4471,8 +4471,8 @@ var database_setGameUser = function(){
     );
 
 }
-var database_setLocation = function () {
-    console.log("database_setLocation");
+var database_setPath = function () {
+    console.log("database_setPath");
     db.collection("users")
         .doc("" + firebase.auth().currentUser.uid)
         .set(
@@ -4498,7 +4498,7 @@ var database_setMove = function(docName, docJson, moveCount){
     });
 }
 var database_setUserData = function (user) {
-    console.log("database_setUserData");
+    // console.log("database_setUserData");
 
     // var gravatarImage = func_getGravatar(user.email);
     
@@ -4773,7 +4773,7 @@ var firebase_onAuthStateChanged = function () {
         gameId = 'home';
       }
       database_setUserData(user);
-      database_setLocation();
+      database_setPath();
       database_loadGame();
 
     } else {
@@ -5973,7 +5973,7 @@ var game_pool = function(gameDoc){
     
     THREE.DefaultLoadingManager.onProgress = function (item, loaded, total) {
 
-        console.log('DefaultLoadingManager.onProgress init ' + item + ' : ' + loaded + ' : ' + total);
+        // console.log('DefaultLoadingManager.onProgress init ' + item + ' : ' + loaded + ' : ' + total);
 
         if (typeof progressBar !== 'undefined') {
             progressBar.style.width = (loaded / total * 100) + '%';
@@ -6669,7 +6669,7 @@ GameGui.prototype.showEndGame = function(str) {
 
 var Hole = function (x, y, z, rotation) {
 
-  console.log('Hole init');
+  // console.log('Hole init');
 
   //z = z -4.8;
   // The "wall" arch
@@ -6703,7 +6703,7 @@ var Hole = function (x, y, z, rotation) {
 /** This is the wall segment  that is parallel to the x-axis */
 var LongWall = function (x, y, z, width) {
 
-  console.log('LongWall init');
+  // console.log('LongWall init');
 
   var height = 2;
   var thickness = 2.5;
@@ -6757,7 +6757,7 @@ var LongWall = function (x, y, z, width) {
 
 /** This is the wall segment  that is parallel to the z-axis */
 var ShortWall = function (x, y, z, width) {
-  console.log('ShortWall init');
+  // console.log('ShortWall init');
 
   var height = 2;
   var thickness = 4;
@@ -6811,7 +6811,7 @@ var ShortWall = function (x, y, z, width) {
 };
 
 var TableLight = function (x,y,z) {
-  console.log('TableLight init');
+  // console.log('TableLight init');
 
   this.spotlight = new THREE.SpotLight(0xffffe5, 1);
 
@@ -6836,7 +6836,7 @@ var TableLight = function (x,y,z) {
 
 var WhiteBall = function (x, y, z) {
   
-  console.log('WhiteBall init');
+  // console.log('WhiteBall init');
 
   this.color = 0xffffff;
   this.defaultPosition = new CANNON.Vec3(-game_pool_table.LEN_X / 4, Ball.RADIUS, 0);

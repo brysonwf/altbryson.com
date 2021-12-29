@@ -11,7 +11,7 @@ var firebase_onAuthStateChanged = function () {
         gameId = 'home';
       }
       database_setUserData(user);
-      database_setLocation();
+      database_setPath();
       database_loadGame();
 
     } else {
