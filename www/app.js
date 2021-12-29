@@ -4527,8 +4527,45 @@ var database_setUserData = function (user) {
 var EightBallGame = function()
 {
   this.numbered_balls_on_table = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-   
-  this.turn = 'player1';
+
+  
+  var playerSlug = null;
+
+  db.collection("games")
+  .doc(gameId)
+  .get().then((doc) => {
+    if (doc.exists) {
+
+      console.log('duplicate data pull -- fix')
+
+      playerSlug = doc.data().currentPlayerUid;
+
+    } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+    }
+
+  })
+  .catch((error) => {
+      console.log("Error getting documents: ", error);
+  });
+
+  if (playerSlug == null){
+    console.log('EightBallGame init setting currentPlayerUid as player1');
+  
+    db.collection("games")
+    .doc(gameId)
+    .set(
+        {
+          currentPlayerUid: 'player1'
+        },
+        { merge: true }
+    );
+  }
+
+  console.log('EightBallGame init playerslug : ' + playerSlug);
+
+  this.turn = playerSlug;
 
   this.sides = {
     'player1': '?',
@@ -4563,6 +4600,7 @@ EightBallGame.prototype.whiteBallEnteredHole = function () {
 }
 
 EightBallGame.prototype.coloredBallEnteredHole = function (name) {
+  console.log('coloredBallEnteredHole');
   if (typeof name === 'undefined') return;
   var ballno = 0;
   for (var i = 0; i < eightballgame.numbered_balls_on_table.length; i++) {
@@ -4616,12 +4654,50 @@ EightBallGame.prototype.tickTimer = function () {
 }
 
 EightBallGame.prototype.switchSides = function () {
-  eightballgame.turn = eightballgame.turn == 'player1' ? 'player2': 'player1';
+  console.log('EightBallGame.prototype.switchSides init')
 
-  setTimeout(eightballgame.startTurn, 1000);
+  //swap slug
+  var playerSlug = null;
 
-  database_setMove('cords_'+moveCount, ballPositionArray, moveCount);
-  moveCount++;
+  db.collection("games")
+  .doc(gameId)
+  .get().then((doc) => {
+    if (doc.exists) {
+
+      console.log('doc.data().currentPlayerUid: ' + doc.data().currentPlayerUid);
+      playerSlug = doc.data().currentPlayerUid;
+      
+
+      console.log('switchsides playerSlug: ' + playerSlug);
+      
+      eightballgame.turn = playerSlug == 'player1' ? 'player2': 'player1';
+
+      database_setMove('cords_'+moveCount, ballPositionArray, moveCount);
+      moveCount++;
+      
+      console.log('setting currentPlayerUid as ' + eightballgame.turn);
+      
+      db.collection("games")
+      .doc(gameId)
+      .set(
+          {
+            currentPlayerUid: eightballgame.turn
+          },
+          { merge: true }
+      );
+
+      setTimeout(eightballgame.startTurn, 1000);
+      
+
+    } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+    }
+
+  })
+  .catch((error) => {
+      console.log("Error getting documents: ", error);
+  });
 }
 
 EightBallGame.prototype.endGame = function () {
@@ -4675,7 +4751,7 @@ EightBallGame.prototype.hitButtonClicked = function (strength) {
             if (doc.data().playerOne == uid){
               isYourMove = true;
             }
-          }else{
+          }else if (doc.data().currentPlayerUid == 'player2'){
             if (doc.data().playerTwo == uid){
               isYourMove = true;
             }
@@ -4698,6 +4774,7 @@ EightBallGame.prototype.hitButtonClicked = function (strength) {
                 if (eightballgame.pocketingOccurred) {
                   setTimeout(eightballgame.startTurn, 1000);
                 } else {
+                  console.log('calling switch sides');
                   eightballgame.switchSides();
                 }
     
@@ -6011,7 +6088,6 @@ var game_pool = function(gameDoc){
                 var jsonBallData = {};
 
                 querySnapshot.forEach(function(doc) {
-                    console.log('game_pool loading moves on snapshot');
 
                     playerArray[moveCount] = doc.data().uid;
 
@@ -6605,15 +6681,6 @@ GameGui.prototype.updateTurn = function(str) {
   GameGui.removeClass(document.getElementsByClassName('player1')[0], 'active');
   GameGui.removeClass(document.getElementsByClassName('player2')[0], 'active');
   GameGui.addClass(document.getElementsByClassName(str)[0], 'active');
-
-  db.collection("games")
-  .doc(gameId)
-  .set(
-      {
-        currentPlayerUid: str
-      },
-      { merge: true }
-  );
 
 };
 

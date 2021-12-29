@@ -141,7 +141,6 @@ var game_pool = function(gameDoc){
                 var jsonBallData = {};
 
                 querySnapshot.forEach(function(doc) {
-                    console.log('game_pool loading moves on snapshot');
 
                     playerArray[moveCount] = doc.data().uid;
 
