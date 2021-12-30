@@ -51,6 +51,7 @@ game_pool_constructor.prototype.tick = function (dt) {
  will make the ball move towards it's current "forward" direction, which
 is determined by the camera position / angle */
 game_pool_constructor.prototype.ballHit = function (strength) {
+    console.log('ballhit init');
     if (this.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING) {
         this.balls[0].hitForward(strength);
     }

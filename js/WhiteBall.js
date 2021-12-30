@@ -32,6 +32,7 @@ WhiteBall.prototype.constructor = WhiteBall;
     edge of the ball in the opposite direction of the "forward"
 */
 WhiteBall.prototype.hitForward = function (strength) {
+  console.log('hitForward init');
   this.rigidBody.wakeUp();
   var ballPoint = new CANNON.Vec3();
   ballPoint.copy(this.rigidBody.position);

@@ -1,35 +1,33 @@
 var EightBallGame = function()
 {
-  this.numbered_balls_on_table = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+  console.log('EightBallGame init');
 
-  
-  var playerSlug = null;
+  this.numbered_balls_on_table = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
   db.collection("games")
   .doc(gameId)
   .get().then((doc) => {
     if (doc.exists) {
+      console.log('EightBallGame check game data');
 
-      console.log('duplicate data pull -- fix')
+      this.turn = null;
 
-      playerSlug = doc.data().currentPlayerUid;
-
-      if (playerSlug == null){
-        console.log('EightBallGame init setting currentPlayerUid as player1');
+      if(doc.data().currentPlayerUid){
+        this.turn = doc.data().currentPlayerUid;
+      }else{
+        this.turn = 'player1';
       
         db.collection("games")
         .doc(gameId)
         .set(
             {
-              currentPlayerUid: 'player1'
+              currentPlayerUid: this.turn
             },
             { merge: true }
         );
       }
     
-      console.log('EightBallGame init playerslug : ' + playerSlug);
-    
-      this.turn = playerSlug;
+      console.log('EightBallGame this.turn : ' + this.turn);
     
       this.sides = {
         'player1': '?',
@@ -41,9 +39,87 @@ var EightBallGame = function()
       this.state = 'notstarted';
     
       this.ticker = undefined;
-    
-      gui.setupGameHud();
+
+      database_setGameActive();
       setTimeout(this.startTurn, 2000);
+
+      db.collection("games/"+gameId+"/moves")
+      .orderBy("createDate", "asc")
+      .onSnapshot(function(querySnapshot) {
+          console.log('game_pool loading moves');
+          moveCount = 0;
+
+          var jsonBallData = {};
+
+          querySnapshot.forEach(function(doc) {
+
+              playerArray[moveCount] = doc.data().uid;
+
+              jsonBallData[0] = JSON.parse(doc.data().whiteball);
+              jsonBallData[1] = JSON.parse(doc.data().ball_1);
+              jsonBallData[2] = JSON.parse(doc.data().ball_2);
+              jsonBallData[3] = JSON.parse(doc.data().ball_3);
+              jsonBallData[4] = JSON.parse(doc.data().ball_4);
+              jsonBallData[5] = JSON.parse(doc.data().ball_5);
+              jsonBallData[6] = JSON.parse(doc.data().ball_6);
+              jsonBallData[7] = JSON.parse(doc.data().ball_7);
+              jsonBallData[8] = JSON.parse(doc.data().ball_8);
+              jsonBallData[9] = JSON.parse(doc.data().ball_9);
+              jsonBallData[10] = JSON.parse(doc.data().ball_10);
+              jsonBallData[11] = JSON.parse(doc.data().ball_11);
+              jsonBallData[12] = JSON.parse(doc.data().ball_12);
+              jsonBallData[13] = JSON.parse(doc.data().ball_13);
+              jsonBallData[14] = JSON.parse(doc.data().ball_14);
+              jsonBallData[15] = JSON.parse(doc.data().ball_15);
+
+              moveCount++;
+          });
+
+          if (moveCount > 0){                    
+              poolgame.balls[0].rigidBody.position.set(jsonBallData[0].x, jsonBallData[0].y, jsonBallData[0].z);
+              poolgame.balls[1].rigidBody.position.set(jsonBallData[4].x, jsonBallData[4].y, jsonBallData[4].z);
+              poolgame.balls[2].rigidBody.position.set(jsonBallData[3].x, jsonBallData[3].y, jsonBallData[3].z);
+              poolgame.balls[3].rigidBody.position.set(jsonBallData[14].x, jsonBallData[14].y, jsonBallData[14].z);
+              poolgame.balls[4].rigidBody.position.set(jsonBallData[2].x, jsonBallData[2].y, jsonBallData[2].z);
+              poolgame.balls[5].rigidBody.position.set(jsonBallData[15].x, jsonBallData[15].y, jsonBallData[15].z);
+              poolgame.balls[6].rigidBody.position.set(jsonBallData[13].x, jsonBallData[13].y, jsonBallData[13].z);
+              poolgame.balls[7].rigidBody.position.set(jsonBallData[5].x, jsonBallData[5].y, jsonBallData[5].z);
+              poolgame.balls[8].rigidBody.position.set(jsonBallData[12].x, jsonBallData[12].y, jsonBallData[12].z);
+              poolgame.balls[9].rigidBody.position.set(jsonBallData[7].x, jsonBallData[7].y, jsonBallData[7].z);
+              poolgame.balls[10].rigidBody.position.set(jsonBallData[6].x, jsonBallData[6].y, jsonBallData[6].z);
+              poolgame.balls[11].rigidBody.position.set(jsonBallData[8].x, jsonBallData[8].y, jsonBallData[8].z);
+              poolgame.balls[12].rigidBody.position.set(jsonBallData[9].x, jsonBallData[9].y, jsonBallData[9].z);
+              poolgame.balls[13].rigidBody.position.set(jsonBallData[10].x, jsonBallData[10].y, jsonBallData[10].z);
+              poolgame.balls[14].rigidBody.position.set(jsonBallData[11].x, jsonBallData[11].y, jsonBallData[11].z);
+              poolgame.balls[15].rigidBody.position.set(jsonBallData[1].x, jsonBallData[1].y, jsonBallData[1].z);
+
+              db.collection("games")
+              .doc(gameId)
+              .get().then((doc) => {
+                if (doc.exists) {
+                  console.log('EightBallGame check game data after loading moves');
+                  this.turn = doc.data().currentPlayerUid;
+    
+                  console.log('eightballgame.turn : ' + this.turn);
+            
+                  $('.player1').removeClass('active');
+                  $('.player2').removeClass('active');
+            
+                  $('.'+this.turn).addClass('active');
+                  
+                  
+                } else {
+                  // doc.data() will be undefined in this case
+                  console.log("No such document!");
+                }
+
+              })
+              .catch((error) => {
+                  console.log("Error getting documents: ", error);
+              });
+          }
+      });
+    
 
     } else {
         // doc.data() will be undefined in this case
@@ -57,81 +133,45 @@ var EightBallGame = function()
 }
 
 EightBallGame.prototype.startTurn = function () {
-  if (eightballgame.state == 'gameover') {
-    return;
-  }
-  
-  //initial render
-  db.collection("games/"+gameId+"/moves")
-  .orderBy("createDate", "asc")
-  .onSnapshot(function(querySnapshot) {
-      console.log('game_pool loading moves');
 
-      moveCount = 0;
-      
-      database_setGameActive();
+  console.log('startTurn');
 
-      var jsonBallData = {};
+  db.collection("games")
+  .doc(gameId)
+  .get().then((doc) => {
+    if (doc.exists) {
 
-      querySnapshot.forEach(function(doc) {
+      console.log('startTurn check game data')
 
-          playerArray[moveCount] = doc.data().uid;
-
-          jsonBallData[0] = JSON.parse(doc.data().whiteball);
-          jsonBallData[1] = JSON.parse(doc.data().ball_1);
-          jsonBallData[2] = JSON.parse(doc.data().ball_2);
-          jsonBallData[3] = JSON.parse(doc.data().ball_3);
-          jsonBallData[4] = JSON.parse(doc.data().ball_4);
-          jsonBallData[5] = JSON.parse(doc.data().ball_5);
-          jsonBallData[6] = JSON.parse(doc.data().ball_6);
-          jsonBallData[7] = JSON.parse(doc.data().ball_7);
-          jsonBallData[8] = JSON.parse(doc.data().ball_8);
-          jsonBallData[9] = JSON.parse(doc.data().ball_9);
-          jsonBallData[10] = JSON.parse(doc.data().ball_10);
-          jsonBallData[11] = JSON.parse(doc.data().ball_11);
-          jsonBallData[12] = JSON.parse(doc.data().ball_12);
-          jsonBallData[13] = JSON.parse(doc.data().ball_13);
-          jsonBallData[14] = JSON.parse(doc.data().ball_14);
-          jsonBallData[15] = JSON.parse(doc.data().ball_15);
-
-          moveCount++;
-      });
-
-      if (moveCount > 0){                    
-          poolgame.balls[0].rigidBody.position.set(jsonBallData[0].x, jsonBallData[0].y, jsonBallData[0].z);
-          poolgame.balls[1].rigidBody.position.set(jsonBallData[4].x, jsonBallData[4].y, jsonBallData[4].z);
-          poolgame.balls[2].rigidBody.position.set(jsonBallData[3].x, jsonBallData[3].y, jsonBallData[3].z);
-          poolgame.balls[3].rigidBody.position.set(jsonBallData[14].x, jsonBallData[14].y, jsonBallData[14].z);
-          poolgame.balls[4].rigidBody.position.set(jsonBallData[2].x, jsonBallData[2].y, jsonBallData[2].z);
-          poolgame.balls[5].rigidBody.position.set(jsonBallData[15].x, jsonBallData[15].y, jsonBallData[15].z);
-          poolgame.balls[6].rigidBody.position.set(jsonBallData[13].x, jsonBallData[13].y, jsonBallData[13].z);
-          poolgame.balls[7].rigidBody.position.set(jsonBallData[5].x, jsonBallData[5].y, jsonBallData[5].z);
-          poolgame.balls[8].rigidBody.position.set(jsonBallData[12].x, jsonBallData[12].y, jsonBallData[12].z);
-          poolgame.balls[9].rigidBody.position.set(jsonBallData[7].x, jsonBallData[7].y, jsonBallData[7].z);
-          poolgame.balls[10].rigidBody.position.set(jsonBallData[6].x, jsonBallData[6].y, jsonBallData[6].z);
-          poolgame.balls[11].rigidBody.position.set(jsonBallData[8].x, jsonBallData[8].y, jsonBallData[8].z);
-          poolgame.balls[12].rigidBody.position.set(jsonBallData[9].x, jsonBallData[9].y, jsonBallData[9].z);
-          poolgame.balls[13].rigidBody.position.set(jsonBallData[10].x, jsonBallData[10].y, jsonBallData[10].z);
-          poolgame.balls[14].rigidBody.position.set(jsonBallData[11].x, jsonBallData[11].y, jsonBallData[11].z);
-          poolgame.balls[15].rigidBody.position.set(jsonBallData[1].x, jsonBallData[1].y, jsonBallData[1].z);
-      }
-
-      // enable movement
-      eightballgame.timer = 300;
-      eightballgame.state = 'turn';
+      eightballgame.turn = doc.data().currentPlayerUid;
+    
+      console.log('eightballgame.turn : ' + eightballgame.turn);
 
       $('.player1').removeClass('active');
       $('.player2').removeClass('active');
 
-      console.log('eightballgame.turn: '+ eightballgame.turn);
-
-      $('.'+eightballgame.turn).addClass('active');
-
+      $('.'+doc.data().currentPlayerUid).addClass('active');
+  
+      // enable movement
+      eightballgame.timer = 300;
+      eightballgame.state = 'turn';
+    
       gui.updateBalls(eightballgame.numbered_balls_on_table, eightballgame.sides.player1, eightballgame.sides.player2);
 
-      eightballgame.tickTimer();
-  
+      if (eightballgame.state == 'gameover') {
+        return;
+      }
+
+    } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+    }
+
+  })
+  .catch((error) => {
+      console.log("Error getting documents: ", error);
   });
+  
 }
 
 EightBallGame.prototype.whiteBallEnteredHole = function () {
@@ -139,11 +179,11 @@ EightBallGame.prototype.whiteBallEnteredHole = function () {
 }
 
 EightBallGame.prototype.coloredBallEnteredHole = function (name) {
-  console.log('coloredBallEnteredHole');
+  console.log('!!!!!!!!!!!!!!!!!!!!!!  coloredBallEnteredHole !!!!!!!!!!!!!!!!!!!');
   if (typeof name === 'undefined') return;
   var ballno = 0;
   for (var i = 0; i < eightballgame.numbered_balls_on_table.length; i++) {
-    if (name == eightballgame.numbered_balls_on_table[i] + 'ball') {
+    if (name == 'ball_'+eightballgame.numbered_balls_on_table[i]) {
       ballno = eightballgame.numbered_balls_on_table[i];
       eightballgame.numbered_balls_on_table.splice(i, 1);
       break;
@@ -154,6 +194,7 @@ EightBallGame.prototype.coloredBallEnteredHole = function (name) {
   }
 
   if (ballno == 8) {
+
     if (eightballgame.numbered_balls_on_table.length > 1) {
       gui.log("Game over! 8 ball pocketed too early by " + this.turn);
       eightballgame.turn = eightballgame.turn == 'player1' ? 'player2': 'player1';
@@ -164,6 +205,7 @@ EightBallGame.prototype.coloredBallEnteredHole = function (name) {
     // Win!
     eightballgame.endGame();
   } else {
+    
     if (eightballgame.sides.player1 == '?' || eightballgame.sides.player2 == '?') {
       eightballgame.sides[eightballgame.turn] = ballno < 8 ? 'solid' : 'striped';
       eightballgame.sides[eightballgame.turn == 'player1' ? 'player2' : 'player1'] = ballno > 8 ? 'solid' : 'striped';
@@ -180,65 +222,6 @@ EightBallGame.prototype.coloredBallEnteredHole = function (name) {
   }
 }
 
-EightBallGame.prototype.tickTimer = function () {
-  gui.UpdateTimer(eightballgame.timer);
-  // if (eightballgame.timer == 0) {
-  //   gui.log(eightballgame.turn + " ran out of time");
-  //   eightballgame.state = "outoftime";
-  //   // eightballgame.switchSides();
-  // } else {
-  //   eightballgame.timer--;
-  //   eightballgame.ticker = setTimeout(eightballgame.tickTimer, 1000);
-  // }
-}
-
-EightBallGame.prototype.switchSides = function () {
-  console.log('EightBallGame.prototype.switchSides init')
-
-  //swap slug
-  var playerSlug = null;
-
-  db.collection("games")
-  .doc(gameId)
-  .get().then((doc) => {
-    if (doc.exists) {
-
-      console.log('doc.data().currentPlayerUid: ' + doc.data().currentPlayerUid);
-      playerSlug = doc.data().currentPlayerUid;
-      
-
-      console.log('switchsides playerSlug: ' + playerSlug);
-      
-      eightballgame.turn = playerSlug == 'player1' ? 'player2': 'player1';
-
-      database_setMove('cords_'+moveCount, ballPositionArray, moveCount);
-      moveCount++;
-      
-      console.log('setting currentPlayerUid as ' + eightballgame.turn);
-      
-      db.collection("games")
-      .doc(gameId)
-      .set(
-          {
-            currentPlayerUid: eightballgame.turn
-          },
-          { merge: true }
-      );
-
-      setTimeout(eightballgame.startTurn, 1000);
-      
-
-    } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-    }
-
-  })
-  .catch((error) => {
-      console.log("Error getting documents: ", error);
-  });
-}
-
 EightBallGame.prototype.endGame = function () {
   eightballgame.state = 'gameover';
   var winner = eightballgame.turn == 'player1' ? 'Player 1' : 'Player 2';
@@ -247,6 +230,7 @@ EightBallGame.prototype.endGame = function () {
 }
 
 EightBallGame.prototype.hitButtonClicked = function (strength) {
+  console.log('hitButtonClicked init');
   
   var isYourMove = false;
 
@@ -254,6 +238,7 @@ EightBallGame.prototype.hitButtonClicked = function (strength) {
     .doc(gameId)
     .get().then((doc) => {
       if (doc.exists) {
+        console.log('hitButtonClicked doc exists');
 
           playerUid[1] = doc.data().playerOne;
           playerUid[2] = doc.data().playerTwo;
@@ -269,9 +254,12 @@ EightBallGame.prototype.hitButtonClicked = function (strength) {
                 },
                 { merge: true }
             );
+
             playerUid[1] = uid;
             isYourMove = true;
+
           }else if (playerUid[1] != uid && playerUid[2] == null){
+
             console.log('init database_setPlayerTwo');
                     
             db.collection("games")
@@ -298,29 +286,81 @@ EightBallGame.prototype.hitButtonClicked = function (strength) {
           
 
           if (isYourMove){
-            if (poolgame.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING && eightballgame.state == 'turn') {
+            console.log('it is your move');
+
+            //balls are sleeping and state is turn
+            if (
+              poolgame.balls[0].rigidBody.sleepState == CANNON.Body.SLEEPING 
+              && eightballgame.state == 'turn'
+            ) {
+
               poolgame.ballHit(strength);
-              clearTimeout(eightballgame.ticker);
+
               eightballgame.state = 'turnwaiting';
+
               var x = setInterval(function() {
+
+                //keep alive while balls are moving
                 if (poolgame.balls[0].rigidBody.sleepState != CANNON.Body.SLEEPING) return;
+
+                //loop through each ball and if moving and 
                 for (var i=1;i<poolgame.balls.length;i++) {
-                  if (poolgame.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && eightballgame.numbered_balls_on_table.indexOf(Number(poolgame.balls[i].name.split('ball')[0])) > -1) {
+                  if (
+                    poolgame.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING 
+                    && eightballgame.numbered_balls_on_table.indexOf(Number(poolgame.balls[i].name.split('ball_')[1])) > -1
+                  ) {
                     return;
                   }
                 }
     
                 if (eightballgame.pocketingOccurred) {
+                  database_setMove('cords_'+moveCount, ballPositionArray, moveCount);
+                  moveCount++;
                   setTimeout(eightballgame.startTurn, 1000);
                 } else {
-                  console.log('calling switch sides');
-                  eightballgame.switchSides();
+                  console.log('EightBallGame.prototype.switchSides')
+
+                  db.collection("games")
+                  .doc(gameId)
+                  .get().then((doc) => {
+                    if (doc.exists) {
+                      console.log('switchSides check game data');
+                  
+                      console.log('switchSides eightballgame.turn: ' + eightballgame.turn);
+                      eightballgame.turn = doc.data().currentPlayerUid == 'player1' ? 'player2': 'player1';
+
+                      db.collection("games")
+                        .doc(gameId)
+                        .set(
+                            {
+                              currentPlayerUid: eightballgame.turn
+                            },
+                            { merge: true }
+                        );
+                        database_setMove('cords_'+moveCount, ballPositionArray, moveCount);
+                        moveCount++;
+                        setTimeout(eightballgame.startTurn, 1000);
+
+                    } else {
+                      // doc.data() will be undefined in this case
+                      console.log("No such document!");
+                    }
+
+                  })
+                  .catch((error) => {
+                      console.log("Error getting documents: ", error);
+                  });
+
+
                 }
+
+                console.log('after switch sides eightballgame.turn: ' + eightballgame.turn);
     
                 eightballgame.pocketingOccurred = false;
-    
                 clearInterval(x);
+
               }, 30);
+
             }
 
           }else{

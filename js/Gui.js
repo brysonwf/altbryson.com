@@ -12,11 +12,6 @@ var GameGui = function () {
   
 };
 
-GameGui.prototype.setupGameHud = function() {
-  this.hide(document.getElementById('mainMenu'));
-  this.show(document.getElementById('controlsHud'));
-};
-
 GameGui.addClass = function (el, className) {
   if (el.classList) {
     el.classList.add(className);

@@ -117,8 +117,6 @@ var game_pool = function(gameDoc){
             var progBarDiv = document.getElementById('loading');
             progBarDiv.parentNode.removeChild(progBarDiv);
 
-            gui.show(document.getElementById('mainMenu'));
-
             // attach the render-supplied DOM element
             var canvasContainer = document.getElementById('canvas');
             canvasContainer.appendChild(renderer.domElement);
