@@ -29,7 +29,7 @@
   <meta property="og:description" content="altbryson.com sandbox" />
   <meta property="og:image" content="https://altbryson.com/images/ogimage.png" />
   <meta name="theme-color" content="#f1e2ba" />
-  <link rel="stylesheet" type="text/css" href="/base.css?v202201151359" />
+  <link rel="stylesheet" type="text/css" href="/base.css?v20220116852" />
 </head>
 
 <body>
@@ -37,28 +37,22 @@
 <div id="sidebar">
     <div class="container">
         <div class="sidebarbg">   
-            <a class="navbutton btn btn-primary button_login hidden" href="#">Login for Games</a>
-            <div class="userbank hidden">
-                <div class="user"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"><span class="score">1</span></div>
-                <div class="user nothere"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"><span class="score">2</span></div>
-                <div class="user itsyourturn"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"><span class="score">3</span></div>
-                <div class="user me itsyourturn">
-                    <div class="ddmenu dropdown pull-right">
-                        <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            <img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"><span class="score">4</span>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                            <li><a class="navbutton_home" href="/"><i class="fas fa-home"></i> Homepage</a></li>
-                            <li><a class="button_create_game" href="#" data-type="tictactoe"><i class="fas fa-hashtag"></i> TicTacToe</a></li>
-                            <li><a class="button_create_game" href="#" data-type="minigolf"><i class="fas fa-golf-ball"></i> minigolf</a></li>
-                            <li><a class="button_create_game" href="#" data-type="dotsandboxes"><i class="fas fa-border"></i> dotsandboxes</a></li>
-                            <li><a class="button_create_game" href="#" data-type="chess"><i class="fas fa-chess"></i> Chess</a></li>
-                            <li><a class="button_create_game" href="#" data-type="pool"><i class="fas fa-pool"></i> Pool</a></li>
-                            <li><a class="button_logout hidden">Logout <span id="username"></span></a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>         
+            <a class="navbutton btn btn-link button_login hidden" href="#">Login for Games</a>
+            
+            <div class="ddmenu dropdown pull-right">
+                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a class="navbutton_home" href="/"><i class="fas fa-home"></i> Homepage</a></li>
+                    <li><a class="button_create_game" href="#" data-type="tictactoe"><i class="fas fa-hashtag"></i> TicTacToe</a></li>
+                    <li><a class="button_create_game" href="#" data-type="minigolf"><i class="fas fa-golf-ball"></i> minigolf</a></li>
+                    <li><a class="button_create_game" href="#" data-type="dotsandboxes"><i class="fas fa-border"></i> dotsandboxes</a></li>
+                    <li><a class="button_create_game" href="#" data-type="chess"><i class="fas fa-chess"></i> Chess</a></li>
+                    <li><a class="button_create_game" href="#" data-type="pool"><i class="fas fa-pool"></i> Pool</a></li>
+                    <li><a class="button_logout hidden">Logout <span id="username"></span></a></li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
@@ -79,11 +73,16 @@
     <h2 id="tictactoe-winner" class="game-winner hidden"></h2>
   <div id="footer">
       <div class="container">
-          Woot.
+          
       </div>
   </div></div>
 
-
+<div class="userbank">
+    <div class="user"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"><span class="score">1</span></div>
+    <div class="user nothere"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"><span class="score">2</span></div>
+    <div class="user itsyourturn"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"><span class="score">3</span></div>
+    <div class="user me itsyourturn"><img src="https://lh3.googleusercontent.com/a-/AOh14GgBe687fg3EiNcXeqanQTOJ8ZYRVNQKnUAWfBBft8s=s96-c"><span class="score">3</span></div>
+</div>
 
 <!-- edit item popup -->
 <div id="sectionModalLogin">
@@ -140,8 +139,8 @@
 <script type="text/javascript" src="/moment-with-locales.min.js"></script>
 <script type="text/javascript" src="/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/three.min.js"></script>
-<script type="text/javascript" src="/lib.js?v202201151359"></script>
-<script type="text/javascript" src="/app.js?v202201151359"></script>
+<script type="text/javascript" src="/lib.js?v20220116852"></script>
+<script type="text/javascript" src="/app.js?v20220116852"></script>
 
 <script type="text/javascript">
   appManager.init();

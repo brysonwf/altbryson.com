@@ -1,6 +1,10 @@
 .userbank{ 
     float: left;
     width: 100%;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
 }
 
 .userbank .user {
@@ -39,7 +43,6 @@
 }
 
 .userbank .user.me{
-    float:right;
 }
 .userbank .me img {
 }

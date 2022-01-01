@@ -14,6 +14,9 @@ var database_loadGame = function () {
                     userLimit = doc.data().userLimit;
                 }
                 
+                $('.player1').addClass(doc.data().playerOne);
+                $('.player2').addClass(doc.data().playerTwo);
+                
                 switch(doc.data().type){
                     case "page":
                         database_loadGameUsers();

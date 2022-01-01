@@ -14,7 +14,6 @@ var playerUid = [];
 var game_pool = function(gameDoc){
 
     console.log('game_pool init');
-
     
     if (playerUid[1] == null){
         playerUid[1] = gameDoc.data().playerOne;
@@ -94,7 +93,7 @@ var game_pool = function(gameDoc){
     }
     
     var WIDTH  = 360,
-    HEIGHT = 480;
+    HEIGHT = 520;
 
     var stats = new Stats();
     stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb

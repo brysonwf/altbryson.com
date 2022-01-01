@@ -102,8 +102,12 @@ var EightBallGame = function()
     
                   console.log('eightballgame.turn : ' + this.turn);
             
-                  $('.player1').removeClass('active');
-                  $('.player2').removeClass('active');
+                  $('.player1').removeClass('active').removeClass('unknown');
+                  $('.player2').removeClass('active').removeClass('unknown');
+
+                  $('.player1').addClass(doc.data().playerOne);
+                  $('.player2').addClass(doc.data().playerTwo);
+
             
                   $('.'+this.turn).addClass('active');
                   
