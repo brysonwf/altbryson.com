@@ -133,7 +133,7 @@ var game_pool = function(gameDoc){
     var VIEW_ANGLE = 45,
         ASPECT     = WIDTH / HEIGHT,
         NEAR       = 1,
-        FAR        = 1000;
+        FAR        = 2000;
 
     // We use the clock to measure time, an extension for the keyboard
     var clock = new THREE.Clock();
@@ -171,15 +171,16 @@ var game_pool = function(gameDoc){
     // MOUSE controls
     controls = new THREE.OrbitControls(camera,renderer.domElement);
 
-    controls.enableZoom = true;
-    controls.enablePan = true;
+    controls.enableZoom = false;
+    controls.enablePan = false;
 
-    controls.minDistance = 35;
-    controls.maxDistance = 165;
+    controls.minDistance = 300;
+    controls.maxDistance = 300;
+
     // Don't let the camera go below the ground
     controls.maxPolarAngle = 0.49 * Math.PI;
 
-    camera.position.set(-170, 70, 0);
+    camera.position.set(83, 167, -7);
 
     // make the background void a grey color instead of black.
     renderer.setClearColor(0x262626, 1);
