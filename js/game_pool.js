@@ -93,7 +93,7 @@ var game_pool = function(gameDoc){
     }
     
     var WIDTH  = 360,
-    HEIGHT = 520;
+    HEIGHT = 600;
 
     var stats = new Stats();
     stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
@@ -171,10 +171,10 @@ var game_pool = function(gameDoc){
     // MOUSE controls
     controls = new THREE.OrbitControls(camera,renderer.domElement);
 
-    controls.enableZoom = false;
-    controls.enablePan = false;
+    controls.enableZoom = true;
+    controls.enablePan = true;
 
-    controls.minDistance = 300;
+    controls.minDistance = 10;
     controls.maxDistance = 300;
 
     // Don't let the camera go below the ground
