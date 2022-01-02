@@ -1,0 +1,19 @@
+.container-index{
+    height: 248px;
+    background-color: #4bb6ba;
+    text-shadow: 1px 1px 0 #11767a;
+    color: #fff;
+    border-radius: 10px;
+    border: 1px solid #5e6f70;
+    box-shadow: 0px 5px 10px #8c8c8c;
+    width: 300px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    padding: 20px 20px;
+    transform: translate(-50%, -50%);
+}
+
+.container-index a{
+    color:#fff;
+}

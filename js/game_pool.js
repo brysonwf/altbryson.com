@@ -90,7 +90,7 @@ var game_pool = function(gameDoc){
         var tableLight2 = new TableLight(-game_pool_table.LEN_X / 4, 150, 0);
     }
     
-    var WIDTH  = 360,
+    var WIDTH  = window.innerWidth,
     HEIGHT = 600;
 
     var stats = new Stats();

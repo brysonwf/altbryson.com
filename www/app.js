@@ -4375,10 +4375,9 @@ var database_loadGameUsers = function(){
                 }else if ($('.' + doc.data().uid).hasClass('player2')){
                     html_player2 = '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'"><img src="' + doc.data().photoUrl + '" /><span class="score hidden"></span></div>';
                 }
-            }else{
-                html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'"><img src="' + doc.data().photoUrl + '" /><span class="score hidden"></span></div>'; 
             }
 
+            html += '<div class="' + classNames +'" id="uid-' + doc.data().uid +'" data-userTime="' + userTime +'"><img src="' + doc.data().photoUrl + '" /><span class="score hidden"></span></div>';
             
         });
 
@@ -6149,7 +6148,7 @@ var game_pool = function(gameDoc){
         var tableLight2 = new TableLight(-game_pool_table.LEN_X / 4, 150, 0);
     }
     
-    var WIDTH  = 360,
+    var WIDTH  = window.innerWidth,
     HEIGHT = 600;
 
     var stats = new Stats();
