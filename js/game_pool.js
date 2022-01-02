@@ -69,8 +69,6 @@ var game_pool = function(gameDoc){
         stats.begin();
         
         // Controls
-        controls.target.copy(poolgame.balls[0].mesh.position);
-        controls.update();
 
         // Physics world
         world.step(w.fixedTimeStep);
@@ -175,12 +173,15 @@ var game_pool = function(gameDoc){
     controls.enablePan = true;
 
     controls.minDistance = 10;
-    controls.maxDistance = 300;
-
+    controls.maxDistance = 400;
+ 
     // Don't let the camera go below the ground
     controls.maxPolarAngle = 0.49 * Math.PI;
 
-    camera.position.set(83, 167, -7);
+    camera.position.set(0, 400, 0);
+
+    // controls.target.copy(poolgame.balls[0].mesh.position);
+    controls.update();
 
     // make the background void a grey color instead of black.
     renderer.setClearColor(0x262626, 1);
