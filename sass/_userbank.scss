@@ -5,15 +5,20 @@
     top: 0;
     right: 0;
     left: 0;
+    background-color: #474747;
+    height:50px;
+    box-shadow: inset 0 -2px 5px #000000;
+    border-bottom: 1px dashed #fff;
+    text-align: center;
 }
 
 .userbank .user {
     margin-left: 5px;
     margin-top: 2px;
-    float: left;
     position: relative;
     transition: all 0.5s ease;
     border-radius: 100%;
+    display: inline-block;
 }
 
 .userbank .user img {

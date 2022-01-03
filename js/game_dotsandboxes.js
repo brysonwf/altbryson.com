@@ -280,10 +280,13 @@ var game_dotsandboxes = function(gameDoc){
               //check winner
               if (!hArray.includes(false) && !vArray.includes(false)){
                 if(score1 > score2){
+                  $('#win-message').removeClass('hidden');
                   $('#message').html('PLAYER ONE WINS!');
                 } else if(score1 < score2){
+                  $('#win-message').removeClass('hidden');
                   $('#message').html('PLAYER TWO WINS!');
                 } else if(score1===score2){
+                  $('#win-message').removeClass('hidden');
                   $('#message').html(`It's a tie!`);
                   console.log('aftering winning');
                   console.log(score1);

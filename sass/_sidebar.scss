@@ -23,11 +23,13 @@ div#sidebar {
 button#dropdownMenu1 {
     color: #fff;
     text-shadow: 1px 1px 0 #000;
-    font-size: 45px;
-    line-height: 48px;
+    font-size: 48px;
+    line-height: 41px;
     font-family: fantasy;
     letter-spacing: -1px;
     padding: 0 7px;
+    border-right: 1px dashed #fff;
+    margin: 3px -1px;
 }
 
 .sidebarbg{
