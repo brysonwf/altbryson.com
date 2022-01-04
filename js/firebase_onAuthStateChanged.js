@@ -19,12 +19,14 @@ var firebase_onAuthStateChanged = function () {
       database_setUserData(user);
       database_setPath();
       database_loadGame();
+      
+      $("#firebaseui-auth-container").addClass('hidden');
 
     } else {
 
       // User not logged in or has just logged out.
       uid = null;
-      $(".firebaseui-auth-container").removeClass('hidden');
+      
 
     }
 

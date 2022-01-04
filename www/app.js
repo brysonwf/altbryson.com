@@ -4924,7 +4924,6 @@ var firebase_init = function() {
 
   // FirebaseUI config.
   var uiConfig = {
-    autoUpgradeAnonymousUsers: true,
     signInSuccessUrl: window.location.href,
     signInOptions: [
       // Leave the lines as is for the providers you want to offer your users.
@@ -4965,12 +4964,14 @@ var firebase_onAuthStateChanged = function () {
       database_setUserData(user);
       database_setPath();
       database_loadGame();
+      
+      $("#firebaseui-auth-container").addClass('hidden');
 
     } else {
 
       // User not logged in or has just logged out.
       uid = null;
-      $(".firebaseui-auth-container").removeClass('hidden');
+      
 
     }
 
