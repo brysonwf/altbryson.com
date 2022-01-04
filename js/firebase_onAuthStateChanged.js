@@ -3,9 +3,15 @@ var firebase_onAuthStateChanged = function () {
   firebase.auth().onAuthStateChanged(function (user) {
     
     if (user) {
-
+      
       // User logged in already or has just logged in.
       uid = user.uid;
+      console.log('loged in as ' + uid);
+      if (user?.isAnonymous) {
+        // Do something
+        console.log('isAnonymous');
+      }
+
       gameId = path[3];
       if (gameId == null){
         gameId = 'home';
@@ -18,7 +24,7 @@ var firebase_onAuthStateChanged = function () {
 
       // User not logged in or has just logged out.
       uid = null;
-      button_login();
+      $(".firebaseui-auth-container").removeClass('hidden');
 
     }
 

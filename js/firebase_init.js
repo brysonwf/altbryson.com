@@ -19,10 +19,12 @@ var firebase_init = function() {
 
   // FirebaseUI config.
   var uiConfig = {
-    signInSuccessUrl: "/",
+    autoUpgradeAnonymousUsers: true,
+    signInSuccessUrl: window.location.href,
     signInOptions: [
       // Leave the lines as is for the providers you want to offer your users.
       firebase.auth.GoogleAuthProvider.PROVIDER_ID
+      // firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
     ],
     // Terms of service url.
     tosUrl: "/tos/",

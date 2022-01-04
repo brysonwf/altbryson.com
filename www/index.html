@@ -29,7 +29,7 @@
   <meta property="og:description" content="altbryson.com sandbox" />
   <meta property="og:image" content="https://altbryson.com/images/ogimage.png" />
   <meta name="theme-color" content="#f1e2ba" />
-  <link rel="stylesheet" type="text/css" href="/base.css?v20220411321" />
+  <link rel="stylesheet" type="text/css" href="/base.css?v20220415814" />
 </head>
 
 <body>
@@ -46,12 +46,12 @@
                     <li><a class="navbutton_home" href="/"><i class="fas fa-home"></i> Homepage</a></li>
                     <li>
                         <a href="https://budgetforecast.app">
-                            <i class="fas fa-hashtag"></i> budgetforecast.app - Cash flow forecasting
+                            <i class="fas fa-hashtag"></i> budgetforecast.app
                         </a>
                     </li>
                     <li>
                         <a href="https://github.com/brysonwf/netsuite-nodeGulpTest-circleciGitflowDeployment">
-                            <i class="fas fa-hashtag"></i> netsuite circleci -> node/gulp/karma -> mocha unit tests -> git deployment
+                            <i class="fas fa-hashtag"></i> netsuite CI
                         </a>
                     </li>
                     <li><a class="button_create_game" href="#" data-type="tictactoe"><i class="fas fa-hashtag"></i> TicTacToe</a></li>
@@ -59,14 +59,12 @@
                     <li><a class="button_create_game" href="#" data-type="dotsandboxes"><i class="fas fa-border"></i> dotsandboxes</a></li>
                     <li><a class="button_create_game" href="#" data-type="chess"><i class="fas fa-chess"></i> Chess</a></li>
                     <li><a class="button_create_game" href="#" data-type="pool"><i class="fas fa-pool"></i> Pool</a></li>
-                    <li><a class="button_logout">Logout <span id="username"></span></a></li>
+                    <li><a class="button_logout">Logout</a></li>
                 </ul>
             </div>
 
             <div class="userbank">
             </div>
-            
-            <a class="navbutton btn btn-link button_login hidden pull-right" href="#">Login for Games</a>
 
         </div>
     </div>
@@ -74,40 +72,6 @@
 <div class="viewport">
     
     <div class="container">
-        <div class="row">
-            <div id="firebaseui-auth-container" lang="en">
-            <div
-              class="firebaseui-container firebaseui-page-provider-sign-in firebaseui-id-page-provider-sign-in firebaseui-use-spinner">
-              <div class="firebaseui-card-content">
-                <form onsubmit="return false;">
-                  <ul class="firebaseui-idp-list">
-                    <li class="firebaseui-list-item"><button
-                        class="firebaseui-idp-button mdl-button mdl-js-button mdl-button--raised firebaseui-idp-google firebaseui-id-idp-button"
-                        data-provider-id="google.com" style="background-color:" data-upgraded=",MaterialButton"><span
-                          class="firebaseui-idp-icon-wrapper"><img class="firebaseui-idp-icon" alt=""
-                            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"></span><span
-                          class="firebaseui-idp-text firebaseui-idp-text-long">Sign in with Google</span><span
-                          class="firebaseui-idp-text firebaseui-idp-text-short">Google</span></button></li>
-                    <li class="firebaseui-list-item"><button
-                        class="firebaseui-idp-button mdl-button mdl-js-button mdl-button--raised firebaseui-idp-password firebaseui-id-idp-button"
-                        data-provider-id="password" style="background-color:" data-upgraded=",MaterialButton"><span
-                          class="firebaseui-idp-icon-wrapper"><img class="firebaseui-idp-icon" alt=""
-                            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/mail.svg"></span><span
-                          class="firebaseui-idp-text firebaseui-idp-text-long">Sign in with email</span><span
-                          class="firebaseui-idp-text firebaseui-idp-text-short">Email</span></button></li>
-                  </ul>
-                </form>
-              </div>
-              <div class="firebaseui-card-footer firebaseui-provider-sign-in-footer">
-                <p class="firebaseui-tos firebaseui-tospp-full-message">By continuing, you are indicating that you
-                  accept our <a href="javascript:void(0)" class="firebaseui-link firebaseui-tos-link"
-                    target="_blank">Terms of Service</a> and
-                  <a href="javascript:void(0)" class="firebaseui-link firebaseui-pp-link" target="_blank">Privacy
-                    Policy</a>.</p>
-              </div>
-            </div>
-          </div>
-        </div>
         <div class="row">
             <div id="loadGamesHere" class="container_games hidden">
                 <table class="dataTable">
@@ -124,21 +88,8 @@
 </div>
 
 
+<div id="firebaseui-auth-container" class="hidden"></div>
 
-<!-- edit item popup -->
-<div id="sectionModalLogin">
-  <div class="modal fade shown" id="modalLogin" tabindex="-1" role="dialog" aria-labelledby="myLoginModalLabel"
-    data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-body">
-          <a href="https://altbryson.com/">Go Home</a>
-          
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 <!-- scripts -->
 <link rel="stylesheet" type="text/css" href="/firebaseui.css" />
 <script type="text/javascript" src="/jquery.min.js"></script>
@@ -146,11 +97,12 @@
 <script type="text/javascript" src="/firebase-auth.js"></script>
 <script type="text/javascript" src="/firebase-analytics.js"></script>
 <script type="text/javascript" src="/firebase-firestore.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/firebasejs/ui/6.0.0/firebase-ui-auth.js"></script>
 <script type="text/javascript" src="/moment-with-locales.min.js"></script>
 <script type="text/javascript" src="/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/three.min.js"></script>
-<script type="text/javascript" src="/lib.js?v20220411321"></script>
-<script type="text/javascript" src="/app.js?v20220411321"></script>
+<script type="text/javascript" src="/lib.js?v20220415814"></script>
+<script type="text/javascript" src="/app.js?v20220415814"></script>
 
 <script type="text/javascript">
   appManager.init();

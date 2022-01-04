@@ -231,12 +231,6 @@ var button_create_game = function(){
         });
     });
 }
-var button_login = function(){
-    console.log('button_login init');
-    $(".button_login").removeClass('hidden').click(function () {
-        $('#modalLogin').modal('show');
-    });
-}
 var button_logout = function(){
     $(".button_logout").on('click', function () {
         console.log('button_logout');
@@ -4930,10 +4924,12 @@ var firebase_init = function() {
 
   // FirebaseUI config.
   var uiConfig = {
-    signInSuccessUrl: "/",
+    autoUpgradeAnonymousUsers: true,
+    signInSuccessUrl: window.location.href,
     signInOptions: [
       // Leave the lines as is for the providers you want to offer your users.
       firebase.auth.GoogleAuthProvider.PROVIDER_ID
+      // firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
     ],
     // Terms of service url.
     tosUrl: "/tos/",
@@ -4953,9 +4949,15 @@ var firebase_onAuthStateChanged = function () {
   firebase.auth().onAuthStateChanged(function (user) {
     
     if (user) {
-
+      
       // User logged in already or has just logged in.
       uid = user.uid;
+      console.log('loged in as ' + uid);
+      if (user?.isAnonymous) {
+        // Do something
+        console.log('isAnonymous');
+      }
+
       gameId = path[3];
       if (gameId == null){
         gameId = 'home';
@@ -4968,7 +4970,7 @@ var firebase_onAuthStateChanged = function () {
 
       // User not logged in or has just logged out.
       uid = null;
-      button_login();
+      $(".firebaseui-auth-container").removeClass('hidden');
 
     }
 
