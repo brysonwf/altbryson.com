@@ -1,88 +1,10 @@
 {
   "hosting": {
-    "public": "WWW",
+    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "/sitemap",
-        "destination": "/sitemap.xml"
-      },
-      {
-        "source": "/sitemap.xml",
-        "destination": "/sitemap.xml"
-      },
-      {
-        "source": "/robots",
-        "destination": "/robots.txt"
-      },
-      {
-        "source": "/robots.txt",
-        "destination": "/robots.txt"
-      },
-      {
-        "source": "/firebase-app.js.map",
-        "destination": "/firebase-app.js.map"
-      },
-      {
-        "source": "/firebase-auth.js.map",
-        "destination": "/firebase-auth.js.map"
-      },
-      {
-        "source": "/firebase-database.js.map",
-        "destination": "/firebase-database.js.map"
-      },
-      {
-        "source": "/firebase-firestore.js.map",
-        "destination": "/firebase-firestore.js.map"
-      },
-      {
-        "source": "/",
-        "destination": "/index.html"
-      },
-      {
-        "source": "/tos",
-        "destination": "/tos.html"
-      },
-      {
-        "source": "/privacy",
-        "destination": "/privacy.html"
-      },
-      {
-        "source": "/help",
-        "destination": "/help.html"
-      },
-      {
-        "source": "/g/page/**",
-        "destination": "/index.html"
-      },
-      {
-        "source": "/g/minigolf/**",
-        "destination": "/game_minigolf.html"
-      },
-      {
-        "source": "/g/tictactoe/**",
-        "destination": "/game_tictactoe.html"
-      },
-      {
-        "source": "/g/dotsandboxes/**",
-        "destination": "/game_dotsandboxes.html"
-      },
-      {
-        "source": "/g/chess/**",
-        "destination": "/game_chess.html"
-      },
-      {
-        "source": "/g/pool/**",
-        "destination": "/game_pool.html"
-      },
-      {
-        "source": "*",
-        "destination": "/404.html"
-      }
     ]
   }
 }
