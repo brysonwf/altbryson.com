@@ -1,101 +1,215 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+    <title>altbryson | Modern Product Portfolio</title>
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/10.13.2/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/10.13.2/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/10.13.2/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/10.13.2/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/10.13.2/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/10.13.2/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/10.13.2/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/10.13.2/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/10.13.2/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/10.13.2/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <script defer src="/__\/firebase/10.13.2/firebase-app-compat.js"></script>
+    <script defer src="/__\/firebase/10.13.2/firebase-auth-compat.js"></script>
+    <script defer src="/__\/firebase/10.13.2/firebase-database-compat.js"></script>
+    <script defer src="/__\/firebase/10.13.2/firebase-firestore-compat.js"></script>
+    <script defer src="/__\/firebase/10.13.2/firebase-functions-compat.js"></script>
+    <script defer src="/__\/firebase/10.13.2/firebase-messaging-compat.js"></script>
+    <script defer src="/__\/firebase/10.13.2/firebase-storage-compat.js"></script>
+    <script defer src="/__\/firebase/10.13.2/firebase-analytics-compat.js"></script>
+    <script defer src="/__\/firebase/10.13.2/firebase-remote-config-compat.js"></script>
+    <script defer src="/__\/firebase/10.13.2/firebase-performance-compat.js"></script>
+    <script defer src="/__\/firebase/init.js?useEmulator=true"></script>
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
+    <style>
+      :root {
+        color-scheme: light;
+        color: #111827;
+        background: #eef2ff;
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; min-height: 100%; }
+      body {
+        background: radial-gradient(circle at top, rgba(99, 102, 241, 0.16), transparent 36%),
+          linear-gradient(180deg, #f8fafc 0%, #eef2ff 45%, #ffffff 100%);
+        color: #111827;
+      }
+      .page {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 40px 24px 56px;
+      }
+      header {
+        padding: 40px 36px;
+        border-radius: 32px;
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        box-shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
+        backdrop-filter: blur(12px);
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.625rem;
+        margin-bottom: 1.25rem;
+        color: #4f46e5;
+        font-size: 0.92rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+      .eyebrow::before {
+        content: "";
+        width: 44px;
+        height: 1px;
+        background: currentColor;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(2.6rem, 4vw, 4.4rem);
+        line-height: 0.96;
+        letter-spacing: -0.04em;
+      }
+      .summary {
+        margin: 24px 0 0;
+        max-width: 720px;
+        font-size: 1.05rem;
+        color: #475569;
+      }
+      .projects { margin-top: 42px; }
+      .section-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 0 0 22px;
+        color: #4f46e5;
+        font-size: 0.92rem;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+      }
+      .card {
+        background: #ffffff;
+        border-radius: 26px;
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        padding: 28px 28px 32px;
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.05);
+      }
+      .card h2 {
+        margin: 0 0 14px;
+        font-size: 1.4rem;
+      }
+      .card p {
+        margin: 0;
+        color: #475569;
+      }
+      .card a {
+        display: inline-flex;
+        margin-top: 18px;
+        align-items: center;
+        gap: 0.4rem;
+        color: #4338ca;
+        text-decoration: none;
+        font-weight: 700;
+      }
+      .card a:hover { text-decoration: underline; }
+      footer {
+        margin-top: 48px;
+        padding-top: 1px;
+        color: #64748b;
+        font-size: 0.94rem;
+        text-align: center;
+      }
+      #load { display: block; margin-top: 8px; }
+      @media (max-width: 820px) {
+        .grid { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 520px) {
+        .page { padding: 28px 16px 40px; }
+        header { padding: 28px 24px; }
       }
     </style>
   </head>
   <body>
-    <div id="message">
-      <h2>altbryson.com</h2>
-      <p>landing page for altbryson.com</p>
-      <ul>
-        <li><a href="https://budgetforecast.app">budgetforecast.app</a></li>
-        <li><a href="https://road.dance">road.dance</a></li>
-        <li><a href="https://baseless.chat">baseless.chat</a></li>
-        <li><a href="https://altbrysonpool.web.app">altbrysonpool.web.app</a></li>
-      </ul>
+    <div class="page">
+      <header>
+        <div class="eyebrow">altbryson</div>
+        <h1>Bryson's Portfolio</h1>
+      </header>
+
+      <section class="projects">
+        <div class="section-title">Featured projects</div>
+        <div class="grid">
+          <article class="card">
+            <h2>Budget Forecast</h2>
+            <p>Personal cash flow forecasting app with daily, monthly, and yearly views. Share future value projections including interest, payments, and overdrafts for unlimited forecasting horizons.</p>
+            <a href="https://budgetforecast.app" target="_blank" rel="noreferrer">Visit budgetforecast.app</a>
+          </article>
+
+          <article class="card">
+            <h2>Road Dance</h2>
+            <p>Custom map application with Ticketmaster API integration, overlaying live event data on a spatial interface for intuitive discovery.</p>
+            <a href="https://road.dance" target="_blank" rel="noreferrer">Visit road.dance</a>
+          </article>
+
+          <article class="card">
+            <h2>Baseless Chat</h2>
+            <p>Google Chrome extension that adds a lightweight chat interface to every website, creating a seamless overlay experience across browsing sessions.</p>
+            <a href="https://baseless.chat" target="_blank" rel="noreferrer">Visit baseless.chat</a>
+          </article>
+
+          <article class="card">
+            <h2>Altbryson Pool</h2>
+            <p>Real-time top-down turn-based multiplayer game featuring strategic play, live updates, and polished online match flow.</p>
+            <a href="https://altbrysonpool.web.app" target="_blank" rel="noreferrer">Visit altbrysonpool.web.app</a>
+          </article>
+
+          <article class="card">
+            <h2>Snowball Fight App</h2>
+            <p>Physics sandbox multiplayer experience where users throw snowballs at each other in real time, combining playful interaction with responsive networking.</p>
+            <a href="https://snowballfightapp.web.app/" target="_blank" rel="noreferrer">Visit snowballfightapp.web.app</a>
+          </article>
+        </div>
+      </section>
+
+      <footer>
+        Available for collaborations in product design, web apps, and digital growth.
+        <br>
+        Connect on <a href="https://www.linkedin.com/in/brysonwf/" target="_blank" rel="noreferrer">LinkedIn</a> and <a href="https://x.com/brysonwf" target="_blank" rel="noreferrer">X / Twitter</a>.
+        <span id="load">Firebase SDK loading…</span>
+      </footer>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-
         try {
           let app = firebase.app();
           let features = [
-            'auth', 
-            'database', 
+            'auth',
+            'database',
             'firestore',
             'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
+            'messaging',
+            'storage',
+            'analytics',
             'remoteConfig',
             'performance',
           ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+          loadEl.textContent = features.length ? `Firebase SDK loaded with ${features.join(', ')}` : 'Firebase SDK initialized.';
         } catch (e) {
           console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+          loadEl.textContent = 'Firebase SDK could not be loaded. See console for details.';
         }
       });
     </script>
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CSF8Q66KD4"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-CSF8Q66KD4');
     </script>
   </body>
