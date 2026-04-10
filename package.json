@@ -1,0 +1,24 @@
+{
+  "name": "altbryson",
+  "version": "1.0.0",
+  "description": "",
+  "main": "screenshot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/brysonwf/altbryson.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://gitlab.com/brysonwf/altbryson/issues"
+  },
+  "homepage": "https://gitlab.com/brysonwf/altbryson#readme",
+  "dependencies": {
+    "puppeteer": "^24.40.0"
+  }
+}
