@@ -1,0 +1,22 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Google Voice Tray app thumbnail</title>
+  <desc id="desc">A bright green circle representing unread Google Voice notifications.</desc>
+  <defs>
+    <radialGradient id="greenGlow" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#6AF0A1"/>
+      <stop offset="100%" stop-color="#00C853"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="22" stdDeviation="18" flood-color="#0B5D36" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="900" fill="#F8FAFC"/>
+  <g filter="url(#shadow)">
+    <circle cx="600" cy="450" r="220" fill="url(#greenGlow)"/>
+  </g>
+  <circle cx="600" cy="450" r="170" fill="rgba(255,255,255,0.12)"/>
+  <path d="M505 280C505 246 532 220 566 220H634C668 220 695 246 695 280V355C695 399 662 434 619 438L594 578H606L625 725H575L594 578H606L581 438C538 434 505 399 505 355V280Z" fill="white" opacity="0.92"/>
+  <circle cx="600" cy="336" r="65" fill="white" opacity="0.96"/>
+  <path d="M530 585H670" stroke="white" stroke-width="32" stroke-linecap="round" opacity="0.95"/>
+  <path d="M555 645H645" stroke="white" stroke-width="28" stroke-linecap="round" opacity="0.95"/>
+</svg>
