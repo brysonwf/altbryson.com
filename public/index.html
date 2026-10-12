@@ -27,8 +27,8 @@
         --glass-border: rgba(255, 255, 255, 0.55);
         --dock-h: 96px;
         /* Icons grow until the dock spans the screen, capped at macOS's 128px maximum.
-           360px covers gaps, dividers, padding and room for magnification; 24.25 = 24 icons with the clock at 1.25x. */
-        --size: clamp(30px, calc((100vw - 360px) / 24.25), 128px);
+           360px covers gaps, dividers, padding and room for magnification; 24 = 22 icons plus the clock at 2x. */
+        --size: clamp(30px, calc((100vw - 360px) / 24), 128px);
         --gv-green: #00c853;
         --gv-grey: #808080;
         font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -77,7 +77,6 @@
       .phone {
         position: relative;
         flex: none;
-        width: clamp(220px, calc((100dvh - 230px) * 0.462), 360px);
         padding: 12px;
         border-radius: 48px;
         background: linear-gradient(145deg, #1f2937, #0b0f19);
@@ -101,20 +100,18 @@
         position: relative;
         overflow: hidden;
         border-radius: 37px;
-        aspect-ratio: 390 / 844;
+        /* A real 375px-wide phone viewport (no scaling). Height is iPhone SE (667px) or less on short screens. */
+        width: 375px;
+        height: clamp(420px, calc(100dvh - var(--dock-h) - 150px), 667px);
         background: #000 center top / cover no-repeat;
       }
-      /* Sites render at a real 390x844 phone viewport, then scale to fit the frame. */
       .phone iframe {
         position: absolute;
-        left: 0;
-        top: 0;
-        width: 390px;
-        height: 844px;
+        inset: 0;
+        width: 100%;
+        height: 100%;
         border: 0;
         background: transparent;
-        transform-origin: 0 0;
-        transform: scale(var(--s, 0.6));
         opacity: 0;
         transition: opacity 300ms;
       }
@@ -274,7 +271,7 @@
       .app-window.sized { max-width: none; max-height: none; }
       .app-window.sized > :not(.titlebar):not(.rz) { flex: 1 1 auto; width: auto; max-width: none; max-height: none; height: auto; }
       .app-window.sized .window-body { container-type: size; }
-      .app-window.sized .phone { width: min(calc((100cqh - 24px) * 0.462 + 24px), 62cqw); }
+      .app-window.sized .phone .screen { height: max(300px, calc(100cqh - 24px)); }
       .app-window.sized .monitor { width: min(100cqw, calc((100cqh - 230px) * 1.6)); }
       .app-window.sized .info { flex: 1 1 260px; max-width: 420px; }
       .app-window.minimized { pointer-events: none; }
@@ -450,7 +447,9 @@
       }
       /* Google Voice Tray icons: grey at zero unread, green when something is unread (same rule as the app). */
       .gv-shape { color: var(--gv-grey); transition: color 300ms; }
-      .dock-item[data-unread="true"] .gv-shape { color: var(--gv-green); filter: drop-shadow(0 0 6px rgba(0, 200, 83, 0.9)); }
+      .dock-item[data-unread="true"] .gv-shape { color: var(--gv-green); }
+      /* Solid shapes read as glowing with any shadow, so the Voice icons get none. */
+      .app-icon.icon-gv-messages, .app-icon.icon-gv-voicemail, .app-icon.icon-gv-chat { filter: none; }
       .dock-item[hidden] { display: none; }
       .dock-item .badge {
         position: absolute;
@@ -518,6 +517,27 @@
       }
       .gv-icon-btn:hover { background: #f1f3f4; }
       .gv-body { flex: 1; overflow: auto; }
+      /* Desktop Trash: bottom-right corner, just above the dock. */
+      .desk-trash { position: absolute; right: 40px; bottom: calc(var(--dock-h) + 20px); }
+      .desk-trash .app-icon { width: 60px; }
+      @media (max-width: 720px) { .desk-trash { right: 16px; } }
+      .gv-get {
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 9px 14px;
+        background: #e6f4ea;
+        color: #0d652d;
+        font-size: 12.5px;
+        line-height: 1.35;
+        text-decoration: none;
+      }
+      .gv-get:hover { background: #ceead6; }
+      .gv-get .go { flex: none; padding: 5px 10px; border-radius: 999px; background: #188038; color: #fff; font-weight: 600; }
+      .gv-drawer.chat .gv-get { background: #e8f0fe; color: #0b57d0; }
+      .gv-drawer.chat .gv-get .go { background: #0b57d0; }
       .gv-row {
         display: flex;
         align-items: center;
@@ -756,7 +776,7 @@
       .doc .btn { font-family: system-ui, sans-serif; }
       .doc .pull { margin: 22px 0; padding: 14px 18px; border-left: 3px solid #4f46e5; background: #eef2ff; font-style: italic; }
       @media (max-width: 720px) {
-        .desk-icons { top: auto; bottom: calc(var(--dock-h) + 20px); right: 16px; }
+        .desk-icons { top: auto; bottom: calc(var(--dock-h) + 120px); right: 16px; }
         .doc { padding: 26px 22px 32px; font-size: 15px; }
       }
 
@@ -864,7 +884,8 @@
       }
       .dock:not(.magnifying) .dock-item { transition: width 260ms ease-out; }
       /* The clock runs a little large so the time is easy to read at a glance. */
-      .dock-item[data-id="clock"] { width: calc(var(--size) * 1.25); }
+      .dock-item[data-id="clock"] { width: calc(var(--size) * 2); }
+      .dock-item[data-id="clock"] .app-icon { aspect-ratio: 2 / 1; }
       .dock-item:focus-visible { outline: none; }
       .dock-item:focus-visible .app-icon { outline: 3px solid #fff; outline-offset: 2px; }
       .dock-item .label {
@@ -1061,8 +1082,8 @@
         .window-body { flex-direction: column; align-items: stretch; padding: 18px 16px 20px; }
         .window-body .phone, .window-body .monitor { align-self: center; }
         .info { width: auto; }
-        .phone { width: min(300px, 78vw); border-radius: 44px; }
-        .phone .screen { border-radius: 33px; }
+        .phone { border-radius: 44px; }
+        .phone .screen { width: min(375px, calc(100vw - 64px)); border-radius: 33px; }
         .about, .settings { width: auto; }
       }
       @media (max-width: 1000px) {
@@ -1094,6 +1115,7 @@
   <body>
     <main class="desktop" id="desktop">
       <div class="desk-icons" id="desk-icons"></div>
+      <button type="button" class="desk-icon desk-trash" id="desk-trash" aria-pressed="false" aria-label="Trash"></button>
     </main>
 
     <div class="dock-wrap">
@@ -1194,9 +1216,7 @@
           <circle cx="50" cy="50" r="19" fill="none" stroke="#fff" stroke-width="10"/>`,
         clock: `
           <g fill="#fff" font-family="system-ui, -apple-system, Segoe UI, sans-serif" text-anchor="middle" style="font-variant-numeric: tabular-nums">
-            <text class="clk-day" x="50" y="30" font-size="14" font-weight="700" letter-spacing="1.5"></text>
-            <text class="clk-time" x="50" y="64" font-size="32" font-weight="600" letter-spacing="-0.5"></text>
-            <text class="clk-ampm" x="50" y="84" font-size="13" font-weight="700" letter-spacing="1.5"></text>
+            <text class="clk-time" x="100" y="79" font-size="78" font-weight="600" letter-spacing="-1"></text>
           </g>`,
         linkedin: `
           <rect width="100" height="100" fill="#0a66c2"/>
@@ -1211,11 +1231,11 @@
           <path transform="translate(18 18) scale(4)" fill="#fff" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>`,
         // Google Voice Tray's three tray icons, drawn like the app draws them: circle, upside-down triangle, square.
         'gv-messages': `
-          <circle class="gv-shape" cx="50" cy="50" r="22" fill="currentColor"/>`,
+          <circle class="gv-shape" cx="50" cy="50" r="30" fill="currentColor"/>`,
         'gv-voicemail': `
-          <polygon class="gv-shape" points="27,33 73,33 50,73" fill="currentColor" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>`,
+          <polygon class="gv-shape" points="22,25 78,25 50,77" fill="currentColor" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>`,
         'gv-chat': `
-          <rect class="gv-shape" x="30" y="30" width="40" height="40" rx="4" fill="currentColor"/>`,
+          <rect class="gv-shape" x="22" y="22" width="56" height="56" rx="6" fill="currentColor"/>`,
         calculator: `
           <rect width="100" height="100" fill="#1c1c1e"/>
           <rect x="18" y="14" width="64" height="18" rx="4" fill="#3a3a3c"/>
@@ -1249,16 +1269,18 @@
         road: { src: '/icons/road.png', bg: '#fff' },
         baseless: { src: '/icons/baseless.png', bg: '#fff' },
       };
+      // The clock is a 2:1 tile: digits as tall as the other glyphs, without standing taller than them.
+      const ICON_VIEWBOX = { clock: '0 0 200 100' };
       const iconHTML = (id) => IMG_ICONS[id]
         ? `<span class="app-icon icon-${id}" style="background:${IMG_ICONS[id].bg}"><img src="${IMG_ICONS[id].src}" alt="" width="180" height="180"></span>`
-        : `<span class="app-icon icon-${id}"><svg viewBox="0 0 100 100" aria-hidden="true">${ICONS[id]}</svg></span>`;
+        : `<span class="app-icon icon-${id}"><svg viewBox="${ICON_VIEWBOX[id] || '0 0 100 100'}" aria-hidden="true">${ICONS[id]}</svg></span>`;
 
       // ---------- Projects ----------
       const PROJECTS = [
         {
           id: 'googlevoicetray', name: 'Google Voice Tray', device: 'windows', platform: 'Windows desktop',
           desc: 'Lightweight system tray wrapper for Google Voice that stays running in the background and keeps your session alive. Three tray icons (a circle for Messages, a triangle for Voicemail, a square for Google Chat) turn green when something is unread. Try them in this Dock: click one to open it, right-click for its menu.',
-          url: 'https://github.com/brysonwf/googlevoicetray', cta: 'View on GitHub',
+          url: 'https://github.com/brysonwf/googlevoicetray', cta: 'Download on GitHub',
         },
         {
           id: 'budgetforecast', name: 'Budget Forecast', device: 'phone', platform: 'Mobile web app',
@@ -1338,10 +1360,6 @@
           </div>`;
       }
 
-      // Scale each 390px-wide iframe to whatever width its phone frame currently has.
-      const screenObserver = new ResizeObserver((entries) => {
-        for (const e of entries) e.target.style.setProperty('--s', e.contentRect.width / 390);
-      });
 
       // ---------- Window manager ----------
       const desktop = $('desktop');
@@ -1391,7 +1409,6 @@
         if (!el) return;
         windows.delete(id);
         dockItem(id)?.classList.remove('running');
-        el.querySelectorAll('.screen').forEach((s) => screenObserver.unobserve(s));
         el.classList.add('closing');
         el.addEventListener('animationend', () => el.remove(), { once: true });
         setTimeout(() => el.remove(), 300); // in case animations are disabled
@@ -1569,7 +1586,6 @@
         desktop.appendChild(el);
         windows.set(id, el);
         dockItem(id)?.classList.add('running');
-        el.querySelectorAll('.screen').forEach((s) => screenObserver.observe(s));
         el.querySelectorAll('iframe').forEach((f) => f.addEventListener('load', () => f.classList.add('loaded'), { once: true }));
         center(el, (cascade++ % 5) * 28 - 56);
         focusWindow(id);
@@ -1811,11 +1827,10 @@
       function updateClock() {
         const d = new Date();
         const time = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-        const [hm, ampm = ''] = time.split(/\s+/); // some locales use a narrow no-break space before AM/PM
-        const day = `${d.toLocaleDateString([], { weekday: 'short' })} ${d.getDate()}`.toUpperCase();
-        document.querySelectorAll('.clk-day').forEach((n) => (n.textContent = day));
+        // The tile shows just h:mm; AM/PM and the date are in the hover label and popover.
+        // Split on any whitespace: some locales put a narrow no-break space before AM/PM.
+        const [hm] = time.split(/\s+/);
         document.querySelectorAll('.clk-time').forEach((n) => (n.textContent = hm));
-        document.querySelectorAll('.clk-ampm').forEach((n) => (n.textContent = ampm.toUpperCase()));
         const label = dockItem('clock')?.querySelector('.label');
         if (label) label.textContent = d.toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
       }
@@ -1959,6 +1974,7 @@
         voicemail: gv.voicemails.filter((v) => v.unread).length,
         chat: [...gv.dms, ...gv.spaces].filter((c) => c.unread).length,
       });
+      const GVT_REPO = 'https://github.com/brysonwf/googlevoicetray';
       const GV_TRAYS = { messages: 'gv-messages', voicemail: 'gv-voicemail', chat: 'gv-chat' };
       const GV_TIPS = { messages: 'Google Voice - Messages', voicemail: 'Google Voice - Voicemail', chat: 'Google Chat' };
 
@@ -2055,6 +2071,11 @@
         gvDrawer.className = `gv-drawer${gv.open === 'chat' ? ' chat' : ''}`;
         gvDrawer.setAttribute('aria-label', gv.open === 'chat' ? 'Google Chat (demo)' : 'Google Voice (demo)');
         gvDrawer.innerHTML = gvScreen();
+        // Every demo screen points to the real app.
+        gvDrawer.querySelector('.gv-top').insertAdjacentHTML('afterend', `
+          <a class="gv-get" href="${GVT_REPO}" target="_blank" rel="noreferrer">
+            <span>This is a demo of <b>Google Voice Tray</b>, a free Windows app.</span><span class="go">Get it on GitHub ↗</span>
+          </a>`);
         const body = gvDrawer.querySelector('.gv-body');
         if (gv.thread) body.scrollTop = body.scrollHeight;
         paintGvTrays();
@@ -2135,6 +2156,7 @@
           { key: 'icon:messages', label: check(gv.icons.messages) + 'Google Messages icon', action: !(gv.icons.messages && enabled === 1) },
           { key: 'icon:chat', label: check(gv.icons.chat) + 'Google Chat icon', action: !(gv.icons.chat && enabled === 1) },
           '-',
+          { key: 'get', label: 'Get Google Voice Tray on GitHub…', action: true },
           { key: 'about', label: 'About Google Voice Tray…', action: true },
           { key: 'quit', label: 'Quit App', action: true },
         ];
@@ -2147,6 +2169,7 @@
           if (act === 'open') { if (!(gv.open && (which === 'chat' ? gv.open === 'chat' : gv.open === 'voice' && gv.tab === which))) gvToggle(which); }
           else if (act === 'auto') gv.autoOpen = !gv.autoOpen;
           else if (act.startsWith('icon:')) { gv.icons[act.slice(5)] = !gv.icons[act.slice(5)]; paintGvTrays(); }
+          else if (act === 'get') window.open(GVT_REPO, '_blank', 'noreferrer');
           else if (act === 'about') openProject('googlevoicetray');
           else if (act === 'quit') {
             gv.open = null;
@@ -2290,7 +2313,7 @@
       let trash = [...TRASH_FILES];
 
       function paintTrashIcon() {
-        dockItem('trash')?.querySelector('.icon-trash')?.setAttribute('data-empty', trash.length === 0);
+        document.querySelector('#desk-trash .icon-trash')?.setAttribute('data-empty', trash.length === 0);
       }
 
       function openTrash() {
@@ -2474,6 +2497,17 @@
         if (!deskIcons.contains(e.target)) deskIcons.querySelectorAll('.desk-icon').forEach((b) => b.setAttribute('aria-pressed', 'false'));
       });
 
+      // The Trash lives on the desktop (bottom-right, above the dock) instead of in the dock.
+      const deskTrash = $('desk-trash');
+      deskTrash.innerHTML = iconHTML('trash') + '<span>Trash</span>';
+      deskTrash.addEventListener('click', () => {
+        if (matchMedia('(hover: none)').matches || deskTrash.getAttribute('aria-pressed') === 'true') openTrash();
+        deskTrash.setAttribute('aria-pressed', 'true');
+      });
+      deskTrash.addEventListener('dblclick', openTrash);
+      deskTrash.addEventListener('keydown', (e) => { if (e.key === 'Enter') openTrash(); });
+      document.addEventListener('pointerdown', (e) => { if (!deskTrash.contains(e.target)) deskTrash.setAttribute('aria-pressed', 'false'); });
+
       // ---------- Browser windows (LinkedIn, X, GitHub) ----------
       // All three refuse to load inside another site's frame (X-Frame-Options), so GitHub is
       // rebuilt from its public API and the other two explain why and link out.
@@ -2649,7 +2683,6 @@
         { id: 'search', name: 'Spotlight Search', run: openSpotlight },
         { id: 'settings', name: 'System Settings', run: openSettings },
         { id: 'clock', name: 'Clock', run: clockPopover },
-        { id: 'trash', name: 'Trash', run: openTrash },
       ];
 
       DOCK.forEach((d) => {
@@ -2690,7 +2723,7 @@
             const r = el.getBoundingClientRect();
             const dist = Math.abs(e.clientX - (r.left + r.width / 2));
             const scale = 1 + amp * Math.max(0, 1 - dist / 150);
-            const base = el.dataset.id === 'clock' ? 1.25 : 1;
+            const base = el.dataset.id === 'clock' ? 2 : 1;
             el.style.width = `calc(var(--size) * ${(scale * base).toFixed(3)})`;
           });
         });
