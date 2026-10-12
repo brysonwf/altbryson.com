@@ -26,7 +26,9 @@
         --glass: rgba(255, 255, 255, 0.72);
         --glass-border: rgba(255, 255, 255, 0.55);
         --dock-h: 96px;
-        --size: clamp(30px, calc((100vw - 200px) / 27), 52px);
+        /* Icons grow until the dock spans the screen, capped at macOS's 128px maximum.
+           360px covers gaps, dividers, padding and room for magnification; 25.25 = 25 icons with the clock at 1.25x. */
+        --size: clamp(30px, calc((100vw - 360px) / 25.25), 128px);
         --gv-green: #00c853;
         --gv-grey: #808080;
         font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -71,30 +73,6 @@
         height: 100dvh;
         overflow: hidden;
       }
-      .welcome {
-        position: absolute;
-        left: 48px;
-        top: 44px;
-        max-width: 560px;
-        color: #fff;
-        text-shadow: 0 2px 20px rgba(15, 23, 42, 0.35);
-        user-select: none;
-      }
-      .welcome .eyebrow {
-        font-size: 13px;
-        font-weight: 700;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        opacity: 0.8;
-      }
-      .welcome h1 {
-        margin: 8px 0 12px;
-        font-size: clamp(2.4rem, 6vw, 4.6rem);
-        line-height: 0.95;
-        letter-spacing: -0.045em;
-      }
-      .welcome p { margin: 0; font-size: 1.05rem; opacity: 0.85; }
-
       /* ---------- Phone frame ---------- */
       .phone {
         position: relative;
@@ -275,6 +253,31 @@
       }
       .app-window:not(.focused) { box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25); }
       .app-window > :not(.titlebar) { min-height: 0; overflow: auto; }
+      .app-window[hidden] { display: none; }
+      .lights button:disabled { background: #cbd5e1; cursor: default; }
+
+      /* Resize handles: thin invisible strips on each edge, squares in the corners. */
+      .rz { position: absolute; z-index: 5; touch-action: none; }
+      .rz-n, .rz-s { left: 10px; right: 10px; height: 8px; cursor: ns-resize; }
+      .rz-e, .rz-w { top: 10px; bottom: 10px; width: 8px; cursor: ew-resize; }
+      .rz-n { top: -3px; } .rz-s { bottom: -3px; } .rz-e { right: -3px; } .rz-w { left: -3px; }
+      .rz-ne, .rz-nw, .rz-se, .rz-sw { width: 14px; height: 14px; }
+      .rz-ne { top: -3px; right: -3px; cursor: nesw-resize; }
+      .rz-sw { bottom: -3px; left: -3px; cursor: nesw-resize; }
+      .rz-nw { top: -3px; left: -3px; cursor: nwse-resize; }
+      .rz-se { bottom: -3px; right: -3px; cursor: nwse-resize; }
+      .app-window.fullscreen .rz { display: none; }
+      .app-window.fullscreen { border-radius: 0; max-width: none; max-height: none; }
+      .app-window.fullscreen .titlebar { cursor: default; }
+
+      /* A window with an explicit size: its content fills it instead of sizing itself. */
+      .app-window.sized { max-width: none; max-height: none; }
+      .app-window.sized > :not(.titlebar):not(.rz) { flex: 1 1 auto; width: auto; max-width: none; max-height: none; height: auto; }
+      .app-window.sized .window-body { container-type: size; }
+      .app-window.sized .phone { width: min(calc((100cqh - 24px) * 0.462 + 24px), 62cqw); }
+      .app-window.sized .monitor { width: min(100cqw, calc((100cqh - 230px) * 1.6)); }
+      .app-window.sized .info { flex: 1 1 260px; max-width: 420px; }
+      .app-window.minimized { pointer-events: none; }
       .app-window.closing { animation: close 180ms ease-in forwards; }
       @keyframes open { from { opacity: 0; transform: translateY(40px) scale(0.92); } }
       @keyframes close { to { opacity: 0; transform: translateY(40px) scale(0.92); } }
@@ -437,6 +440,13 @@
       .app-icon svg, .app-icon img { display: block; width: 100%; height: 100%; object-fit: contain; }
       .icon-trash[data-empty="true"] .trash-papers { display: none; }
       .app-icon.icon-trash { border-radius: 0; overflow: visible; box-shadow: none; filter: drop-shadow(0 4px 6px rgba(15, 23, 42, 0.35)); }
+      .app-icon.icon-weather, .app-icon.icon-bluetooth, .app-icon.icon-battery, .app-icon.icon-wifi,
+      .app-icon.icon-search, .app-icon.icon-settings, .app-icon.icon-clock {
+        border-radius: 0;
+        overflow: visible;
+        box-shadow: none;
+        filter: drop-shadow(0 2px 3px rgba(15, 23, 42, 0.45));
+      }
       /* Google Voice Tray icons: grey at zero unread, green when something is unread (same rule as the app). */
       .gv-shape { color: var(--gv-grey); transition: color 300ms; }
       .dock-item[data-unread="true"] .gv-shape { color: var(--gv-green); filter: drop-shadow(0 0 6px rgba(0, 200, 83, 0.9)); }
@@ -458,6 +468,40 @@
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
       }
       .dock-item .badge:empty { display: none; }
+      /* Release-stage tag across the bottom of a dock icon, and a rubber stamp in its window. */
+      .dock-item .stage {
+        position: absolute;
+        left: 50%;
+        bottom: 2px;
+        transform: translateX(-50%) rotate(-8deg);
+        padding: 1px 5px;
+        border-radius: 4px;
+        color: #fff;
+        font-size: max(8px, calc(var(--size) * 0.17));
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        line-height: 1.3;
+        text-transform: uppercase;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        pointer-events: none;
+      }
+      .stage-alpha { --stage: #dc2626; }
+      .stage-beta { --stage: #d97706; }
+      .dock-item .stage { background: var(--stage); }
+      .stage-stamp {
+        display: inline-block;
+        margin: 4px 0 0 8px;
+        padding: 1px 10px;
+        border: 2.5px solid var(--stage);
+        border-radius: 6px;
+        color: var(--stage);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        transform: rotate(-10deg);
+        opacity: 0.88;
+      }
 
       /* ---------- Google Voice Tray drawer (375x667 panel docked bottom-right, like the app) ---------- */
       .gv-drawer {
@@ -606,7 +650,11 @@
       .app-window.dark .titlebar { color: #d4d4d8; border-bottom-color: rgba(255, 255, 255, 0.08); }
 
       /* Calculator */
-      .calc { width: 248px; padding: 0 12px 14px; user-select: none; }
+      .calc { width: 248px; padding: 0 12px 14px; user-select: none; cursor: default; touch-action: none; }
+      /* Calculator has no separate title strip on macOS: blend it into the body. */
+      .app-window.calc-window .titlebar { border-bottom: 0; cursor: default; }
+      .app-window.calc-window .titlebar .title { opacity: 0; }
+      .app-window.calc-window.dragging .titlebar, .app-window.dragging [data-drag] { cursor: grabbing; }
       .calc .screen-out { padding: 10px 6px 0; text-align: right; color: #fff; }
       .calc .expr { min-height: 18px; color: #a1a1aa; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .calc .val { font-size: 46px; font-weight: 300; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -741,6 +789,42 @@
         .doc { padding: 26px 22px 32px; font-size: 15px; }
       }
 
+      /* Browser window (LinkedIn, X, GitHub) */
+      .browser { display: flex; flex-direction: column; width: min(860px, calc(100vw - 16px)); height: min(600px, calc(100dvh - var(--dock-h) - 80px)); }
+      .browser .addr { flex: none; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid rgba(15, 23, 42, 0.08); }
+      .browser .url { flex: 1; min-width: 0; padding: 6px 12px; border-radius: 8px; background: rgba(15, 23, 42, 0.06); color: #334155; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .browser .addr .btn { margin: 0; padding: 6px 12px; font-size: 12.5px; white-space: nowrap; }
+      .browser .page { flex: 1; min-height: 0; overflow: auto; background: #fff; }
+      .blocked { max-width: 420px; margin: 0 auto; padding: 64px 24px; text-align: center; }
+      .blocked .app-icon { width: 72px; margin: 0 auto 18px; }
+      .blocked h3 { margin: 0 0 8px; font-size: 1.25rem; }
+      .blocked p { margin: 0; color: var(--muted); line-height: 1.55; }
+      .gh-loading { padding: 64px 24px; text-align: center; color: #64748b; }
+      .gh { display: flex; gap: 28px; padding: 24px 28px; color: #1f2328; }
+      .gh-profile { flex: none; width: 200px; }
+      .gh-profile img { width: 100%; height: auto; border-radius: 50%; box-shadow: 0 0 0 1px #d0d7de; }
+      .gh-profile h3 { margin: 14px 0 0; font-size: 1.35rem; }
+      .gh-login { color: #59636e; font-size: 1.05rem; }
+      .gh-profile p { margin: 12px 0 0; font-size: 14px; line-height: 1.5; }
+      .gh-stats { margin-top: 12px; color: #59636e; font-size: 13px; line-height: 1.5; }
+      .gh-repos { flex: 1; min-width: 0; }
+      .gh-repos h4 { margin: 0 0 12px; font-size: 15px; font-weight: 600; }
+      .gh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+      .gh-repo { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 8px; color: inherit; text-decoration: none; }
+      .gh-repo:hover { border-color: #0969da; }
+      .gh-repo b { color: #0969da; font-size: 14px; }
+      .gh-repo .desc { flex: 1; color: #59636e; font-size: 12.5px; line-height: 1.45; }
+      .gh-repo .meta { color: #59636e; font-size: 12px; }
+      .gh-repo .dot { display: inline-block; width: 10px; height: 10px; margin-right: 5px; border-radius: 50%; background: #3178c6; vertical-align: -1px; }
+      @media (max-width: 720px) {
+        .gh { flex-direction: column; padding: 18px; }
+        .gh-profile { width: auto; display: grid; grid-template-columns: 72px 1fr; column-gap: 14px; }
+        .gh-profile img { grid-row: span 2; width: 72px; }
+        .gh-profile h3 { margin: 6px 0 0; }
+        .gh-profile p, .gh-stats { grid-column: 1 / -1; }
+        .browser { height: auto; }
+      }
+
       /* Built with Claude card */
       .popover.claude { width: 330px; padding: 22px 22px 20px; background: rgba(250, 249, 245, 0.97); color: #141413; }
       .claude-card .app-icon { width: 52px; margin-bottom: 14px; }
@@ -809,6 +893,8 @@
         transition: width 140ms ease-out;
       }
       .dock:not(.magnifying) .dock-item { transition: width 260ms ease-out; }
+      /* The clock runs a little large so the time is easy to read at a glance. */
+      .dock-item[data-id="clock"] { width: calc(var(--size) * 1.25); }
       .dock-item:focus-visible { outline: none; }
       .dock-item:focus-visible .app-icon { outline: 3px solid #fff; outline-offset: 2px; }
       .dock-item .label {
@@ -990,7 +1076,6 @@
 
       /* ---------- Responsive ---------- */
       @media (max-width: 720px) {
-        .welcome { left: 20px; top: 28px; right: 20px; }
         .app-window {
           left: 8px !important;
           right: 8px;
@@ -1004,7 +1089,7 @@
         .phone .screen { border-radius: 33px; }
         .about, .settings { width: auto; }
       }
-      @media (max-width: 900px) {
+      @media (max-width: 1000px) {
         :root { --size: 44px; --dock-h: 84px; }
         /* Too many icons to fit: let the dock scroll sideways like a shelf. */
         .dock-wrap { justify-content: flex-start; }
@@ -1032,11 +1117,6 @@
   </head>
   <body>
     <main class="desktop" id="desktop">
-      <div class="welcome">
-        <div class="eyebrow">altbryson</div>
-        <h1>Bryson's Portfolio</h1>
-        <p>Open anything in the dock. Every project runs live, on the device it was built for.</p>
-      </div>
       <div class="desk-icons" id="desk-icons"></div>
     </main>
 
@@ -1108,46 +1188,30 @@
           <path d="M50 14c4 14 22 22 22 42a22 22 0 0 1-44 0c0-10 6-17 10-21 0 8 4 13 8 14-2-12 2-25 4-35z" fill="url(#g-fire)"/>
           <path d="M50 52c3 6 10 9 10 17a10 10 0 0 1-20 0c0-5 3-8 5-10 1 4 3 5 5 5-1-4-1-8 0-12z" fill="#fde68a"/>
           <rect x="22" y="80" width="56" height="6" rx="3" fill="#7c2d12" opacity=".8"/>`,
+        // Status items are flat glyphs with no tile, drawn to sit beside the Trash.
         weather: `
-          <defs><linearGradient id="g-wx" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient>
-          <radialGradient id="g-sun" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fef08a"/><stop offset="1" stop-color="#facc15"/></radialGradient></defs>
-          <rect width="100" height="100" fill="url(#g-wx)"/>
-          <circle cx="40" cy="40" r="17" fill="url(#g-sun)"/>
-          <path d="M34 74h34a13 13 0 0 0 0-26 18 18 0 0 0-34 4 11 11 0 0 0 0 22z" fill="#fff"/>
-          <text class="wx-temp" x="50" y="92" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="15" fill="#fff"></text>`,
+          <circle cx="40" cy="38" r="16" fill="#facc15"/>
+          <path d="M32 76h38a14 14 0 0 0 0-28 19 19 0 0 0-36 4 12 12 0 0 0-2 24z" fill="#fff"/>
+          <text class="wx-temp" x="51" y="68" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="15" fill="#1e3a8a"></text>`,
         bluetooth: `
-          <defs><linearGradient id="g-bt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient></defs>
-          <rect width="100" height="100" fill="url(#g-bt)"/>
-          <polyline points="33,35 65,63 50,77 50,23 65,37 33,65" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>`,
+          <polyline points="31,34 67,64 50,80 50,20 67,36 31,66" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>`,
         battery: `
-          <defs><linearGradient id="g-bat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4ade80"/><stop offset="1" stop-color="#15803d"/></linearGradient></defs>
-          <rect width="100" height="100" fill="url(#g-bat)"/>
-          <rect x="18" y="34" width="58" height="32" rx="8" fill="none" stroke="#fff" stroke-width="5"/>
-          <rect x="79" y="44" width="5" height="12" rx="2" fill="#fff"/>
-          <rect class="bat-fill" x="24" y="40" width="46" height="20" rx="3" fill="#fff"/>
-          <path class="bat-bolt" d="M50 37l-9 15h8l-3 11 10-16h-8z" fill="#15803d" style="display:none"/>`,
+          <rect x="12" y="32" width="66" height="36" rx="10" fill="none" stroke="#fff" stroke-width="6"/>
+          <rect x="82" y="43" width="7" height="14" rx="3" fill="#fff"/>
+          <rect class="bat-fill" x="20" y="40" width="50" height="20" rx="4" fill="#fff"/>
+          <path class="bat-bolt" d="M49 35l-10 17h9l-3 13 11-18h-9z" fill="#16a34a" stroke="#fff" stroke-width="1.5" style="display:none"/>`,
         wifi: `
-          <defs><linearGradient id="g-wifi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1e40af"/></linearGradient></defs>
-          <rect width="100" height="100" fill="url(#g-wifi)"/>
-          <g class="wifi-arcs" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round">
-            <path d="M18 44a46 46 0 0 1 64 0"/><path d="M29 55a30 30 0 0 1 42 0"/><path d="M40 66a14 14 0 0 1 20 0"/>
+          <g class="wifi-arcs" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round">
+            <path d="M14 42a51 51 0 0 1 72 0"/><path d="M27 55a33 33 0 0 1 46 0"/><path d="M39 67a16 16 0 0 1 22 0"/>
           </g>
-          <circle cx="50" cy="76" r="5.5" fill="#fff"/>`,
+          <circle cx="50" cy="79" r="6.5" fill="#fff"/>`,
         search: `
-          <defs><linearGradient id="g-sr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f8fafc"/><stop offset="1" stop-color="#cbd5e1"/></linearGradient></defs>
-          <rect width="100" height="100" fill="url(#g-sr)"/>
-          <circle cx="44" cy="44" r="19" fill="rgba(56,189,248,.2)" stroke="#334155" stroke-width="8"/>
-          <path d="M58 58l17 17" stroke="#334155" stroke-width="10" stroke-linecap="round"/>`,
+          <circle cx="43" cy="43" r="22" fill="none" stroke="#fff" stroke-width="9"/>
+          <path d="M60 60l20 20" stroke="#fff" stroke-width="11" stroke-linecap="round"/>`,
         settings: `
-          <defs><linearGradient id="g-set" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9ca3af"/><stop offset="1" stop-color="#4b5563"/></linearGradient>
-          <linearGradient id="g-gear" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3f4f6"/><stop offset="1" stop-color="#9ca3af"/></linearGradient></defs>
-          <rect width="100" height="100" fill="url(#g-set)"/>
-          <circle cx="50" cy="50" r="30" fill="none" stroke="url(#g-gear)" stroke-width="10" stroke-dasharray="7.2 5.37"/>
-          <circle cx="50" cy="50" r="25" fill="url(#g-gear)"/>
-          <circle cx="50" cy="50" r="13" fill="#4b5563"/>
-          <circle cx="50" cy="50" r="7" fill="#d1d5db"/>`,
+          <circle cx="50" cy="50" r="33" fill="none" stroke="#fff" stroke-width="11" stroke-dasharray="7.8 6.02"/>
+          <circle cx="50" cy="50" r="21" fill="none" stroke="#fff" stroke-width="13"/>`,
         clock: `
-          <rect width="100" height="100" fill="#111"/>
           <circle cx="50" cy="50" r="40" fill="#fff"/>
           <g stroke="#111" stroke-linecap="round">${Array.from({ length: 12 }, (_, i) =>
             `<line x1="50" y1="${i % 3 ? 14 : 13}" x2="50" y2="${i % 3 ? 18 : 21}" stroke-width="${i % 3 ? 2 : 3.2}" transform="rotate(${i * 30} 50 50)"/>`).join('')}</g>
@@ -1231,7 +1295,7 @@
           url: 'https://road.dance', cta: 'Open in new tab',
         },
         {
-          id: 'baseless', name: 'Baseless Chat', device: 'phone', platform: 'Mobile web + Chrome extension',
+          id: 'baseless', name: 'Baseless Chat', device: 'phone', platform: 'Mobile web + Chrome extension', stage: 'beta',
           desc: 'Google Chrome extension that adds a lightweight chat interface to every website, creating a seamless overlay experience across browsing sessions.',
           url: 'https://baseless.chat', cta: 'Open in new tab',
         },
@@ -1246,12 +1310,12 @@
           url: 'https://snowballfightapp.web.app/', cta: 'Open in new tab',
         },
         {
-          id: 'iamlocal', name: 'iamlocal.online', device: 'phone', platform: 'Mobile web app · WIP',
+          id: 'iamlocal', name: 'iamlocal.online', device: 'phone', platform: 'Mobile web app', stage: 'alpha',
           desc: 'Work in progress chat application designed to connect nearby users in real time. A modern collaboration tool built with live messaging and location-aware interaction in mind.',
           url: 'https://iamlocal.online/', cta: 'Open in new tab',
         },
         {
-          id: 'firerp', name: 'Firerp', device: 'phone', platform: 'Mobile web app · WIP',
+          id: 'firerp', name: 'Firerp', device: 'phone', platform: 'Mobile web app', stage: 'alpha',
           desc: 'Work in progress ERP application offering enterprise resource planning for modern teams, designed to manage operations, inventory, and financial workflows in one place.',
           url: 'https://firerp.app/', cta: 'Open in new tab',
         },
@@ -1355,21 +1419,62 @@
         el.classList.add('closing');
         el.addEventListener('animationend', () => el.remove(), { once: true });
         setTimeout(() => el.remove(), 300); // in case animations are disabled
-        const next = [...windows.entries()].sort((a, b) => b[1].style.zIndex - a[1].style.zIndex)[0];
+        focusTopmost();
+      }
+
+      function focusTopmost() {
+        const next = [...windows.entries()]
+          .filter(([, w]) => !w.classList.contains('minimized'))
+          .sort((a, b) => b[1].style.zIndex - a[1].style.zIndex)[0];
         focusWindow(next ? next[0] : null);
       }
 
       function closeAllWindows() { [...windows.keys()].forEach(closeWindow); }
 
+      // Minimize shrinks the window into its dock icon (or the dock's centre) and keeps it alive;
+      // opening it again from the dock, desktop or menus restores it.
+      function genieOffset(id, el) {
+        const target = (dockItem(id) || dock).getBoundingClientRect();
+        const r = el.getBoundingClientRect();
+        return `translate(${target.left + target.width / 2 - (r.left + r.width / 2)}px, ${target.top + target.height / 2 - (r.top + r.height / 2)}px) scale(0.08)`;
+      }
+      const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function minimizeWindow(id) {
+        const el = windows.get(id);
+        if (!el || el.classList.contains('minimized')) return;
+        el.classList.add('minimized');
+        el.classList.remove('focused');
+        const finish = () => { if (el.classList.contains('minimized')) el.hidden = true; };
+        if (reduceMotion()) finish();
+        else el.animate([{ transform: 'none', opacity: 1 }, { transform: genieOffset(id, el), opacity: 0 }],
+          { duration: 320, easing: 'cubic-bezier(.4, 0, .9, .6)' }).onfinish = finish;
+        focusTopmost();
+      }
+
+      function restoreWindow(id) {
+        const el = windows.get(id);
+        el.classList.remove('minimized');
+        el.hidden = false;
+        if (!reduceMotion()) {
+          el.animate([{ transform: genieOffset(id, el), opacity: 0 }, { transform: 'none', opacity: 1 }],
+            { duration: 320, easing: 'cubic-bezier(.1, .4, .6, 1)' });
+        }
+        focusWindow(id);
+      }
+
+      // Windows drag by the titlebar, plus any area marked data-drag (e.g. the whole calculator, like macOS).
+      const DRAG_HANDLE = '.titlebar, [data-drag]';
+      const NOT_DRAGGABLE = 'button, input, a, textarea';
       function makeDraggable(el) {
-        const bar = el.querySelector('.titlebar');
-        bar.addEventListener('pointerdown', (e) => {
-          if (e.button !== 0 || e.target.closest('button') || isCompact()) return;
+        el.addEventListener('pointerdown', (e) => {
+          if (e.button !== 0 || !e.target.closest(DRAG_HANDLE) || e.target.closest(NOT_DRAGGABLE) || isCompact() || el.classList.contains('fullscreen')) return;
+          e.preventDefault();
           const dx = e.clientX - el.offsetLeft;
           const dy = e.clientY - el.offsetTop;
           el.classList.add('dragging');
           document.body.classList.add('dragging');
-          bar.setPointerCapture(e.pointerId);
+          el.setPointerCapture(e.pointerId);
           const move = (ev) => {
             el.style.left = ev.clientX - dx + 'px';
             el.style.top = ev.clientY - dy + 'px';
@@ -1378,21 +1483,86 @@
           const up = () => {
             el.classList.remove('dragging');
             document.body.classList.remove('dragging');
-            bar.removeEventListener('pointermove', move);
-            bar.removeEventListener('pointerup', up);
-            bar.removeEventListener('pointercancel', up);
+            el.removeEventListener('pointermove', move);
+            el.removeEventListener('pointerup', up);
+            el.removeEventListener('pointercancel', up);
           };
-          bar.addEventListener('pointermove', move);
-          bar.addEventListener('pointerup', up);
-          bar.addEventListener('pointercancel', up);
+          el.addEventListener('pointermove', move);
+          el.addEventListener('pointerup', up);
+          el.addEventListener('pointercancel', up);
         });
-        bar.addEventListener('dblclick', (e) => { if (!e.target.closest('button')) center(el); });
+        el.querySelector('.titlebar').addEventListener('dblclick', (e) => {
+          if (!e.target.closest('button') && el.querySelector('.rz')) toggleFullScreen(el);
+        });
+      }
+
+      // ---------- Resize + full screen ----------
+      const RESIZE_DIRS = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
+      const MIN_W = 280, MIN_H = 200;
+
+      // Once a window has an explicit size, its content stretches to fill it (see .sized in CSS).
+      function setRect(el, { left, top, width, height }) {
+        el.classList.add('sized');
+        Object.assign(el.style, { left: left + 'px', top: top + 'px', width: width + 'px', height: height + 'px' });
+      }
+
+      function makeResizable(el) {
+        el.addEventListener('pointerdown', (e) => {
+          const handle = e.target.closest('[data-rz]');
+          if (!handle || e.button !== 0 || isCompact() || el.classList.contains('fullscreen')) return;
+          e.preventDefault();
+          e.stopPropagation();
+          focusWindow([...windows.entries()].find(([, w]) => w === el)?.[0]);
+          const dir = handle.dataset.rz;
+          const start = { x: e.clientX, y: e.clientY, left: el.offsetLeft, top: el.offsetTop, width: el.offsetWidth, height: el.offsetHeight };
+          const maxH = desktop.clientHeight - dockH();
+          document.body.classList.add('dragging');
+          handle.setPointerCapture(e.pointerId);
+          const move = (ev) => {
+            const dx = ev.clientX - start.x, dy = ev.clientY - start.y;
+            let { left, top, width, height } = start;
+            if (dir.includes('e')) width = Math.max(MIN_W, start.width + dx);
+            if (dir.includes('s')) height = Math.min(Math.max(MIN_H, start.height + dy), maxH - top);
+            if (dir.includes('w')) { width = Math.max(MIN_W, start.width - dx); left = start.left + start.width - width; }
+            if (dir.includes('n')) { height = Math.max(MIN_H, start.height - dy); top = Math.max(0, start.top + start.height - height); height = start.top + start.height - top; }
+            setRect(el, { left, top, width, height });
+          };
+          const up = () => {
+            document.body.classList.remove('dragging');
+            handle.removeEventListener('pointermove', move);
+            handle.removeEventListener('pointerup', up);
+            handle.removeEventListener('pointercancel', up);
+          };
+          handle.addEventListener('pointermove', move);
+          handle.addEventListener('pointerup', up);
+          handle.addEventListener('pointercancel', up);
+        });
+      }
+
+      // Full screen fills the desktop above the dock; toggling again restores the previous size.
+      function fitFullScreen(el) {
+        Object.assign(el.style, { left: '0px', top: '0px', width: desktop.clientWidth + 'px', height: desktop.clientHeight - dockH() + 'px' });
+      }
+      function toggleFullScreen(el) {
+        if (el.classList.contains('fullscreen')) {
+          const prev = JSON.parse(el.dataset.prevRect);
+          el.classList.remove('fullscreen');
+          el.classList.toggle('sized', prev.sized);
+          Object.assign(el.style, prev.style);
+          return;
+        }
+        el.dataset.prevRect = JSON.stringify({
+          sized: el.classList.contains('sized'),
+          style: { left: el.style.left, top: el.style.top, width: el.style.width, height: el.style.height },
+        });
+        el.classList.add('fullscreen', 'sized');
+        fitFullScreen(el);
       }
 
       // Opens (or focuses) a window. `body` is the inner HTML below the titlebar.
-      function openWindow({ id, title, body, device = '' }) {
+      function openWindow({ id, title, body, device = '', resizable = true }) {
         bounce(id);
-        if (windows.has(id)) return focusWindow(id);
+        if (windows.has(id)) return windows.get(id).classList.contains('minimized') ? restoreWindow(id) : focusWindow(id);
         if (isCompact()) closeAllWindows();
 
         const el = document.createElement('section');
@@ -1405,14 +1575,18 @@
             <span class="lights">
               <button class="close" type="button" aria-label="Close ${title}">×</button>
               <button class="min" type="button" aria-label="Minimize ${title}">−</button>
-              <button class="max" type="button" aria-label="Center ${title}">+</button>
+              <button class="max" type="button" aria-label="Full screen ${title}" ${resizable ? '' : 'disabled'}>⤢</button>
             </span>
             <span class="title">${title}</span>
           </div>
-          ${body}`;
+          ${body}
+          ${resizable ? RESIZE_DIRS.map((d) => `<span class="rz rz-${d}" data-rz="${d}" aria-hidden="true"></span>`).join('') : ''}`;
         el.querySelector('.close').addEventListener('click', () => closeWindow(id));
-        el.querySelector('.min').addEventListener('click', () => closeWindow(id));
-        el.querySelector('.max').addEventListener('click', () => center(el));
+        el.querySelector('.min').addEventListener('click', () => minimizeWindow(id));
+        if (resizable) {
+          el.querySelector('.max').addEventListener('click', () => toggleFullScreen(el));
+          makeResizable(el);
+        }
         el.addEventListener('pointerdown', () => focusWindow(id));
         makeDraggable(el);
 
@@ -1440,7 +1614,7 @@
               <div class="info">
                 <div class="head">
                   ${iconHTML(p.id)}
-                  <div><h2>${p.name}</h2><span class="platform">${p.platform}</span></div>
+                  <div><h2>${p.name}</h2><span class="platform">${p.platform}</span>${p.stage ? `<span class="stage-stamp stage-${p.stage}">${p.stage}</span>` : ''}</div>
                 </div>
                 <p>${p.desc}</p>
                 ${p.device === 'phone' ? '<div class="live">Live — tap and scroll inside the phone</div>' : ''}
@@ -1681,8 +1855,8 @@
         if (!battery) return;
         const fill = document.querySelector('.icon-battery .bat-fill');
         const bolt = document.querySelector('.icon-battery .bat-bolt');
-        fill.setAttribute('width', Math.max(3, 46 * battery.level));
-        fill.setAttribute('fill', battery.level < 0.2 && !battery.charging ? '#fecaca' : '#fff');
+        fill.setAttribute('width', Math.max(4, 50 * battery.level));
+        fill.setAttribute('fill', battery.level < 0.2 && !battery.charging ? '#f87171' : '#fff');
         bolt.style.display = battery.charging ? '' : 'none';
         const label = dockItem('battery').querySelector('.label');
         label.textContent = `Battery ${Math.round(battery.level * 100)}%${battery.charging ? ' · Charging' : ''}`;
@@ -1728,47 +1902,38 @@
           <div class="sub">Websites can't list your nearby devices, so there's nothing to show here.</div>`);
       }
 
-      // Weather: only asks for location after the visitor clicks, then uses Open-Meteo (no key needed).
+      // Weather: always Carolina Beach, NC, from Open-Meteo (no key, no visitor location needed).
+      const WX_PLACE = { name: 'Carolina Beach, NC', lat: 34.04, lon: -77.89 };
       let weather = null;
       const WX = [[0, 'Clear'], [2, 'Partly cloudy'], [3, 'Overcast'], [48, 'Fog'], [57, 'Drizzle'], [67, 'Rain'], [77, 'Snow'], [82, 'Rain showers'], [86, 'Snow showers'], [99, 'Thunderstorm']];
       const wxText = (code) => (WX.find(([max]) => code <= max) || WX[WX.length - 1])[1];
-      function weatherHTML() {
-        if (!weather) {
-          return `<h4>Weather</h4><div class="sub">See current conditions where you are.</div>
-            <button class="btn" type="button" data-wx="load">Use my location</button>`;
+
+      async function loadWeather() {
+        try {
+          const url = `https://api.open-meteo.com/v1/forecast?latitude=${WX_PLACE.lat}&longitude=${WX_PLACE.lon}` +
+            '&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=America%2FNew_York&forecast_days=1';
+          const r = await (await fetch(url)).json();
+          weather = {
+            temp: Math.round(r.current.temperature_2m),
+            text: wxText(r.current.weather_code),
+            hi: Math.round(r.daily.temperature_2m_max[0]),
+            lo: Math.round(r.daily.temperature_2m_min[0]),
+          };
+          document.querySelector('.icon-weather .wx-temp').textContent = weather.temp + '°';
+          dockItem('weather').querySelector('.label').textContent = `${WX_PLACE.name} · ${weather.temp}°F ${weather.text}`;
+        } catch {
+          if (!weather) weather = { error: "Couldn't reach the weather service. Try again later." };
         }
-        if (weather.error) return `<h4>Weather</h4><div class="sub">${esc(weather.error)}</div>`;
-        return `<h4>Weather</h4><div class="big">${weather.temp}°F</div>
+        if (popoverOwner === dockItem('weather')) popover.innerHTML = weatherHTML();
+      }
+
+      function weatherHTML() {
+        if (!weather) return `<h4>${WX_PLACE.name}</h4><div class="sub">Loading…</div>`;
+        if (weather.error) return `<h4>${WX_PLACE.name}</h4><div class="sub">${esc(weather.error)}</div>`;
+        return `<h4>${WX_PLACE.name}</h4><div class="big">${weather.temp}°F</div>
           <div class="sub">${weather.text} · H ${weather.hi}° L ${weather.lo}°</div>`;
       }
-      function weatherPopover(anchor) {
-        const el = showPopover(anchor, weatherHTML());
-        el?.addEventListener('click', (e) => {
-          if (!e.target.closest('[data-wx="load"]')) return;
-          e.target.textContent = 'Locating…';
-          navigator.geolocation.getCurrentPosition(async ({ coords }) => {
-            try {
-              const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.latitude.toFixed(2)}&longitude=${coords.longitude.toFixed(2)}` +
-                '&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=auto&forecast_days=1';
-              const r = await (await fetch(url)).json();
-              weather = {
-                temp: Math.round(r.current.temperature_2m),
-                text: wxText(r.current.weather_code),
-                hi: Math.round(r.daily.temperature_2m_max[0]),
-                lo: Math.round(r.daily.temperature_2m_min[0]),
-              };
-              document.querySelector('.icon-weather .wx-temp').textContent = weather.temp + '°';
-              dockItem('weather').querySelector('.label').textContent = `${weather.temp}°F · ${weather.text}`;
-            } catch {
-              weather = { error: "Couldn't reach the weather service. Try again later." };
-            }
-            if (popover === el) el.innerHTML = weatherHTML();
-          }, () => {
-            weather = null;
-            if (popover === el) el.innerHTML = `<h4>Weather</h4><div class="sub">Location access was declined.</div>`;
-          }, { timeout: 10000 });
-        });
-      }
+      function weatherPopover(anchor) { showPopover(anchor, weatherHTML()); }
 
       // ---------- Google Voice Tray (three tray icons + drawer) ----------
       // Demo data only: fictional names and 555 numbers.
@@ -2044,8 +2209,9 @@
         const el = openWindow({
           id: 'calculator',
           title: 'Calculator',
+          resizable: false,
           body: `
-            <div class="calc">
+            <div class="calc" data-drag>
               <div class="screen-out"><div class="expr"></div><div class="val">0</div><div class="conf"></div></div>
               <div class="keys">
                 <button class="fn" data-k="C">AC</button><button class="fn" data-k="±">±</button><button class="fn" data-k="%">%</button><button class="op" data-k="/">÷</button>
@@ -2057,7 +2223,7 @@
             </div>`,
         });
         if (!el) return;
-        el.classList.add('dark');
+        el.classList.add('dark', 'calc-window');
         let expr = '';
         let cur = '0';
         let fresh = true;
@@ -2280,7 +2446,7 @@
               <p>The Google Voice Tray screens show fictional demo data. The names, messages and 555 phone numbers are made up, and nothing is sent anywhere. The calculator is wrong on purpose. Please don't do your taxes with it.</p>
 
               <h2>Your data</h2>
-              <p>The desktop keeps a few preferences, like your wallpaper and recent items, in your own browser. Weather asks for your location only after you click, and sends it only to the Open-Meteo weather service. The site uses standard Google Analytics to count visits.</p>
+              <p>The desktop keeps a few preferences, like your wallpaper and recent items, in your own browser. Weather always shows Carolina Beach, NC, from the Open-Meteo service. Your location is never used. The site uses standard Google Analytics to count visits.</p>
 
               <p class="pull">In short: this is one person's opinion about interface design, made for fun and for a portfolio. No harm meant, no money made.</p>
             </article>`,
@@ -2290,7 +2456,7 @@
       function openResume() {
         openWindow({
           id: 'resume',
-          title: 'Resume.pdf',
+          title: "Bryson Faggart's Resume.pdf",
           body: `
             <article class="doc" style="text-align:center;padding-top:64px;padding-bottom:64px">
               <div class="kicker">Resume</div>
@@ -2303,7 +2469,7 @@
 
       // Desktop icons: touch opens on a single tap; a mouse selects first and opens on double-click, like Finder.
       const DESK_DOCS = [
-        { id: 'resume', name: 'Resume.pdf', ext: 'pdf', open: openResume },
+        { id: 'resume', name: "Bryson Faggart's Resume.pdf", ext: 'pdf', open: openResume },
         { id: 'menubar-doc', name: 'The Menu Bar Problem.doc', ext: 'doc', open: openMenubarDoc },
         { id: 'disclaimer', name: 'Legal Disclaimer.txt', ext: 'txt', open: openDisclaimer },
       ];
@@ -2325,6 +2491,87 @@
       document.addEventListener('pointerdown', (e) => {
         if (!deskIcons.contains(e.target)) deskIcons.querySelectorAll('.desk-icon').forEach((b) => b.setAttribute('aria-pressed', 'false'));
       });
+
+      // ---------- Browser windows (LinkedIn, X, GitHub) ----------
+      // All three refuse to load inside another site's frame (X-Frame-Options), so GitHub is
+      // rebuilt from its public API and the other two explain why and link out.
+      const SOCIAL = {
+        github: { title: 'GitHub', url: 'https://github.com/brysonwf', host: 'github.com/brysonwf' },
+        linkedin: { title: 'LinkedIn', url: 'https://www.linkedin.com/in/brysonwf/', host: 'linkedin.com/in/brysonwf' },
+        x: { title: 'X', url: 'https://x.com/brysonwf', host: 'x.com/brysonwf' },
+      };
+
+      function openBrowser(id) {
+        const s = SOCIAL[id];
+        const el = openWindow({
+          id,
+          title: s.title,
+          body: `
+            <div class="browser">
+              <div class="addr">
+                <span class="url">🔒 ${s.host}</span>
+                <a class="btn secondary" href="${s.url}" target="_blank" rel="noreferrer">Open in new tab ↗</a>
+              </div>
+              <div class="page"></div>
+            </div>`,
+        });
+        if (!el) return;
+        const page = el.querySelector('.page');
+        if (id === 'github') return renderGitHub(page);
+        page.innerHTML = `
+          <div class="blocked">
+            ${iconHTML(id)}
+            <h3>${s.host.split('/')[0]} won't open inside another website</h3>
+            <p>${s.title} blocks other sites from showing its pages in a window, so this one opens in a new tab instead.</p>
+            <a class="btn" href="${s.url}" target="_blank" rel="noreferrer">View @brysonwf on ${s.title} ↗</a>
+          </div>`;
+      }
+
+      let githubCache = null;
+      async function renderGitHub(page) {
+        page.innerHTML = '<div class="gh-loading">Loading github.com/brysonwf…</div>';
+        try {
+          if (!githubCache) {
+            const [user, repos] = await Promise.all([
+              fetch('https://api.github.com/users/brysonwf').then((r) => r.json()),
+              fetch('https://api.github.com/users/brysonwf/repos?sort=pushed&per_page=12').then((r) => r.json()),
+            ]);
+            if (!user.login || !Array.isArray(repos)) throw new Error('GitHub API unavailable');
+            githubCache = { user, repos };
+          }
+          const { user, repos } = githubCache;
+          const ago = (d) => new Date(d).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+          page.innerHTML = `
+            <div class="gh">
+              <aside class="gh-profile">
+                <img src="${esc(user.avatar_url)}" alt="" width="120" height="120">
+                <h3>${esc(user.name || user.login)}</h3>
+                <div class="gh-login">${esc(user.login)}</div>
+                ${user.bio ? `<p>${esc(user.bio)}</p>` : ''}
+                <div class="gh-stats">${user.followers} followers · ${user.following} following · ${user.public_repos} public repos</div>
+              </aside>
+              <section class="gh-repos">
+                <h4>Recently updated repositories</h4>
+                <div class="gh-grid">
+                  ${repos.map((r) => `
+                    <a class="gh-repo" href="${esc(r.html_url)}" target="_blank" rel="noreferrer">
+                      <b>${esc(r.name)}</b>
+                      <span class="desc">${esc(r.description || 'No description')}</span>
+                      <span class="meta">${r.language ? `<i class="dot"></i>${esc(r.language)} · ` : ''}★ ${r.stargazers_count} · Updated ${ago(r.pushed_at)}</span>
+                    </a>`).join('')}
+                </div>
+              </section>
+            </div>`;
+        } catch {
+          page.innerHTML = `
+            <div class="blocked">
+              ${iconHTML('github')}
+              <h3>Couldn't load GitHub right now</h3>
+              <p>GitHub's public API may be rate-limiting this connection. Try again in a bit, or open the profile directly.</p>
+              <a class="btn" href="${SOCIAL.github.url}" target="_blank" rel="noreferrer">View @brysonwf on GitHub ↗</a>
+            </div>`;
+        }
+      }
 
       // ---------- Built with Claude ----------
       function claudePopover(anchor) {
@@ -2351,13 +2598,13 @@
           { name: 'Trash', kind: 'System', icon: 'trash', run: openTrash },
           { name: 'The Menu Bar Problem.doc', kind: 'Document', icon: 'altbryson', run: openMenubarDoc },
           { name: 'Legal Disclaimer.txt', kind: 'Document', icon: 'altbryson', run: openDisclaimer },
-          { name: 'Resume.pdf', kind: 'Document', icon: 'altbryson', run: openResume },
+          { name: "Bryson Faggart's Resume.pdf", kind: 'Document', icon: 'altbryson', run: openResume },
           { name: 'Messages', kind: 'Google Voice Tray', icon: 'gv-messages', run: () => gvToggle('messages') },
           { name: 'Voicemail', kind: 'Google Voice Tray', icon: 'gv-voicemail', run: () => gvToggle('voicemail') },
           { name: 'Google Chat', kind: 'Google Voice Tray', icon: 'gv-chat', run: () => gvToggle('chat') },
-          { name: 'LinkedIn', kind: 'Link', icon: 'linkedin', run: () => window.open('https://www.linkedin.com/in/brysonwf/', '_blank', 'noreferrer') },
-          { name: 'X / Twitter', kind: 'Link', icon: 'x', run: () => window.open('https://x.com/brysonwf', '_blank', 'noreferrer') },
-          { name: 'GitHub', kind: 'Link', icon: 'github', run: () => window.open('https://github.com/brysonwf', '_blank', 'noreferrer') },
+          { name: 'LinkedIn', kind: 'Link', icon: 'linkedin', run: () => openBrowser('linkedin') },
+          { name: 'X / Twitter', kind: 'Link', icon: 'x', run: () => openBrowser('x') },
+          { name: 'GitHub', kind: 'Link', icon: 'github', run: () => openBrowser('github') },
         ];
         const back = document.createElement('div');
         back.className = 'spotlight-backdrop';
@@ -2396,28 +2643,28 @@
       // ---------- Dock ----------
       const DOCK = [
         { id: 'altbryson', name: 'altbryson', run: (el) => openSystemMenu(el) },
+        { id: 'terminal', name: 'Terminal', run: openTerminal },
         '|',
-        ...PROJECTS.filter((p) => p.device === 'phone').map((p) => ({ id: p.id, name: p.name, run: () => openProject(p.id) })),
+        ...PROJECTS.filter((p) => p.device === 'phone').map((p) => ({ id: p.id, name: p.name, stage: p.stage, run: () => openProject(p.id) })),
         '|',
         { id: 'calculator', name: 'Calculator', run: openCalculator },
-        { id: 'terminal', name: 'Terminal', run: openTerminal },
         { id: 'claude', name: 'Built with Claude', run: claudePopover },
+        '|',
+        { id: 'gv-messages', name: 'Google Voice - Messages', run: () => gvToggle('messages'), menu: (el) => gvContextMenu(el, 'messages'), badge: true },
+        { id: 'gv-voicemail', name: 'Google Voice - Voicemail', run: () => gvToggle('voicemail'), menu: (el) => gvContextMenu(el, 'voicemail'), badge: true },
+        { id: 'gv-chat', name: 'Google Chat', run: () => gvToggle('chat'), menu: (el) => gvContextMenu(el, 'chat'), badge: true },
+        '|',
+        { id: 'linkedin', name: 'LinkedIn', run: () => openBrowser('linkedin') },
+        { id: 'x', name: 'X / Twitter', run: () => openBrowser('x') },
+        { id: 'github', name: 'GitHub', run: () => openBrowser('github') },
         '|',
         { id: 'weather', name: 'Weather', run: weatherPopover },
         { id: 'bluetooth', name: 'Bluetooth', run: bluetoothPopover },
         { id: 'battery', name: 'Battery', run: batteryPopover },
         { id: 'wifi', name: 'Wi-Fi', run: wifiPopover },
-        { id: 'gv-messages', name: 'Google Voice - Messages', run: () => gvToggle('messages'), menu: (el) => gvContextMenu(el, 'messages'), badge: true },
-        { id: 'gv-voicemail', name: 'Google Voice - Voicemail', run: () => gvToggle('voicemail'), menu: (el) => gvContextMenu(el, 'voicemail'), badge: true },
-        { id: 'gv-chat', name: 'Google Chat', run: () => gvToggle('chat'), menu: (el) => gvContextMenu(el, 'chat'), badge: true },
         { id: 'search', name: 'Spotlight Search', run: openSpotlight },
         { id: 'settings', name: 'System Settings', run: openSettings },
         { id: 'clock', name: 'Clock', run: clockPopover },
-        '|',
-        { id: 'linkedin', name: 'LinkedIn', href: 'https://www.linkedin.com/in/brysonwf/' },
-        { id: 'x', name: 'X / Twitter', href: 'https://x.com/brysonwf' },
-        { id: 'github', name: 'GitHub', href: 'https://github.com/brysonwf' },
-        '|',
         { id: 'trash', name: 'Trash', run: openTrash },
       ];
 
@@ -2441,7 +2688,7 @@
           el.addEventListener('click', () => d.run(el));
         }
         if (d.menu) el.addEventListener('contextmenu', (e) => { e.preventDefault(); d.menu(el); });
-        el.innerHTML = iconHTML(d.id) + (d.badge ? '<span class="badge"></span>' : '') + `<span class="label">${d.name}</span>`;
+        el.innerHTML = iconHTML(d.id) + (d.badge ? '<span class="badge"></span>' : '') + (d.stage ? `<span class="stage stage-${d.stage}">${d.stage}</span>` : '') + `<span class="label">${d.name}${d.stage ? ` (${d.stage})` : ''}</span>`;
         dock.appendChild(el);
       });
 
@@ -2450,13 +2697,17 @@
           !matchMedia('(prefers-reduced-motion: reduce)').matches) {
         const items = [...dock.querySelectorAll('.dock-item')];
         dock.addEventListener('mousemove', (e) => {
-          if (!settings.magnify || matchMedia('(max-width: 900px)').matches) return;
+          if (!settings.magnify || matchMedia('(max-width: 1000px)').matches) return;
+          // Magnifying adds roughly amp x 150px of width; never let that push the dock off-screen.
+          if (!dock.classList.contains('magnifying')) dock.dataset.slack = innerWidth - 16 - dock.getBoundingClientRect().width;
+          const amp = Math.max(0, Math.min(0.55, (dock.dataset.slack * 0.9) / 150));
           dock.classList.add('magnifying');
           items.forEach((el) => {
             const r = el.getBoundingClientRect();
             const dist = Math.abs(e.clientX - (r.left + r.width / 2));
-            const scale = 1 + 0.55 * Math.max(0, 1 - dist / 150);
-            el.style.width = `calc(var(--size) * ${scale.toFixed(3)})`;
+            const scale = 1 + amp * Math.max(0, 1 - dist / 150);
+            const base = el.dataset.id === 'clock' ? 1.25 : 1;
+            el.style.width = `calc(var(--size) * ${(scale * base).toFixed(3)})`;
           });
         });
         dock.addEventListener('mouseleave', () => {
@@ -2480,7 +2731,10 @@
         if (focused) closeWindow(focused[0]);
       });
 
-      window.addEventListener('resize', () => { closePopover(); windows.forEach((el) => clamp(el)); });
+      window.addEventListener('resize', () => {
+        closePopover();
+        windows.forEach((el) => (el.classList.contains('fullscreen') ? fitFullScreen(el) : clamp(el)));
+      });
       window.addEventListener('hashchange', () => openProject(location.hash.slice(1)));
 
       updateClock();
@@ -2488,6 +2742,8 @@
       paintWifi();
       paintGvTrays();
       paintTrashIcon();
+      loadWeather();
+      setInterval(loadWeather, 15 * 60 * 1000);
       if (location.hash) openProject(location.hash.slice(1));
     </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CSF8Q66KD4"></script>
