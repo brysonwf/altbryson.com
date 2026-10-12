@@ -2,241 +2,827 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>altbryson | Modern Product Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>altbryson | Bryson's Portfolio</title>
+    <meta name="description" content="Bryson's portfolio: web apps, games, and tools, each shown on the device it was built for.">
 
-    <script defer src="/__\/firebase/10.13.2/firebase-app-compat.js"></script>
-    <script defer src="/__\/firebase/10.13.2/firebase-auth-compat.js"></script>
-    <script defer src="/__\/firebase/10.13.2/firebase-database-compat.js"></script>
-    <script defer src="/__\/firebase/10.13.2/firebase-firestore-compat.js"></script>
-    <script defer src="/__\/firebase/10.13.2/firebase-functions-compat.js"></script>
-    <script defer src="/__\/firebase/10.13.2/firebase-messaging-compat.js"></script>
-    <script defer src="/__\/firebase/10.13.2/firebase-storage-compat.js"></script>
-    <script defer src="/__\/firebase/10.13.2/firebase-analytics-compat.js"></script>
-    <script defer src="/__\/firebase/10.13.2/firebase-remote-config-compat.js"></script>
-    <script defer src="/__\/firebase/10.13.2/firebase-performance-compat.js"></script>
-    <script defer src="/__\/firebase/init.js?useEmulator=true"></script>
+    <script defer src="/__/firebase/10.13.2/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/10.13.2/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
     <style>
       :root {
-        color-scheme: light;
-        color: #111827;
-        background: #eef2ff;
+        --ink: #0f172a;
+        --muted: #475569;
+        --accent: #4f46e5;
+        --glass: rgba(255, 255, 255, 0.72);
+        --glass-border: rgba(255, 255, 255, 0.55);
+        --dock-h: 96px;
         font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--ink);
       }
       * { box-sizing: border-box; }
-      html, body { margin: 0; min-height: 100%; }
+      html, body { margin: 0; height: 100%; }
       body {
-        background: radial-gradient(circle at top, rgba(99, 102, 241, 0.16), transparent 36%),
-          linear-gradient(180deg, #f8fafc 0%, #eef2ff 45%, #ffffff 100%);
-        color: #111827;
+        min-height: 100dvh;
+        overflow-x: hidden;
+        background:
+          radial-gradient(1200px 700px at 12% 8%, rgba(129, 140, 248, 0.75), transparent 60%),
+          radial-gradient(900px 600px at 92% 18%, rgba(244, 114, 182, 0.55), transparent 60%),
+          radial-gradient(1000px 700px at 70% 100%, rgba(56, 189, 248, 0.55), transparent 60%),
+          linear-gradient(160deg, #312e81 0%, #4338ca 40%, #6d28d9 100%);
+        background-attachment: fixed;
       }
-      .page {
-        max-width: 1080px;
-        margin: 0 auto;
-        padding: 40px 24px 56px;
-      }
-      header {
-        padding: 40px 36px;
-        border-radius: 32px;
-        background: rgba(255, 255, 255, 0.96);
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        box-shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
-        backdrop-filter: blur(12px);
-      }
-      .eyebrow {
-        display: inline-flex;
+      a { color: inherit; }
+
+      /* ---------- Menu bar ---------- */
+      .menubar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: flex;
         align-items: center;
-        gap: 0.625rem;
-        margin-bottom: 1.25rem;
-        color: #4f46e5;
-        font-size: 0.92rem;
-        font-weight: 700;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
+        gap: 18px;
+        height: 30px;
+        padding: 0 16px;
+        font-size: 13px;
+        color: #fff;
+        background: rgba(15, 23, 42, 0.28);
+        backdrop-filter: blur(24px) saturate(160%);
+        -webkit-backdrop-filter: blur(24px) saturate(160%);
       }
-      .eyebrow::before {
-        content: "";
-        width: 44px;
-        height: 1px;
-        background: currentColor;
+      .menubar strong { font-weight: 700; }
+      .menubar .spacer { flex: 1; }
+      .menubar a { text-decoration: none; opacity: 0.92; }
+      .menubar a:hover { opacity: 1; text-decoration: underline; }
+      .menubar .logo {
+        width: 16px; height: 16px; border-radius: 5px;
+        background: linear-gradient(135deg, #a5b4fc, #f0abfc);
       }
-      h1 {
-        margin: 0;
-        font-size: clamp(2.6rem, 4vw, 4.4rem);
-        line-height: 0.96;
-        letter-spacing: -0.04em;
+
+      /* ---------- Desktop ---------- */
+      .desktop {
+        position: relative;
+        height: calc(100dvh - 30px);
+        overflow: hidden;
       }
-      .summary {
-        margin: 24px 0 0;
-        max-width: 720px;
-        font-size: 1.05rem;
-        color: #475569;
+      .welcome {
+        position: absolute;
+        left: 48px;
+        top: 40px;
+        max-width: 520px;
+        color: #fff;
+        text-shadow: 0 2px 20px rgba(15, 23, 42, 0.35);
+        user-select: none;
       }
-      .projects { margin-top: 42px; }
-      .section-title {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin: 0 0 22px;
-        color: #4f46e5;
-        font-size: 0.92rem;
+      .welcome .eyebrow {
+        font-size: 13px;
         font-weight: 700;
         letter-spacing: 0.18em;
         text-transform: uppercase;
+        opacity: 0.8;
       }
-      .grid {
+      .welcome h1 {
+        margin: 8px 0 12px;
+        font-size: clamp(2.4rem, 6vw, 4.6rem);
+        line-height: 0.95;
+        letter-spacing: -0.045em;
+      }
+      .welcome p { margin: 0; font-size: 1.05rem; opacity: 0.85; }
+
+      /* Phone frame */
+      .phone {
+        position: relative;
+        flex: none;
+        width: clamp(170px, calc((100dvh - 250px) * 0.45), 240px);
+        padding: 12px;
+        border-radius: 44px;
+        background: linear-gradient(145deg, #1f2937, #0b0f19);
+        box-shadow:
+          0 0 0 2px #374151,
+          0 0 0 3px #0b0f19,
+          0 40px 80px rgba(15, 23, 42, 0.45),
+          inset 0 0 6px rgba(255, 255, 255, 0.12);
+      }
+      .phone::before {
+        content: "";
+        position: absolute;
+        top: 22px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 30%;
+        height: 24px;
+        border-radius: 999px;
+        background: #000;
+        z-index: 2;
+      }
+      .phone::after { /* side button */
+        content: "";
+        position: absolute;
+        right: -4px;
+        top: 26%;
+        width: 4px;
+        height: 64px;
+        border-radius: 0 3px 3px 0;
+        background: #374151;
+      }
+      .phone .screen {
+        position: relative;
+        overflow: hidden;
+        border-radius: 34px;
+        aspect-ratio: 390 / 844;
+        background: #000;
+      }
+      .phone img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top;
+      }
+
+      /* Windows desktop frame */
+      .monitor { flex: none; width: min(500px, 100%); }
+      .monitor .bezel {
+        padding: 12px;
+        border-radius: 16px;
+        background: linear-gradient(145deg, #1f2937, #0b0f19);
+        box-shadow: 0 0 0 1px #374151, 0 40px 80px rgba(15, 23, 42, 0.45);
+      }
+      .monitor .stand {
+        width: 22%;
+        height: 54px;
+        margin: 0 auto;
+        background: linear-gradient(180deg, #9ca3af, #d1d5db);
+        clip-path: polygon(22% 0, 78% 0, 88% 100%, 12% 100%);
+      }
+      .monitor .base {
+        width: 40%;
+        height: 10px;
+        margin: 0 auto;
+        border-radius: 6px 6px 3px 3px;
+        background: linear-gradient(180deg, #d1d5db, #9ca3af);
+        box-shadow: 0 16px 30px rgba(15, 23, 42, 0.35);
+      }
+      .win {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 16 / 10;
+        border-radius: 4px;
+        font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+        background:
+          radial-gradient(60% 70% at 50% 75%, #60a5fa 0%, transparent 70%),
+          radial-gradient(45% 55% at 38% 70%, #1d4ed8 0%, transparent 70%),
+          radial-gradient(45% 55% at 64% 70%, #2563eb 0%, transparent 70%),
+          linear-gradient(180deg, #0c1a3d 0%, #1e3a8a 60%, #93c5fd 100%);
+      }
+      .win .taskbar {
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        height: 9%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.6%;
+        background: rgba(243, 244, 246, 0.82);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255, 255, 255, 0.6);
+      }
+      .win .tb-icon {
+        width: 3.8%;
+        aspect-ratio: 1;
+        border-radius: 4px;
+      }
+      .win .tb-start {
+        background:
+          linear-gradient(#0ea5e9, #0ea5e9) 0 0 / 46% 46% no-repeat,
+          linear-gradient(#0ea5e9, #0ea5e9) 100% 0 / 46% 46% no-repeat,
+          linear-gradient(#0ea5e9, #0ea5e9) 0 100% / 46% 46% no-repeat,
+          linear-gradient(#0ea5e9, #0ea5e9) 100% 100% / 46% 46% no-repeat;
+      }
+      .win .tb-search { border-radius: 50%; border: 2px solid #334155; width: 3%; }
+      .win .tb-files { background: linear-gradient(180deg, #fde68a 0 35%, #f59e0b 35%); }
+      .win .tb-browser { border-radius: 50%; background: conic-gradient(#ef4444 0 33%, #facc15 0 66%, #22c55e 0); }
+      .win .tray {
+        position: absolute;
+        right: 2%;
+        top: 0; bottom: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: clamp(7px, 1.5vw, 11px);
+        color: #111827;
+      }
+      .win .tray .clock { text-align: right; line-height: 1.25; }
+      .gvt-dot {
+        position: relative;
+        width: clamp(12px, 2.6vw, 17px);
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #6af0a1, #00c853);
+        box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.25), 0 0 14px rgba(0, 200, 83, 0.85);
+        animation: pulse 2.2s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        50% { box-shadow: 0 0 0 6px rgba(0, 200, 83, 0.12), 0 0 22px rgba(0, 200, 83, 1); }
+      }
+      .win .toast {
+        position: absolute;
+        right: 2%;
+        bottom: 12%;
+        width: 44%;
+        display: flex;
+        gap: 4%;
+        align-items: flex-start;
+        padding: 3% 3.5%;
+        border-radius: 8px;
+        background: rgba(249, 250, 251, 0.94);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        font-size: clamp(7px, 1.5vw, 11.5px);
+        line-height: 1.35;
+        color: #111827;
+      }
+      .win .toast .gvt-dot { flex: none; animation: none; box-shadow: none; }
+      .win .toast b { display: block; font-size: 1.05em; }
+      .win .toast span { color: #4b5563; }
+      .win .tray-hint {
+        position: absolute;
+        right: 6.6%;
+        bottom: 9.5%;
+        width: 0; height: 0;
+        border: 6px solid transparent;
+        border-top-color: rgba(249, 250, 251, 0.94);
+      }
+
+      /* ---------- App windows ---------- */
+      .app-window {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        max-width: calc(100vw - 16px);
+        border-radius: 14px;
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 30px 80px rgba(15, 23, 42, 0.38), 0 0 0 0.5px rgba(15, 23, 42, 0.25);
+        backdrop-filter: blur(30px) saturate(170%);
+        -webkit-backdrop-filter: blur(30px) saturate(170%);
+        overflow: hidden;
+        animation: open 260ms cubic-bezier(.2, .8, .2, 1);
+      }
+      .app-window:not(.focused) { box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25); }
+      .app-window:not(.focused) .lights i { background: #cbd5e1; }
+      .app-window.closing { animation: close 180ms ease-in forwards; }
+      @keyframes open { from { opacity: 0; transform: translateY(40px) scale(0.92); } }
+      @keyframes close { to { opacity: 0; transform: translateY(40px) scale(0.92); } }
+      .titlebar {
+        position: relative;
+        flex: none;
+        display: flex;
+        align-items: center;
+        height: 40px;
+        padding: 0 14px;
+        border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+        cursor: grab;
+        user-select: none;
+        touch-action: none;
+      }
+      .app-window.dragging .titlebar { cursor: grabbing; }
+      .lights { position: relative; z-index: 1; display: flex; gap: 8px; }
+      .lights button {
+        width: 12px; height: 12px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        cursor: pointer;
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        place-items: center;
+        font-size: 9px;
+        line-height: 1;
+        color: transparent;
+      }
+      .lights:hover button { color: rgba(0, 0, 0, 0.55); }
+      .lights i { display: block; width: 12px; height: 12px; border-radius: 50%; }
+      .lights .close { background: #ff5f57; }
+      .lights .min { background: #febc2e; }
+      .lights .max { background: #28c840; }
+      .app-window:not(.focused) .lights button { background: #cbd5e1; }
+      .titlebar .title {
+        position: absolute;
+        left: 0; right: 0;
+        text-align: center;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+      .window-body {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        padding: 24px 28px 28px;
+        overflow: auto;
+      }
+      .app-window[data-device="windows"] .window-body {
+        flex-direction: column;
+        align-items: stretch;
         gap: 20px;
       }
-      .card {
-        background: #ffffff;
-        border-radius: 26px;
-        border: 1px solid rgba(148, 163, 184, 0.16);
-        padding: 28px 28px 32px;
-        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.05);
+      .app-window[data-device="windows"] .monitor { align-self: center; }
+      .info { width: 260px; }
+      .app-window[data-device="windows"] .info { width: auto; max-width: 500px; }
+      .info .head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+      .info .head .app-icon { width: 48px; flex: none; }
+      .info h2 { margin: 0; font-size: 1.4rem; line-height: 1.1; letter-spacing: -0.02em; }
+      .platform {
+        display: inline-block;
+        margin-top: 4px;
+        padding: 2px 9px;
+        border-radius: 999px;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--accent);
+        background: rgba(79, 70, 229, 0.1);
       }
-      .card img {
-        width: 100%;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 12px;
-        margin-bottom: 16px;
-      }
-      .card h2 {
-        margin: 0 0 14px;
-        font-size: 1.4rem;
-      }
-      .card p {
-        margin: 0;
-        color: #475569;
-      }
-      .card a {
+      .info p { margin: 0; color: var(--muted); font-size: 0.95rem; line-height: 1.55; }
+      .btn {
         display: inline-flex;
         margin-top: 18px;
-        align-items: center;
-        gap: 0.4rem;
-        color: #4338ca;
+        padding: 9px 16px;
+        border-radius: 10px;
+        background: var(--accent);
+        color: #fff;
+        font-size: 0.92rem;
+        font-weight: 600;
         text-decoration: none;
-        font-weight: 700;
+        box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
       }
-      .card a:hover { text-decoration: underline; }
-      footer {
-        margin-top: 48px;
-        padding-top: 1px;
-        color: #64748b;
-        font-size: 0.94rem;
-        text-align: center;
+      .btn:hover { background: #4338ca; }
+
+      /* ---------- App icons ---------- */
+      .app-icon {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 23%;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.15);
       }
-      #load { display: block; margin-top: 8px; }
-      @media (max-width: 820px) {
-        .grid { grid-template-columns: 1fr; }
+      .app-icon svg { display: block; width: 100%; height: 100%; }
+
+      /* ---------- Dock ---------- */
+      .dock-wrap {
+        position: fixed;
+        left: 0; right: 0;
+        bottom: max(12px, env(safe-area-inset-bottom));
+        z-index: 30;
+        display: flex;
+        justify-content: center;
+        padding: 0 16px;
+        pointer-events: none;
       }
-      @media (max-width: 520px) {
-        .page { padding: 28px 16px 40px; }
-        header { padding: 28px 24px; }
+      .dock {
+        pointer-events: auto;
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        height: 76px;
+        padding: 0 10px 10px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.28);
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
+        backdrop-filter: blur(30px) saturate(180%);
+        -webkit-backdrop-filter: blur(30px) saturate(180%);
+      }
+      .dock-item {
+        --size: 56px;
+        position: relative;
+        width: var(--size);
+        flex: none;
+        padding: 0;
+        border: 0;
+        background: none;
+        cursor: pointer;
+        transition: width 140ms ease-out;
+      }
+      .dock:not(.magnifying) .dock-item { transition: width 260ms ease-out; }
+      .dock-item:focus-visible { outline: none; }
+      .dock-item:focus-visible .app-icon { outline: 3px solid #fff; outline-offset: 2px; }
+      .dock-item .label {
+        position: absolute;
+        bottom: calc(100% + 14px);
+        left: 50%;
+        transform: translateX(-50%) translateY(4px);
+        padding: 5px 10px;
+        border-radius: 8px;
+        background: rgba(30, 41, 59, 0.88);
+        color: #fff;
+        font-size: 12.5px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 120ms, transform 120ms;
+      }
+      .dock-item:hover .label,
+      .dock-item:focus-visible .label { opacity: 1; transform: translateX(-50%); }
+      .dock-item::after { /* running indicator */
+        content: "";
+        position: absolute;
+        bottom: -7px;
+        left: 50%;
+        width: 5px; height: 5px;
+        margin-left: -2.5px;
+        border-radius: 50%;
+        background: rgba(15, 23, 42, 0.75);
+        opacity: 0;
+        transition: opacity 200ms;
+      }
+      .dock-item.running::after { opacity: 1; }
+      .dock-item.bounce .app-icon { animation: bounce 520ms ease; }
+      @keyframes bounce {
+        30% { transform: translateY(-18px); }
+        60% { transform: translateY(0); }
+        80% { transform: translateY(-6px); }
+      }
+      .dock .divider {
+        align-self: stretch;
+        width: 1px;
+        margin: 12px 4px 2px;
+        background: rgba(15, 23, 42, 0.18);
+      }
+
+      /* ---------- Responsive ---------- */
+      @media (max-width: 720px) {
+        .welcome { left: 20px; top: 28px; right: 20px; }
+        .app-window {
+          left: 8px !important;
+          right: 8px;
+          top: 8px !important;
+          max-height: calc(100% - var(--dock-h) - 8px);
+        }
+        .titlebar { cursor: default; }
+        .window-body { flex-direction: column; align-items: stretch; padding: 20px 18px 22px; }
+        .window-body .phone, .window-body .monitor { align-self: center; }
+        .info { width: auto; }
+        .phone { width: min(220px, 60vw); border-radius: 42px; }
+        .phone .screen { border-radius: 32px; }
+      }
+      @media (max-width: 640px) {
+        :root { --dock-h: 80px; }
+        .menubar .hide-sm { display: none; }
+        .dock { gap: 6px; height: 62px; padding: 0 8px 8px; border-radius: 20px; }
+        .dock-item { --size: 44px; }
+        .dock .divider { display: none; }
+      }
+      @media (max-width: 420px) {
+        :root { --dock-h: 68px; }
+        .dock-item { --size: 36px; }
+        .dock { gap: 5px; height: 52px; padding: 0 7px 7px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation: none !important; transition: none !important; }
       }
     </style>
   </head>
   <body>
-    <div class="page">
-      <header>
+    <nav class="menubar">
+      <span class="logo" aria-hidden="true"></span>
+      <strong>altbryson</strong>
+      <span class="hide-sm" id="menu-app"></span>
+      <span class="spacer"></span>
+      <a href="https://www.linkedin.com/in/brysonwf/" target="_blank" rel="noreferrer">LinkedIn</a>
+      <a href="https://x.com/brysonwf" target="_blank" rel="noreferrer">X</a>
+      <span class="hide-sm" id="clock"></span>
+    </nav>
+
+    <main class="desktop" id="desktop">
+      <div class="welcome">
         <div class="eyebrow">altbryson</div>
         <h1>Bryson's Portfolio</h1>
-      </header>
+        <p>Open anything in the dock to see it on the device it was built for.</p>
+      </div>
+    </main>
 
-      <section class="projects">
-        <div class="section-title">Featured projects</div>
-        <div class="grid">
-          <article class="card">
-            <img src="/googlevoicetray.svg" alt="Google Voice Tray thumbnail" />
-            <h2>Google Voice Tray</h2>
-            <p>Lightweight Windows system tray wrapper for Google Voice that stays running in the background, keeps your session alive, and updates its tray icon color based on unread messages and voicemails.</p>
-            <a href="https://github.com/brysonwf/googlevoicetray" target="_blank" rel="noreferrer">View on GitHub</a>
-          </article>
-
-          <article class="card">
-            <img src="/budgetforecast.png" alt="Budget Forecast thumbnail" />
-            <h2>Budget Forecast</h2>
-            <p>Personal cash flow forecasting app with daily, monthly, and yearly views. Share future value projections including interest, payments, and overdrafts for unlimited forecasting horizons.</p>
-            <a href="https://budgetforecast.app" target="_blank" rel="noreferrer">Visit budgetforecast.app</a>
-          </article>
-
-          <article class="card">
-            <img src="/road.png" alt="Road Dance thumbnail" />
-            <h2>Road Dance</h2>
-            <p>Custom map application with Ticketmaster API integration, overlaying live event data on a spatial interface for intuitive discovery.</p>
-            <a href="https://road.dance" target="_blank" rel="noreferrer">Visit road.dance</a>
-          </article>
-
-          <article class="card">
-            <img src="/baseless.png" alt="Baseless Chat thumbnail" />
-            <h2>Baseless Chat</h2>
-            <p>Google Chrome extension that adds a lightweight chat interface to every website, creating a seamless overlay experience across browsing sessions.</p>
-            <a href="https://baseless.chat" target="_blank" rel="noreferrer">Visit baseless.chat</a>
-          </article>
-
-          <article class="card">
-            <img src="/altbrysonpool.png" alt="Altbryson Pool thumbnail" />
-            <h2>Altbryson Pool</h2>
-            <p>Real-time top-down turn-based multiplayer game featuring strategic play, live updates, and polished online match flow.</p>
-            <a href="https://altbrysonpool.web.app" target="_blank" rel="noreferrer">Visit altbrysonpool.web.app</a>
-          </article>
-
-          <article class="card">
-            <img src="/snowballfight.png" alt="Snowball Fight App thumbnail" />
-            <h2>Snowball Fight App</h2>
-            <p>Physics sandbox multiplayer experience where users throw snowballs at each other in real time, combining playful interaction with responsive networking.</p>
-            <a href="https://snowballfightapp.web.app/" target="_blank" rel="noreferrer">Visit snowballfightapp.web.app</a>
-          </article>
-
-          <article class="card">
-            <img src="/iamlocal.png" alt="iamlocal.online thumbnail" />
-            <h2>iamlocal.online</h2>
-            <p>Work in progress chat application designed to connect nearby users in real time. A modern collaboration tool built with live messaging and location-aware interaction in mind.</p>
-            <a href="https://iamlocal.online/" target="_blank" rel="noreferrer">Visit iamlocal.online</a>
-          </article>
-
-          <article class="card">
-            <img src="/firerp.png" alt="Firerp thumbnail" />
-            <h2>Firerp</h2>
-            <p>Work in progress ERP application offering enterprise resource planning for modern teams, designed to manage operations, inventory, and financial workflows in one place.</p>
-            <a href="https://firerp.app/" target="_blank" rel="noreferrer">Visit firerp.app</a>
-          </article>
-        </div>
-      </section>
-
-      <footer>
-        Available for collaborations in product design, web apps, and digital growth.
-        <br>
-        Connect on <a href="https://www.linkedin.com/in/brysonwf/" target="_blank" rel="noreferrer">LinkedIn</a> and <a href="https://x.com/brysonwf" target="_blank" rel="noreferrer">X / Twitter</a>.
-        <span id="load">Firebase SDK loading…</span>
-      </footer>
+    <div class="dock-wrap">
+      <div class="dock" id="dock" role="toolbar" aria-label="Projects"></div>
     </div>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth',
-            'database',
-            'firestore',
-            'functions',
-            'messaging',
-            'storage',
-            'analytics',
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = features.length ? `Firebase SDK loaded with ${features.join(', ')}` : 'Firebase SDK initialized.';
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Firebase SDK could not be loaded. See console for details.';
+      // Each icon is a 100x100 SVG body drawn on a squircle.
+      const ICONS = {
+        googlevoicetray: `
+          <defs><radialGradient id="g-gvt" cx="35%" cy="25%" r="80%"><stop offset="0" stop-color="#6af0a1"/><stop offset="1" stop-color="#00a844"/></radialGradient></defs>
+          <rect width="100" height="100" fill="url(#g-gvt)"/>
+          <path d="M36 26c3-1 6 0 7 3l4 10c1 3 0 5-2 7l-4 3c3 7 9 13 16 16l3-4c2-2 4-3 7-2l10 4c3 1 4 4 3 7l-2 6c-1 4-5 6-9 6-24-2-43-21-45-45 0-4 2-8 6-9z" fill="#fff"/>`,
+        budgetforecast: `
+          <defs><linearGradient id="g-bf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5b21b6"/><stop offset="1" stop-color="#1e1b4b"/></linearGradient></defs>
+          <rect width="100" height="100" fill="url(#g-bf)"/>
+          <path d="M18 76h64" stroke="rgba(255,255,255,.25)" stroke-width="3"/>
+          <path d="M20 68h12v-8h12v-10h12v-8h12v-12h12" fill="none" stroke="#e879f9" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="80" cy="30" r="6" fill="#fff"/>`,
+        road: `
+          <rect width="100" height="100" fill="#fde68a"/>
+          <path d="M-5 70 L40 45 L105 62" stroke="#fb923c" stroke-width="9" fill="none"/>
+          <path d="M30 -5 L48 105" stroke="#fff" stroke-width="7"/>
+          <path d="M-5 25 Q50 35 105 18" stroke="#93c5fd" stroke-width="12" fill="none"/>
+          <path d="M50 18c-12 0-21 9-21 21 0 15 21 39 21 39s21-24 21-39c0-12-9-21-21-21z" fill="#7c3aed"/>
+          <path d="M55 30v14.5a5 5 0 1 1-3-4.6V30h9v5z" fill="#fff"/>`,
+        baseless: `
+          <rect width="100" height="100" fill="#0b0f19"/>
+          <path d="M22 26h56a8 8 0 0 1 8 8v26a8 8 0 0 1-8 8H46l-14 12v-12h-10a8 8 0 0 1-8-8V34a8 8 0 0 1 8-8z" fill="#facc15"/>
+          <circle cx="36" cy="47" r="4.5" fill="#0b0f19"/><circle cx="50" cy="47" r="4.5" fill="#0b0f19"/><circle cx="64" cy="47" r="4.5" fill="#0b0f19"/>`,
+        altbrysonpool: `
+          <defs><radialGradient id="g-pool" cx="50%" cy="45%" r="70%"><stop offset="0" stop-color="#6b8f4e"/><stop offset="1" stop-color="#2f4a22"/></radialGradient>
+          <radialGradient id="g-ball" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#4b5563"/><stop offset="1" stop-color="#000"/></radialGradient></defs>
+          <rect width="100" height="100" fill="#5b2c12"/>
+          <rect x="9" y="9" width="82" height="82" rx="14" fill="url(#g-pool)"/>
+          <circle cx="50" cy="50" r="24" fill="url(#g-ball)"/>
+          <circle cx="50" cy="50" r="11" fill="#fff"/>
+          <text x="50" y="55" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="14" fill="#000">8</text>`,
+        snowballfight: `
+          <defs><linearGradient id="g-snow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7dd3fc"/><stop offset="1" stop-color="#0284c7"/></linearGradient>
+          <radialGradient id="g-sb" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#cbd5e1"/></radialGradient></defs>
+          <rect width="100" height="100" fill="url(#g-snow)"/>
+          <path d="M14 30h18M10 44h22M16 58h16" stroke="rgba(255,255,255,.7)" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="60" cy="48" r="24" fill="url(#g-sb)"/>
+          <ellipse cx="58" cy="84" rx="28" ry="6" fill="rgba(255,255,255,.9)"/>`,
+        iamlocal: `
+          <rect width="100" height="100" fill="#e0f2fe"/>
+          <path d="M-5 72 Q40 52 105 70" stroke="#93c5fd" stroke-width="14" fill="none"/>
+          <path d="M20 -5 L36 105M62 -5 L74 105" stroke="#fde68a" stroke-width="6"/>
+          <path d="M50 16c-12 0-21 9-21 21 0 15 21 39 21 39s21-24 21-39c0-12-9-21-21-21z" fill="#2563eb"/>
+          <circle cx="50" cy="37" r="8" fill="#fff"/>`,
+        firerp: `
+          <defs><linearGradient id="g-fire" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fb923c"/><stop offset="1" stop-color="#dc2626"/></linearGradient></defs>
+          <rect width="100" height="100" fill="#fff7ed"/>
+          <path d="M50 14c4 14 22 22 22 42a22 22 0 0 1-44 0c0-10 6-17 10-21 0 8 4 13 8 14-2-12 2-25 4-35z" fill="url(#g-fire)"/>
+          <path d="M50 52c3 6 10 9 10 17a10 10 0 0 1-20 0c0-5 3-8 5-10 1 4 3 5 5 5-1-4-1-8 0-12z" fill="#fde68a"/>
+          <rect x="22" y="80" width="56" height="6" rx="3" fill="#7c2d12" opacity=".8"/>`,
+      };
+
+      const PROJECTS = [
+        {
+          id: 'googlevoicetray', name: 'Google Voice Tray', device: 'windows', platform: 'Windows desktop',
+          desc: 'Lightweight Windows system tray wrapper for Google Voice that stays running in the background, keeps your session alive, and updates its tray icon color based on unread messages and voicemails.',
+          url: 'https://github.com/brysonwf/googlevoicetray', cta: 'View on GitHub',
+        },
+        {
+          id: 'budgetforecast', name: 'Budget Forecast', device: 'phone', platform: 'Mobile web app',
+          desc: 'Personal cash flow forecasting app with daily, monthly, and yearly views. Share future value projections including interest, payments, and overdrafts for unlimited forecasting horizons.',
+          url: 'https://budgetforecast.app', cta: 'Visit budgetforecast.app',
+        },
+        {
+          id: 'road', name: 'Road Dance', device: 'phone', platform: 'Mobile web app',
+          desc: 'Custom map application with Ticketmaster API integration, overlaying live event data on a spatial interface for intuitive discovery.',
+          url: 'https://road.dance', cta: 'Visit road.dance',
+        },
+        {
+          id: 'baseless', name: 'Baseless Chat', device: 'phone', platform: 'Mobile web + Chrome extension',
+          desc: 'Google Chrome extension that adds a lightweight chat interface to every website, creating a seamless overlay experience across browsing sessions.',
+          url: 'https://baseless.chat', cta: 'Visit baseless.chat',
+        },
+        {
+          id: 'altbrysonpool', name: 'Altbryson Pool', device: 'phone', platform: 'Mobile game',
+          desc: 'Real-time top-down turn-based multiplayer game featuring strategic play, live updates, and polished online match flow.',
+          url: 'https://altbrysonpool.web.app', cta: 'Visit altbrysonpool.web.app',
+        },
+        {
+          id: 'snowballfight', name: 'Snowball Fight', device: 'phone', platform: 'Mobile game',
+          desc: 'Physics sandbox multiplayer experience where users throw snowballs at each other in real time, combining playful interaction with responsive networking.',
+          url: 'https://snowballfightapp.web.app/', cta: 'Visit snowballfightapp.web.app',
+        },
+        {
+          id: 'iamlocal', name: 'iamlocal.online', device: 'phone', platform: 'Mobile web app · WIP',
+          desc: 'Work in progress chat application designed to connect nearby users in real time. A modern collaboration tool built with live messaging and location-aware interaction in mind.',
+          url: 'https://iamlocal.online/', cta: 'Visit iamlocal.online',
+        },
+        {
+          id: 'firerp', name: 'Firerp', device: 'phone', platform: 'Mobile web app · WIP',
+          desc: 'Work in progress ERP application offering enterprise resource planning for modern teams, designed to manage operations, inventory, and financial workflows in one place.',
+          url: 'https://firerp.app/', cta: 'Visit firerp.app',
+        },
+      ];
+
+      const $ = (id) => document.getElementById(id);
+      const iconHTML = (id) =>
+        `<span class="app-icon"><svg viewBox="0 0 100 100" aria-hidden="true">${ICONS[id]}</svg></span>`;
+
+      function deviceHTML(p) {
+        if (p.device === 'windows') {
+          return `
+            <div class="monitor" role="img" aria-label="${p.name} running on a Windows desktop">
+              <div class="bezel">
+                <div class="win">
+                  <div class="toast">
+                    <span class="gvt-dot"></span>
+                    <div><b>Google Voice</b><span>2 unread messages · 1 voicemail</span></div>
+                  </div>
+                  <div class="tray-hint"></div>
+                  <div class="taskbar">
+                    <span class="tb-icon tb-start"></span>
+                    <span class="tb-icon tb-search"></span>
+                    <span class="tb-icon tb-files"></span>
+                    <span class="tb-icon tb-browser"></span>
+                    <div class="tray">
+                      <span aria-hidden="true">⌃</span>
+                      <span class="gvt-dot" title="Google Voice Tray"></span>
+                      <span class="clock">10:42 AM<br>10/12/2026</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="stand"></div>
+              <div class="base"></div>
+            </div>`;
         }
+        return `
+          <div class="phone">
+            <div class="screen"><img src="/${p.id}.png" alt="${p.name} running on a phone" width="390" height="844"></div>
+          </div>`;
+      }
+
+      // ---------- Window manager ----------
+      const desktop = $('desktop');
+      const dock = $('dock');
+      const windows = new Map(); // project id -> window element
+      const isCompact = () => matchMedia('(max-width: 720px)').matches;
+      let zTop = 10;
+      let cascade = 0;
+
+      const dockItem = (id) => dock.querySelector(`.dock-item[data-id="${id}"]`);
+
+      function focusWindow(id) {
+        windows.forEach((el, key) => el.classList.toggle('focused', key === id));
+        dock.querySelectorAll('.dock-item').forEach((el) =>
+          el.setAttribute('aria-current', el.dataset.id === id ? 'true' : 'false'));
+        const p = id && PROJECTS.find((x) => x.id === id);
+        $('menu-app').textContent = p ? p.name : '';
+        if (p) {
+          windows.get(id).style.zIndex = ++zTop;
+          if (location.hash.slice(1) !== id) history.replaceState(null, '', '#' + id);
+        } else if (location.hash) {
+          history.replaceState(null, '', location.pathname + location.search);
+        }
+      }
+
+      // Keep at least the titlebar reachable so a window can't be lost off-screen.
+      function clamp(el) {
+        const W = desktop.clientWidth, H = desktop.clientHeight;
+        el.style.left = Math.min(Math.max(el.offsetLeft, 80 - el.offsetWidth), W - 80) + 'px';
+        el.style.top = Math.min(Math.max(el.offsetTop, 0), H - 40) + 'px';
+      }
+
+      function center(el, offset = 0) {
+        const dockH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dock-h'));
+        const W = desktop.clientWidth, H = desktop.clientHeight - dockH;
+        el.style.left = Math.max(8, (W - el.offsetWidth) / 2 + offset) + 'px';
+        el.style.top = Math.max(8, (H - el.offsetHeight) / 2 + offset) + 'px';
+        clamp(el);
+      }
+
+      function closeWindow(id) {
+        const el = windows.get(id);
+        if (!el) return;
+        windows.delete(id);
+        dockItem(id).classList.remove('running');
+        el.classList.add('closing');
+        el.addEventListener('animationend', () => el.remove(), { once: true });
+        setTimeout(() => el.remove(), 300); // in case animations are disabled
+        const next = [...windows.entries()].sort((a, b) => b[1].style.zIndex - a[1].style.zIndex)[0];
+        focusWindow(next ? next[0] : null);
+      }
+
+      function makeDraggable(el) {
+        const bar = el.querySelector('.titlebar');
+        bar.addEventListener('pointerdown', (e) => {
+          if (e.button !== 0 || e.target.closest('button') || isCompact()) return;
+          const dx = e.clientX - el.offsetLeft;
+          const dy = e.clientY - el.offsetTop;
+          el.classList.add('dragging');
+          bar.setPointerCapture(e.pointerId);
+          const move = (ev) => {
+            el.style.left = ev.clientX - dx + 'px';
+            el.style.top = ev.clientY - dy + 'px';
+            clamp(el);
+          };
+          const up = () => {
+            el.classList.remove('dragging');
+            bar.removeEventListener('pointermove', move);
+            bar.removeEventListener('pointerup', up);
+            bar.removeEventListener('pointercancel', up);
+          };
+          bar.addEventListener('pointermove', move);
+          bar.addEventListener('pointerup', up);
+          bar.addEventListener('pointercancel', up);
+        });
+        bar.addEventListener('dblclick', (e) => { if (!e.target.closest('button')) center(el); });
+      }
+
+      function openWindow(id) {
+        const p = PROJECTS.find((x) => x.id === id);
+        if (!p) return;
+        const item = dockItem(id);
+        item.classList.remove('bounce');
+        void item.offsetWidth;
+        item.classList.add('bounce');
+
+        if (windows.has(id)) return focusWindow(id);
+        if (isCompact()) [...windows.keys()].forEach(closeWindow);
+
+        const el = document.createElement('section');
+        el.className = 'app-window';
+        el.dataset.device = p.device;
+        el.setAttribute('role', 'dialog');
+        el.setAttribute('aria-label', p.name);
+        el.innerHTML = `
+          <div class="titlebar">
+            <span class="lights">
+              <button class="close" type="button" aria-label="Close ${p.name}">×</button>
+              <button class="min" type="button" aria-label="Minimize ${p.name}">−</button>
+              <button class="max" type="button" aria-label="Center ${p.name}">+</button>
+            </span>
+            <span class="title">${p.name}</span>
+          </div>
+          <div class="window-body">
+            ${deviceHTML(p)}
+            <div class="info">
+              <div class="head">
+                ${iconHTML(p.id)}
+                <div><h2>${p.name}</h2><span class="platform">${p.platform}</span></div>
+              </div>
+              <p>${p.desc}</p>
+              <a class="btn" href="${p.url}" target="_blank" rel="noreferrer">${p.cta} ↗</a>
+            </div>
+          </div>`;
+        el.querySelector('.close').addEventListener('click', () => closeWindow(id));
+        el.querySelector('.min').addEventListener('click', () => closeWindow(id));
+        el.querySelector('.max').addEventListener('click', () => center(el));
+        el.addEventListener('pointerdown', () => focusWindow(id));
+        makeDraggable(el);
+
+        desktop.appendChild(el);
+        windows.set(id, el);
+        item.classList.add('running');
+        center(el, (cascade++ % 5) * 28 - 56);
+        focusWindow(id);
+      }
+
+      // Build the dock: desktop apps, a divider, then phone apps.
+      PROJECTS.forEach((p, i) => {
+        if (i > 0 && PROJECTS[i - 1].device !== p.device) {
+          const d = document.createElement('span');
+          d.className = 'divider';
+          dock.appendChild(d);
+        }
+        const btn = document.createElement('button');
+        btn.className = 'dock-item';
+        btn.type = 'button';
+        btn.dataset.id = p.id;
+        btn.setAttribute('aria-label', `Open ${p.name}`);
+        btn.innerHTML = iconHTML(p.id) + `<span class="label">${p.name}</span>`;
+        btn.addEventListener('click', () => openWindow(p.id));
+        dock.appendChild(btn);
       });
+
+      // macOS-style magnification for mouse/trackpad users.
+      if (matchMedia('(hover: hover) and (pointer: fine)').matches &&
+          !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const items = [...dock.querySelectorAll('.dock-item')];
+        dock.addEventListener('mousemove', (e) => {
+          dock.classList.add('magnifying');
+          items.forEach((el) => {
+            const r = el.getBoundingClientRect();
+            const dist = Math.abs(e.clientX - (r.left + r.width / 2));
+            const scale = 1 + 0.55 * Math.max(0, 1 - dist / 150);
+            el.style.width = `calc(var(--size) * ${scale.toFixed(3)})`;
+          });
+        });
+        dock.addEventListener('mouseleave', () => {
+          dock.classList.remove('magnifying');
+          items.forEach((el) => (el.style.width = ''));
+        });
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        const focused = [...windows.entries()].find(([, el]) => el.classList.contains('focused'));
+        if (focused) closeWindow(focused[0]);
+      });
+      window.addEventListener('resize', () => windows.forEach((el) => clamp(el)));
+      window.addEventListener('hashchange', () => openWindow(location.hash.slice(1)));
+      if (location.hash) openWindow(location.hash.slice(1));
+
+      // Preload screenshots so switching is instant.
+      PROJECTS.filter((p) => p.device === 'phone').forEach((p) => { new Image().src = `/${p.id}.png`; });
+
+      const clock = $('clock');
+      const tick = () => {
+        clock.textContent = new Date().toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+      };
+      tick();
+      setInterval(tick, 30000);
     </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CSF8Q66KD4"></script>
     <script>
