@@ -536,6 +536,41 @@
       }
       .gv-get:hover { background: #ceead6; }
       .gv-get .go { flex: none; padding: 5px 10px; border-radius: 999px; background: #188038; color: #fff; font-weight: 600; }
+      /* Google Chat (web at phone width): pill search, New chat button, Chats/Spaces sections. */
+      .gv-drawer.chat { background: #f6f8fc; font-family: "Google Sans", Roboto, "Segoe UI", system-ui, sans-serif; }
+      .gc-top { flex: none; display: flex; align-items: center; gap: 8px; height: 60px; padding: 0 10px; }
+      .gc-search { flex: 1; display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px; border-radius: 999px; background: #e9eef6; color: #444746; font-size: 15px; }
+      .gc-search span { color: #5f6368; }
+      .gc-me { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: #7c3aed; color: #fff; font-weight: 600; font-size: 14px; }
+      .gc-body { padding: 0 8px 12px; }
+      .gc-new { display: inline-flex; align-items: center; gap: 10px; margin: 6px 4px 12px; padding: 0 20px; height: 52px; border: 0; border-radius: 16px; background: #c2e7ff; color: #001d35; font: inherit; font-size: 14.5px; font-weight: 500; cursor: pointer; }
+      .gc-nav { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; }
+      .gc-nav span { padding: 8px 16px; border-radius: 999px; color: #1f1f1f; font-size: 14px; }
+      .gc-nav .on { background: #d3e3fd; font-weight: 600; }
+      .gc-section { margin: 10px 0 4px; padding: 0 12px; color: #1f1f1f; font-size: 14px; font-weight: 600; }
+      .gc-row { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 12px; border: 0; border-radius: 999px; background: none; text-align: left; font: inherit; cursor: pointer; }
+      .gc-row:hover { background: #e9eef6; }
+      .gc-row .main { flex: 1; min-width: 0; }
+      .gc-row .name { display: flex; justify-content: space-between; gap: 8px; color: #1f1f1f; font-size: 14px; }
+      .gc-row .name time { flex: none; color: #5f6368; font-size: 12px; }
+      .gc-row .snip { display: block; color: #5f6368; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .gc-row.unread .name, .gc-row.unread .snip { color: #1f1f1f; font-weight: 700; }
+      .gc-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #0b57d0; }
+      .gc-avatar { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; color: #fff; font-weight: 600; font-size: 14px; }
+      .gc-avatar.space { border-radius: 9px; }
+      .gc-avatar.small { width: 28px; height: 28px; font-size: 12.5px; }
+      .gc-title { flex: 1; min-width: 0; font-size: 16px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .gc-title small { display: block; color: #5f6368; font-size: 12px; font-weight: 400; }
+      .gc-messages { display: flex; flex-direction: column; gap: 14px; padding: 16px 14px; background: #fff; border-radius: 16px 16px 0 0; }
+      .gc-msg { display: flex; gap: 10px; align-items: flex-start; }
+      .gc-msg.me { justify-content: flex-end; }
+      .gc-meta { color: #5f6368; font-size: 12px; }
+      .gc-meta b { color: #1f1f1f; font-size: 13.5px; font-weight: 600; margin-right: 4px; }
+      .gc-text { margin-top: 2px; color: #1f1f1f; font-size: 14px; line-height: 1.45; }
+      .gc-bubble { max-width: 80%; padding: 8px 14px; border-radius: 18px 18px 4px 18px; background: #d3e3fd; color: #041e49; font-size: 14px; line-height: 1.45; }
+      .gc-compose { background: #fff; border-top: 0; }
+      .gc-compose input { background: #f0f4f9; }
+      .gc-compose button { width: 40px; padding: 0; background: none; color: #0b57d0; font-size: 18px; }
       .gv-drawer.chat .gv-get { background: #e8f0fe; color: #0b57d0; }
       .gv-drawer.chat .gv-get .go { background: #0b57d0; }
       .gv-row {
@@ -1960,8 +1995,8 @@
           { id: 'c2', name: 'Taylor Kim', color: '#9333ea', time: 'Mon', unread: false, msgs: [{ text: 'lunch?' }] },
         ],
         spaces: [
-          { id: 's1', name: 'firERP dev', color: '#dc2626', time: 'Tue', unread: false, msgs: [{ text: 'Raw Data view is live' }] },
-          { id: 's2', name: 'Weekend Plans', color: '#0284c7', time: 'Sun', unread: false, msgs: [{ text: 'Sam: pool at 8 🎱' }] },
+          { id: 's1', name: 'firERP dev', color: '#dc2626', time: 'Tue', unread: false, msgs: [{ from: 'Jordan Lee', text: 'Raw Data view is live' }] },
+          { id: 's2', name: 'Weekend Plans', color: '#0284c7', time: 'Sun', unread: false, msgs: [{ from: 'Sam Carter', text: 'pool at 8 🎱' }] },
         ],
         icons: { messages: true, voicemail: true, chat: true }, // the app's "Google ... icon" toggles
         autoOpen: false,
@@ -1992,7 +2027,17 @@
       }
 
       const gvAvatar = (c) => `<span class="gv-avatar" style="background:${c.color}">${esc(c.name.replace(/[^A-Za-z]/, '')[0] || '#')}</span>`;
-      const gvSnip = (c) => { const m = c.msgs[c.msgs.length - 1]; return (m.me ? 'You: ' : '') + m.text; };
+      const gvSnip = (c) => {
+        const m = c.msgs[c.msgs.length - 1];
+        return (m.me ? 'You: ' : m.from ? m.from.split(' ')[0] + ': ' : '') + m.text;
+      };
+      // A person's avatar color: theirs if they're a DM contact, otherwise picked from their name.
+      const GC_COLORS = ['#16a34a', '#9333ea', '#ea580c', '#0891b2', '#db2777', '#4f46e5'];
+      const gcPersonColor = (name) => [...gv.dms, ...gv.threads].find((c) => c.name === name)?.color
+        || GC_COLORS[[...name].reduce((h, ch) => h + ch.charCodeAt(0), 0) % GC_COLORS.length];
+      // Chat avatars: circles for people, rounded squares for Spaces.
+      const gcAvatar = (c, space, small) =>
+        `<span class="gc-avatar${space ? ' space' : ''}${small ? ' small' : ''}" style="background:${c.color}">${esc(c.name.replace(/[^A-Za-z]/, '')[0] || '#')}</span>`;
       const gvRow = (c) => `
         <button type="button" class="gv-row${c.unread ? ' unread' : ''}" data-thread="${c.id}">
           ${gvAvatar(c)}
@@ -2002,6 +2047,26 @@
 
       function gvScreen() {
         const chat = gv.open === 'chat';
+        if (gv.thread && chat) {
+          const c = gvFind(gv.thread);
+          const space = gv.spaces.includes(c);
+          return `
+            <header class="gc-top">
+              <button class="gv-icon-btn" data-act="back" aria-label="Back">←</button>
+              ${gcAvatar(c, space)}
+              <span class="gc-title">${esc(c.name)}<small>${space ? '3 members' : 'Active'}</small></span>
+              <span class="gv-demo">Demo</span>
+            </header>
+            <div class="gv-body gc-messages">
+              ${c.msgs.map((m) => m.me
+                ? `<div class="gc-msg me"><div class="gc-bubble">${esc(m.text)}</div></div>`
+                : `<div class="gc-msg">${gcAvatar(m.from ? { name: m.from, color: gcPersonColor(m.from) } : c, false, true)}<div><div class="gc-meta"><b>${esc(m.from || c.name)}</b> ${c.time}</div><div class="gc-text">${esc(m.text)}</div></div></div>`).join('')}
+            </div>
+            <form class="gv-compose gc-compose" data-act="send">
+              <input type="text" placeholder="Message ${esc(c.name)}" aria-label="Message" autocomplete="off">
+              <button type="submit" aria-label="Send">➤</button>
+            </form>`;
+        }
         if (gv.thread) {
           const c = gvFind(gv.thread);
           return `
@@ -2018,12 +2083,24 @@
             </form>`;
         }
         if (chat) {
+          // Laid out like Google Chat on the web at phone width (which is how the app shows it).
+          const row = (c, space) => `
+            <button type="button" class="gc-row${c.unread ? ' unread' : ''}" data-thread="${c.id}">
+              ${gcAvatar(c, space)}
+              <span class="main"><span class="name"><span>${esc(c.name)}</span><time>${c.time}</time></span><span class="snip">${esc(gvSnip(c))}</span></span>
+              ${c.unread ? '<i class="gc-dot"></i>' : ''}
+            </button>`;
           return `
-            <header class="gv-top"><button class="gv-icon-btn" aria-label="Menu">☰</button><h3>Chat</h3><span class="gv-demo">Demo</span></header>
-            <div class="gv-body">
-              <div class="gv-search">Search in chat</div>
-              <div class="gv-section">Direct messages</div>${gv.dms.map(gvRow).join('')}
-              <div class="gv-section">Spaces</div>${gv.spaces.map(gvRow).join('')}
+            <header class="gc-top">
+              <button class="gv-icon-btn" aria-label="Main menu">☰</button>
+              <span class="gc-search">⌕ <span>Search in chat</span></span>
+              <span class="gc-me" aria-label="Your account">B</span>
+            </header>
+            <div class="gv-body gc-body">
+              <button type="button" class="gc-new">✎ New chat</button>
+              <div class="gc-nav"><span class="on">⌂ Home</span><span>@ Mentions</span><span>☆ Starred</span></div>
+              <div class="gc-section">⌄ Chats</div>${gv.dms.map((c) => row(c, false)).join('')}
+              <div class="gc-section">⌄ Spaces</div>${gv.spaces.map((c) => row(c, true)).join('')}
             </div>`;
         }
         const title = { messages: 'Messages', calls: 'Calls', voicemail: 'Voicemail' }[gv.tab];
@@ -2072,7 +2149,7 @@
         gvDrawer.setAttribute('aria-label', gv.open === 'chat' ? 'Google Chat (demo)' : 'Google Voice (demo)');
         gvDrawer.innerHTML = gvScreen();
         // Every demo screen points to the real app.
-        gvDrawer.querySelector('.gv-top').insertAdjacentHTML('afterend', `
+        gvDrawer.querySelector('.gv-top, .gc-top').insertAdjacentHTML('afterend', `
           <a class="gv-get" href="${GVT_REPO}" target="_blank" rel="noreferrer">
             <span>This is a demo of <b>Google Voice Tray</b>, a free Windows app.</span><span class="go">Get it on GitHub ↗</span>
           </a>`);
