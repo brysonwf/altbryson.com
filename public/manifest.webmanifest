@@ -1,0 +1,16 @@
+{
+  "name": "altbryson — Bryson's Portfolio",
+  "short_name": "altbryson",
+  "description": "Bryson's portfolio desktop: every project running live on the device it was built for.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#312e81",
+  "theme_color": "#4338ca",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
