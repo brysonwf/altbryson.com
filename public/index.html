@@ -25,7 +25,8 @@
         --accent: #4f46e5;
         --glass: rgba(255, 255, 255, 0.72);
         --glass-border: rgba(255, 255, 255, 0.55);
-        --dock-h: 96px;
+        /* Space reserved above the dock: its height (icon size + padding) plus the 10px it floats above the edge. */
+        --dock-h: calc(var(--size) + 40px);
         /* Icons grow until the dock spans the screen, capped at macOS's 128px maximum.
            360px covers gaps, dividers, padding and room for magnification; 21 = 21 icons. */
         --size: clamp(30px, calc((100vw - 360px) / 21), 128px);
@@ -1144,7 +1145,7 @@
         .about, .settings { width: auto; }
       }
       @media (max-width: 1000px) {
-        :root { --size: 44px; --dock-h: 84px; }
+        :root { --size: 44px; }
         /* Tray icons (all but the clock) move into the aB menu. */
         .dock-item.tray-item, .dock .divider:has(+ .tray-item) { display: none; }
         /* Too many icons to fit: let the dock scroll sideways like a shelf. */
@@ -1164,7 +1165,7 @@
         .dock-item.bounce .app-icon { animation: none; }
       }
       @media (max-width: 420px) {
-        :root { --size: 40px; --dock-h: 78px; }
+        :root { --size: 40px; }
       }
       @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -1469,7 +1470,8 @@
 
       const dockItem = (id) => dock.querySelector(`.dock-item[data-id="${id}"]`);
       const isDockCompact = () => matchMedia('(max-width: 1000px)').matches;
-      const dockH = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dock-h'));
+      // The dock's real footprint (it grows with the screen), measured rather than assumed.
+      const dockH = () => window.innerHeight - dock.getBoundingClientRect().top + 8;
 
       function bounce(id) {
         const item = dockItem(id);
@@ -1699,7 +1701,8 @@
         return el;
       }
 
-      function openProject(id) {
+      // startUrl only applies to the Baseless browser: the page its first tab opens on.
+      function openProject(id, startUrl) {
         const p = projectById(id);
         if (!p) return;
         rememberRecent(id);
@@ -1712,7 +1715,7 @@
             body: '<div class="browser-app"></div>',
           });
           if (!el) return;
-          setupBrowserTabs(el, p);
+          setupBrowserTabs(el, p, startUrl);
           if (!isCompact()) {
             const W = desktop.clientWidth, H = desktop.clientHeight - dockH();
             setRect(el, { left: 0, top: 0, width: Math.min(1280, W - 48), height: Math.min(860, H - 32) });
@@ -1720,7 +1723,7 @@
           }
           return;
         }
-        openWindow({
+        const win = openWindow({
           id: p.id,
           title: p.name,
           device: p.device,
@@ -1734,16 +1737,32 @@
                 </div>
                 <p>${p.desc}</p>
                 ${p.device === 'phone' ? '<div class="live">Live — tap and scroll inside the phone</div>' : ''}
-                <a class="btn" href="${p.url}" target="_blank" rel="noreferrer">${p.cta} ↗</a>
+                ${p.device === 'phone'
+                  ? '<button class="btn" type="button" data-open-baseless>Open in Baseless ↗</button>'
+                  : `<a class="btn" href="${p.url}" target="_blank" rel="noreferrer">${p.cta} ↗</a>`}
               </div>
             </div>`,
         });
+        // Sites that load in a frame open in the Baseless browser (a new tab there), not a real browser tab.
+        win?.querySelector('[data-open-baseless]')?.addEventListener('click', () => openInBaseless(p.url));
+      }
+
+      // Opens a site in the Baseless browser window as a new tab, opening the window first if needed.
+      function openInBaseless(siteUrl) {
+        const browser = projectById('baseless');
+        const src = `${browser.url}/?url=${siteUrl.replace(/^https:\/\//, '').replace(/\/$/, '')}`;
+        const win = windows.get(browser.id);
+        if (!win) return openProject(browser.id, src);
+        if (win.classList.contains('minimized')) restoreWindow(browser.id);
+        else focusWindow(browser.id);
+        bounce(browser.id);
+        win.addBrowserTab(src);
       }
 
       // ---------- Browser tabs (Baseless Chat window) ----------
       // Tabs sit in the titlebar like Chrome. Each tab is its own live baseless.chat iframe; only the
       // active one is shown. baseless.chat is cross-origin, so tab labels can't read the page title.
-      function setupBrowserTabs(win, p) {
+      function setupBrowserTabs(win, p, startUrl) {
         const bar = win.querySelector('.titlebar');
         bar.classList.add('has-tabs');
         bar.querySelector('.title').hidden = true;
@@ -1760,7 +1779,7 @@
           list.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', t.dataset.tab === tabId));
           app.querySelectorAll('iframe').forEach((f) => (f.hidden = f.dataset.tab !== tabId));
         };
-        const addTab = () => {
+        const addTab = (src = p.url) => {
           const tabId = 't' + ++seq;
           list.insertAdjacentHTML('beforeend', `
             <div class="tab" role="tab" data-tab="${tabId}" aria-selected="false">
@@ -1769,7 +1788,7 @@
               <button type="button" class="tab-close" aria-label="Close tab">×</button>
             </div>`);
           app.insertAdjacentHTML('beforeend',
-            `<iframe data-tab="${tabId}" src="${p.url}" title="${p.name}" allow="clipboard-write; fullscreen; geolocation"></iframe>`);
+            `<iframe data-tab="${tabId}" src="${src}" title="${p.name}" allow="clipboard-write; fullscreen; geolocation"></iframe>`);
           activate(tabId);
         };
         const closeTab = (tabId) => {
@@ -1807,7 +1826,8 @@
         });
         // Middle-click closes a tab, like a desktop browser.
         list.addEventListener('auxclick', (e) => { const tab = e.target.closest('.tab'); if (e.button === 1 && tab) closeTab(tab.dataset.tab); });
-        addTab();
+        win.addBrowserTab = addTab; // used by openInBaseless()
+        addTab(startUrl);
       }
 
       // ---------- Recent items ----------
