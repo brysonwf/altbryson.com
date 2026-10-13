@@ -11,4 +11,4 @@ State at end of 2026-10-12 (last deploy/commit 1248f0a; everything is committed,
 - The legal disclaimer was written in plain language, not reviewed by a lawyer.
 - Phone-app install support (manifest + icons + iPhone tags) is shipped for baseless.chat only. It is still uncommitted and undeployed in road.dance, altbrysonpool, iamlocal.online, firerp.app and snowballfight (snowballfight's deploy setup is unknown).
 - The apps and the LinkedIn / X / GitHub links appear both here (dock + desktop) and on the baseless.chat home page. The user removed them from altbryson.com once, then asked for them back (b981bcc reverted by 38f8713), so keep both.
-- 2026-10-13: the Baseless window ⋮ menu (altbryson) and the removal of baseless.chat's own ⋮ File menu are tested locally but not committed or deployed. Ship both together: deploy/commit altbryson, then push baseless.chat (auto-deploys).
+- 2026-10-13: Baseless window ⋮ menu (7edf772) and removal of baseless.chat's own ⋮ menu (baseless 64c10f0) are live.
