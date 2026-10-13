@@ -27,8 +27,8 @@
         --glass-border: rgba(255, 255, 255, 0.55);
         --dock-h: 96px;
         /* Icons grow until the dock spans the screen, capped at macOS's 128px maximum.
-           360px covers gaps, dividers, padding and room for magnification; 21 = 19 icons plus the clock at 2x. */
-        --size: clamp(30px, calc((100vw - 360px) / 21), 128px);
+           360px covers gaps, dividers, padding and room for magnification; 22 = 20 icons plus the clock at 2x. */
+        --size: clamp(30px, calc((100vw - 360px) / 22), 128px);
         --gv-green: #00c853;
         --gv-grey: #808080;
         font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -116,6 +116,7 @@
         transition: opacity 300ms;
       }
       .phone iframe.loaded { opacity: 1; }
+      .phone .screen.live { background: #fff; }
       body.dragging .phone iframe { pointer-events: none; }
 
       /* ---------- Windows desktop frame ---------- */
@@ -438,7 +439,7 @@
       .icon-trash[data-empty="true"] .trash-papers { display: none; }
       .app-icon.icon-trash { border-radius: 0; overflow: visible; box-shadow: none; filter: drop-shadow(0 4px 6px rgba(15, 23, 42, 0.35)); }
       .app-icon.icon-weather, .app-icon.icon-bluetooth, .app-icon.icon-battery, .app-icon.icon-wifi,
-      .app-icon.icon-search, .app-icon.icon-settings, .app-icon.icon-clock,
+      .app-icon.icon-sound, .app-icon.icon-search, .app-icon.icon-settings, .app-icon.icon-clock,
       .app-icon.icon-gv-messages, .app-icon.icon-gv-voicemail, .app-icon.icon-gv-chat {
         border-radius: 0;
         overflow: visible;
@@ -447,7 +448,7 @@
       }
       /* Tray glyphs are drawn at ~60% of the tile; draw them 20% larger without changing the dock layout. */
       .app-icon.icon-weather svg, .app-icon.icon-bluetooth svg, .app-icon.icon-battery svg, .app-icon.icon-wifi svg,
-      .app-icon.icon-search svg, .app-icon.icon-settings svg, .app-icon.icon-clock svg,
+      .app-icon.icon-sound svg, .app-icon.icon-search svg, .app-icon.icon-settings svg, .app-icon.icon-clock svg,
       .app-icon.icon-gv-messages svg, .app-icon.icon-gv-voicemail svg, .app-icon.icon-gv-chat svg { transform: scale(1.2); overflow: visible; }
       /* Google Voice Tray icons: grey at zero unread, green when something is unread (same rule as the app). */
       .gv-shape { color: var(--gv-grey); transition: color 300ms; }
@@ -965,6 +966,9 @@
       .popover .row:first-of-type { border-top: 0; }
       .popover .btn { margin-top: 12px; }
       .bt-section { margin: 10px 0 6px; color: #64748b; font-size: 11.5px; font-weight: 600; }
+      .vol-slider { width: 100%; margin: 6px 0 2px; accent-color: #2563eb; }
+      .sound-out { padding: 4px 0 4px 18px; font-size: 13px; color: #334155; }
+      .sound-out.on { padding-left: 0; font-weight: 600; }
       .bt-device { display: flex; align-items: center; gap: 10px; }
       .bt-device b { display: block; font-size: 13.5px; }
       .bt-device .sub { margin-top: 0; }
@@ -1228,6 +1232,14 @@
             <path d="M16 43a49 49 0 0 1 68 0"/><path d="M28 55a31 31 0 0 1 44 0"/><path d="M39.5 66.5a15 15 0 0 1 21 0"/>
           </g>
           <circle cx="50" cy="77" r="5" fill="#fff"/>`,
+        sound: `
+          <path d="M18 40h14l18-15v50L32 60H18z" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+          <g class="vol-waves" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round">
+            <path d="M60 41a12 12 0 0 1 0 18"/><path d="M68 33a24 24 0 0 1 0 34"/><path d="M76 25a36 36 0 0 1 0 50"/>
+          </g>
+          <g class="vol-mute" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" style="display:none">
+            <path d="M62 40l20 20M82 40L62 60"/>
+          </g>`,
         search: `
           <circle cx="44" cy="44" r="20" fill="none" stroke="#fff" stroke-width="6"/>
           <path d="M59 59l18 18" stroke="#fff" stroke-width="7.5" stroke-linecap="round"/>`,
@@ -1608,7 +1620,15 @@
         desktop.appendChild(el);
         windows.set(id, el);
         dockItem(id)?.classList.add('running');
-        el.querySelectorAll('iframe').forEach((f) => f.addEventListener('load', () => f.classList.add('loaded'), { once: true }));
+        // Once the live site loads, drop the placeholder screenshot so it can't show through a transparent page.
+        el.querySelectorAll('iframe').forEach((f) => f.addEventListener('load', () => {
+          f.classList.add('loaded');
+          const screen = f.closest('.screen');
+          if (screen) {
+            screen.style.backgroundImage = 'none';
+            screen.classList.add('live');
+          }
+        }, { once: true }));
         center(el, (cascade++ % 5) * 28 - 56);
         focusWindow(id);
         return el;
@@ -1922,6 +1942,28 @@
           ${c?.effectiveType ? `<div class="row"><span>Connection</span><b>${c.effectiveType.toUpperCase()}</b></div>` : ''}
           ${c?.downlink ? `<div class="row"><span>Speed</span><b>~${c.downlink} Mbps</b></div>` : ''}
           ${c?.rtt ? `<div class="row"><span>Latency</span><b>${c.rtt} ms</b></div>` : ''}`);
+      }
+
+      // Sound: a volume slider and output list. The site plays no audio, so this only changes the icon.
+      let volume = store.get('volume', 70);
+      function paintSound() {
+        const waves = document.querySelectorAll('.icon-sound .vol-waves path');
+        waves.forEach((w, i) => (w.style.display = volume > i * 34 ? '' : 'none'));
+        document.querySelectorAll('.icon-sound .vol-mute').forEach((m) => (m.style.display = volume === 0 ? '' : 'none'));
+        const label = dockItem('sound')?.querySelector('.label');
+        if (label) label.textContent = volume === 0 ? 'Sound · Muted' : `Sound · ${volume}%`;
+      }
+      function soundPopover(anchor) {
+        const el = showPopover(anchor, `
+          <h4>Sound</h4>
+          <input class="vol-slider" type="range" min="0" max="100" value="${volume}" aria-label="Volume">
+          <div class="bt-section">Output</div>
+          <div class="sound-out on">✓ MacBook Pro Speakers</div>`);
+        el?.querySelector('.vol-slider').addEventListener('input', (e) => {
+          volume = Number(e.target.value);
+          store.set('volume', volume);
+          paintSound();
+        });
       }
 
       function bluetoothPopover(anchor) {
@@ -2562,7 +2604,8 @@
         { id: 'menubar-doc', name: 'The Menu Bar Problem.doc', ext: 'doc', open: openMenubarDoc },
         { id: 'disclaimer', name: 'Legal Disclaimer.txt', ext: 'txt', open: openDisclaimer },
         { id: 'link-linkedin', name: 'LinkedIn', icon: 'linkedin', url: 'https://www.linkedin.com/in/brysonwf/' },
-        { id: 'link-x', name: 'X', icon: 'x', url: 'https://x.com/brysonwf' },
+        { id: 'link-x', name: 'X @brysonwf', icon: 'x', url: 'https://x.com/brysonwf' },
+        { id: 'link-x-brysonf', name: 'X @brysonf', icon: 'x', url: 'https://x.com/brysonf' },
         { id: 'link-github', name: 'GitHub', icon: 'github', url: 'https://github.com/brysonwf' },
         { id: 'trash', name: 'Trash', icon: 'trash', open: openTrash },
       ];
@@ -2715,7 +2758,8 @@
           { name: 'Voicemail', kind: 'Google Voice Tray', icon: 'gv-voicemail', run: () => gvToggle('voicemail') },
           { name: 'Google Chat', kind: 'Google Voice Tray', icon: 'gv-chat', run: () => gvToggle('chat') },
           { name: 'LinkedIn', kind: 'Link', icon: 'linkedin', run: () => window.open('https://www.linkedin.com/in/brysonwf/', '_blank', 'noreferrer') },
-          { name: 'X / Twitter', kind: 'Link', icon: 'x', run: () => window.open('https://x.com/brysonwf', '_blank', 'noreferrer') },
+          { name: 'X @brysonwf', kind: 'Link', icon: 'x', run: () => window.open('https://x.com/brysonwf', '_blank', 'noreferrer') },
+          { name: 'X @brysonf', kind: 'Link', icon: 'x', run: () => window.open('https://x.com/brysonf', '_blank', 'noreferrer') },
           { name: 'GitHub', kind: 'Link', icon: 'github', run: () => window.open('https://github.com/brysonwf', '_blank', 'noreferrer') },
         ];
         const back = document.createElement('div');
@@ -2767,6 +2811,7 @@
         { id: 'bluetooth', name: 'Bluetooth', run: bluetoothPopover, tray: true },
         { id: 'battery', name: 'Battery', run: batteryPopover, tray: true },
         { id: 'wifi', name: 'Wi-Fi', run: wifiPopover, tray: true },
+        { id: 'sound', name: 'Sound', run: soundPopover, tray: true },
         { id: 'search', name: 'Spotlight Search', run: openSpotlight, tray: true },
         { id: 'settings', name: 'System Settings', run: openSettings, tray: true },
         { id: 'clock', name: 'Clock', run: clockPopover },
@@ -2845,6 +2890,7 @@
       setInterval(updateClock, 1000);
       paintWifi();
       paintBattery();
+      paintSound();
       paintGvTrays();
       paintTrashIcon();
       loadWeather();
