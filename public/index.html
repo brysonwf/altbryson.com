@@ -127,10 +127,12 @@
       .titlebar.has-tabs { padding-right: 8px; border-bottom: 0; }
       /* Tabs fill the titlebar from its very top edge, like Chrome on Windows (and in full screen they meet the screen edge). */
       .tabs { flex: 1; min-width: 0; display: flex; align-items: stretch; align-self: stretch; gap: 4px; margin-left: 14px; }
-      .tab-list { display: flex; align-items: stretch; gap: 2px; min-width: 0; }
+      /* Every tab is the same fixed width; when they don't fit, the strip scrolls sideways instead of squeezing them. */
+      .tab-list { display: flex; align-items: stretch; gap: 2px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+      .tab-list::-webkit-scrollbar { display: none; }
       .tab {
-        flex: 0 1 210px;
-        min-width: 70px;
+        flex: 0 0 200px;
+        width: 200px;
         height: auto;
         display: flex;
         align-items: center;
@@ -1780,6 +1782,7 @@
         const activate = (tabId) => {
           list.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', t.dataset.tab === tabId));
           app.querySelectorAll('iframe').forEach((f) => (f.hidden = f.dataset.tab !== tabId));
+          list.querySelector(`.tab[data-tab="${tabId}"]`)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         };
         const addTab = (src = p.url) => {
           const tabId = 't' + ++seq;
