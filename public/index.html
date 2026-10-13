@@ -886,7 +886,8 @@
       }
       .dock-item {
         position: relative;
-        width: var(--size);
+        /* --w widens or narrows a slot so tray glyphs of different widths get equal gaps (set from TRAY_FIT). */
+        width: calc(var(--size) * var(--w, 1));
         flex: none;
         padding: 0;
         border: 0;
@@ -896,6 +897,8 @@
         transition: width 140ms ease-out;
       }
       .dock:not(.magnifying) .dock-item { transition: width 260ms ease-out; }
+      /* The icon itself stays square at the slot's base size; only the slot (and so the gap) changes. */
+      .dock-item > .app-icon { width: calc(100% / var(--w, 1)); margin: 0 auto; }
       .dock-item:focus-visible { outline: none; }
       .dock-item:focus-visible .app-icon { outline: 3px solid #fff; outline-offset: 2px; }
       .dock-item .label {
@@ -1307,12 +1310,12 @@
       // Icons with a non-square drawing area (none at the moment; the clock is square with stacked digits).
       const ICON_VIEWBOX = {};
       // Tray glyphs are drawn at slightly different sizes; this fits each one to the same 60-unit
-      // height, centred in the tile. Values are [visual height, centre x, centre y] measured in Chrome
+      // height, centred in the tile. Values are [visual height, centre x, centre y, visual width] measured in Chrome
       // including stroke width (the gear's rotated teeth and the clock's digit caps measured by hand).
       const TRAY_FIT = {
-        'gv-messages': [60, 50, 50], 'gv-voicemail': [57, 50, 51], 'gv-chat': [56, 50, 50],
-        weather: [54, 52.5, 49], bluetooth: [59.5, 49, 50], battery: [55, 50, 50.5], wifi: [55.7, 50, 54.1],
-        sound: [56, 52.8, 50], search: [59.8, 50.9, 50.9], settings: [64, 50, 50], clock: [66.6, 50, 51.7],
+        'gv-messages': [60, 50, 50, 60], 'gv-voicemail': [57, 50, 51, 61], 'gv-chat': [56, 50, 50, 56],
+        weather: [54, 46.5, 49, 63], bluetooth: [59.5, 49, 50, 37.5], battery: [55, 50, 50.5, 40], wifi: [55.7, 50, 54.1, 74],
+        sound: [56, 52.8, 50, 72.6], search: [59.8, 50.9, 50.9, 59.8], settings: [64, 50, 50, 64], clock: [66.6, 50, 51.7, 48],
       };
       const fitGlyph = (id, body) => {
         const f = TRAY_FIT[id];
@@ -2868,6 +2871,11 @@
           el.type = 'button';
           el.addEventListener('click', () => d.run(el));
         }
+        // Tray slots are as wide as their glyph (rendered at 60/h scale, then the 1.2x CSS scale) plus a fixed margin.
+        if (TRAY_FIT[d.id]) {
+          const [h, , , w] = TRAY_FIT[d.id];
+          el.style.setProperty('--w', ((w * 60 / h / 100) * 1.2 + 0.32).toFixed(3));
+        }
         if (d.menu) el.addEventListener('contextmenu', (e) => { e.preventDefault(); d.menu(el); });
         el.innerHTML = iconHTML(d.id) + (d.badge ? '<span class="badge"></span>' : '') + (d.stage ? `<span class="badge stage" title="${d.stage}">${d.stage === 'alpha' ? 'α' : 'β'}</span>` : '') + `<span class="label">${d.name}${d.stage ? ` (${d.stage})` : ''}</span>`;
         dock.appendChild(el);
@@ -2887,7 +2895,7 @@
             const r = el.getBoundingClientRect();
             const dist = Math.abs(e.clientX - (r.left + r.width / 2));
             const scale = 1 + amp * Math.max(0, 1 - dist / 150);
-            el.style.width = `calc(var(--size) * ${scale.toFixed(3)})`;
+            el.style.width = `calc(var(--size) * var(--w, 1) * ${scale.toFixed(3)})`;
           });
         });
         dock.addEventListener('mouseleave', () => {
