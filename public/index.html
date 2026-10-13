@@ -1306,9 +1306,23 @@
       };
       // Icons with a non-square drawing area (none at the moment; the clock is square with stacked digits).
       const ICON_VIEWBOX = {};
+      // Tray glyphs are drawn at slightly different sizes; this fits each one to the same 60-unit
+      // height, centred in the tile. Values are [visual height, centre x, centre y] measured in Chrome
+      // including stroke width (the gear's rotated teeth and the clock's digit caps measured by hand).
+      const TRAY_FIT = {
+        'gv-messages': [60, 50, 50], 'gv-voicemail': [57, 50, 51], 'gv-chat': [56, 50, 50],
+        weather: [54, 52.5, 49], bluetooth: [59.5, 49, 50], battery: [55, 50, 50.5], wifi: [55.7, 50, 54.1],
+        sound: [56, 52.8, 50], search: [59.8, 50.9, 50.9], settings: [64, 50, 50], clock: [66.6, 50, 51.7],
+      };
+      const fitGlyph = (id, body) => {
+        const f = TRAY_FIT[id];
+        if (!f) return body;
+        const [h, cx, cy] = f;
+        return `<g transform="translate(50 50) scale(${(60 / h).toFixed(4)}) translate(${-cx} ${-cy})">${body}</g>`;
+      };
       const iconHTML = (id) => IMG_ICONS[id]
         ? `<span class="app-icon icon-${id}" style="background:${IMG_ICONS[id].bg}"><img src="${IMG_ICONS[id].src}" alt="" width="180" height="180"></span>`
-        : `<span class="app-icon icon-${id}"><svg viewBox="${ICON_VIEWBOX[id] || '0 0 100 100'}" aria-hidden="true">${ICONS[id]}</svg></span>`;
+        : `<span class="app-icon icon-${id}"><svg viewBox="${ICON_VIEWBOX[id] || '0 0 100 100'}" aria-hidden="true">${fitGlyph(id, ICONS[id])}</svg></span>`;
 
       // ---------- Projects ----------
       const PROJECTS = [
