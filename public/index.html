@@ -2992,7 +2992,8 @@
         { id: 'terminal', name: 'Terminal', run: openTerminal },
         { id: 'calculator', name: 'Calculator', run: openCalculator },
         '|',
-        ...PROJECTS.filter((p) => p.device !== 'windows').map((p) => ({ id: p.id, name: p.name, stage: p.stage, run: () => openProject(p.id) })),
+        // Web apps open straight into a new Baseless tab; Baseless itself opens its window.
+        ...PROJECTS.filter((p) => p.device !== 'windows').map((p) => ({ id: p.id, name: p.name, stage: p.stage, run: () => (p.device === 'phone' ? openInBaseless(p.url) : openProject(p.id)) })),
         '|',
         { id: 'gv-messages', name: 'Google Voice - Messages', run: () => gvToggle('messages'), menu: (el) => gvContextMenu(el, 'messages'), badge: true, tray: true },
         { id: 'gv-voicemail', name: 'Google Voice - Voicemail', run: () => gvToggle('voicemail'), menu: (el) => gvContextMenu(el, 'voicemail'), badge: true, tray: true },
