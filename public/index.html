@@ -27,8 +27,8 @@
         --glass-border: rgba(255, 255, 255, 0.55);
         --dock-h: 96px;
         /* Icons grow until the dock spans the screen, capped at macOS's 128px maximum.
-           360px covers gaps, dividers, padding and room for magnification; 24 = 22 icons plus the clock at 2x. */
-        --size: clamp(30px, calc((100vw - 360px) / 24), 128px);
+           360px covers gaps, dividers, padding and room for magnification; 21 = 19 icons plus the clock at 2x. */
+        --size: clamp(30px, calc((100vw - 360px) / 21), 128px);
         --gv-green: #00c853;
         --gv-grey: #808080;
         font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -445,9 +445,13 @@
         box-shadow: none;
         filter: drop-shadow(0 1px 1px rgba(15, 23, 42, 0.4));
       }
+      /* Tray glyphs are drawn at ~60% of the tile; draw them 20% larger without changing the dock layout. */
+      .app-icon.icon-weather svg, .app-icon.icon-bluetooth svg, .app-icon.icon-battery svg, .app-icon.icon-wifi svg,
+      .app-icon.icon-search svg, .app-icon.icon-settings svg, .app-icon.icon-clock svg,
+      .app-icon.icon-gv-messages svg, .app-icon.icon-gv-voicemail svg, .app-icon.icon-gv-chat svg { transform: scale(1.2); overflow: visible; }
       /* Google Voice Tray icons: grey at zero unread, green when something is unread (same rule as the app). */
       .gv-shape { color: var(--gv-grey); transition: color 300ms; }
-      .dock-item[data-unread="true"] .gv-shape { color: var(--gv-green); }
+      .dock-item[data-unread="true"] .gv-shape, .menu-tray-item[data-unread="true"] .gv-shape { color: var(--gv-green); }
       /* Solid shapes read as glowing with any shadow, so the Voice icons get none. */
       .app-icon.icon-gv-messages, .app-icon.icon-gv-voicemail, .app-icon.icon-gv-chat { filter: none; }
       .dock-item[hidden] { display: none; }
@@ -518,9 +522,6 @@
       .gv-icon-btn:hover { background: #f1f3f4; }
       .gv-body { flex: 1; overflow: auto; }
       /* Desktop Trash: bottom-right corner, just above the dock. */
-      .desk-trash { position: absolute; right: 40px; bottom: calc(var(--dock-h) + 20px); }
-      .desk-trash .app-icon { width: 60px; }
-      @media (max-width: 720px) { .desk-trash { right: 16px; } }
       .gv-get {
         flex: none;
         display: flex;
@@ -767,7 +768,15 @@
       .finder .confirm .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
       .finder .confirm .btn { margin: 0; }
       /* Desktop icons */
-      .desk-icons { position: absolute; top: 40px; right: 40px; display: grid; gap: 14px; }
+      /* The desktop grid: items are absolutely positioned into cells by layoutDesk(). */
+      .desk-icons { position: absolute; inset: 0; pointer-events: none; }
+      .desk-icons .desk-icon { position: absolute; pointer-events: auto; touch-action: none; transition: left 180ms ease, top 180ms ease; }
+      .desk-icons .desk-icon.dragging { transition: none; z-index: 5; opacity: 0.85; }
+      .desk-icon[data-id="trash"] .app-icon { width: 56px; margin-bottom: 2px; }
+      .desk-link { text-decoration: none; cursor: pointer; }
+      .desk-link:hover .fname { text-decoration: underline; }
+      .link-ic { position: relative; display: block; width: 56px; margin: 1px 0 3px; }
+      .link-badge { position: absolute; left: -6px; bottom: -6px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: #fff; color: #2563eb; font-size: 14px; font-weight: 800; text-shadow: none; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.4); }
       .desk-icon {
         display: flex;
         flex-direction: column;
@@ -787,7 +796,7 @@
       .desk-icon .file-ic { background: #fff; }
       .desk-icon .file-ic::after { color: #4f46e5; }
       .desk-icon[aria-pressed="true"] { background: rgba(15, 23, 42, 0.25); }
-      .desk-icon[aria-pressed="true"] span:last-child { background: #2563eb; border-radius: 4px; padding: 0 4px; text-shadow: none; }
+      .desk-icon[aria-pressed="true"] .fname { background: #2563eb; border-radius: 4px; padding: 0 4px; text-shadow: none; }
 
       /* Document window */
       .doc {
@@ -811,45 +820,9 @@
       .doc .btn { font-family: system-ui, sans-serif; }
       .doc .pull { margin: 22px 0; padding: 14px 18px; border-left: 3px solid #4f46e5; background: #eef2ff; font-style: italic; }
       @media (max-width: 720px) {
-        .desk-icons { top: auto; bottom: calc(var(--dock-h) + 120px); right: 16px; }
         .doc { padding: 26px 22px 32px; font-size: 15px; }
       }
 
-      /* Browser window (LinkedIn, X, GitHub) */
-      .browser { display: flex; flex-direction: column; width: min(860px, calc(100vw - 16px)); height: min(600px, calc(100dvh - var(--dock-h) - 80px)); }
-      .browser .addr { flex: none; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid rgba(15, 23, 42, 0.08); }
-      .browser .url { flex: 1; min-width: 0; padding: 6px 12px; border-radius: 8px; background: rgba(15, 23, 42, 0.06); color: #334155; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .browser .addr .btn { margin: 0; padding: 6px 12px; font-size: 12.5px; white-space: nowrap; }
-      .browser .page { flex: 1; min-height: 0; overflow: auto; background: #fff; }
-      .blocked { max-width: 420px; margin: 0 auto; padding: 64px 24px; text-align: center; }
-      .blocked .app-icon { width: 72px; margin: 0 auto 18px; }
-      .blocked h3 { margin: 0 0 8px; font-size: 1.25rem; }
-      .blocked p { margin: 0; color: var(--muted); line-height: 1.55; }
-      .gh-loading { padding: 64px 24px; text-align: center; color: #64748b; }
-      .gh { display: flex; gap: 28px; padding: 24px 28px; color: #1f2328; }
-      .gh-profile { flex: none; width: 200px; }
-      .gh-profile img { width: 100%; height: auto; border-radius: 50%; box-shadow: 0 0 0 1px #d0d7de; }
-      .gh-profile h3 { margin: 14px 0 0; font-size: 1.35rem; }
-      .gh-login { color: #59636e; font-size: 1.05rem; }
-      .gh-profile p { margin: 12px 0 0; font-size: 14px; line-height: 1.5; }
-      .gh-stats { margin-top: 12px; color: #59636e; font-size: 13px; line-height: 1.5; }
-      .gh-repos { flex: 1; min-width: 0; }
-      .gh-repos h4 { margin: 0 0 12px; font-size: 15px; font-weight: 600; }
-      .gh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
-      .gh-repo { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 8px; color: inherit; text-decoration: none; }
-      .gh-repo:hover { border-color: #0969da; }
-      .gh-repo b { color: #0969da; font-size: 14px; }
-      .gh-repo .desc { flex: 1; color: #59636e; font-size: 12.5px; line-height: 1.45; }
-      .gh-repo .meta { color: #59636e; font-size: 12px; }
-      .gh-repo .dot { display: inline-block; width: 10px; height: 10px; margin-right: 5px; border-radius: 50%; background: #3178c6; vertical-align: -1px; }
-      @media (max-width: 720px) {
-        .gh { flex-direction: column; padding: 18px; }
-        .gh-profile { width: auto; display: grid; grid-template-columns: 72px 1fr; column-gap: 14px; }
-        .gh-profile img { grid-row: span 2; width: 72px; }
-        .gh-profile h3 { margin: 6px 0 0; }
-        .gh-profile p, .gh-stats { grid-column: 1 / -1; }
-        .browser { height: auto; }
-      }
 
       /* Built with Claude card */
       .claude-doc .app-icon { width: 64px; margin-bottom: 18px; }
@@ -1023,6 +996,13 @@
       }
       .menu-item:not([aria-disabled="true"]):hover .kbd { color: rgba(255, 255, 255, 0.85); }
       .menu-item[aria-disabled="true"] { color: #a3a3a3; }
+      /* Tray icons shown at the top of the aB menu on small screens (dark panel so the white glyphs read). */
+      .menu-tray { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: 0 0 6px; padding: 10px 6px; border-radius: 10px; background: #1e293b; }
+      .menu-tray-item { position: relative; display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 2px; border: 0; border-radius: 8px; background: none; color: #e2e8f0; font-size: 11px; cursor: pointer; }
+      .menu-tray-item:hover { background: rgba(255, 255, 255, 0.08); }
+      .menu-tray-item .app-icon { width: 30px; }
+      .menu-tray-item .badge { position: absolute; top: 0; right: 14px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: #ef4444; color: #fff; font-size: 10px; font-weight: 700; line-height: 16px; }
+      .menu-tray-item .badge:empty { display: none; }
       .menu-sep { height: 1px; margin: 5px 10px; background: rgba(15, 23, 42, 0.12); }
       .submenu {
         position: absolute;
@@ -1123,6 +1103,8 @@
       }
       @media (max-width: 1000px) {
         :root { --size: 44px; --dock-h: 84px; }
+        /* Tray icons (all but the clock) move into the aB menu. */
+        .dock-item.tray-item, .dock .divider:has(+ .tray-item) { display: none; }
         /* Too many icons to fit: let the dock scroll sideways like a shelf. */
         .dock-wrap { justify-content: flex-start; }
         .dock {
@@ -1150,7 +1132,6 @@
   <body>
     <main class="desktop" id="desktop">
       <div class="desk-icons" id="desk-icons"></div>
-      <button type="button" class="desk-icon desk-trash" id="desk-trash" aria-pressed="false" aria-label="Trash"></button>
     </main>
 
     <div class="dock-wrap">
@@ -1171,12 +1152,17 @@
 
       // ---------- Icons (100x100 SVG bodies, clipped to a squircle by .app-icon) ----------
       const ICONS = {
+        // A periodic-table element tile: atomic number, a script "aB" symbol, and the element name.
         altbryson: `
           <defs><linearGradient id="g-ab" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#818cf8"/><stop offset=".55" stop-color="#6366f1"/><stop offset="1" stop-color="#ec4899"/></linearGradient></defs>
           <rect width="100" height="100" fill="url(#g-ab)"/>
-          <circle cx="50" cy="50" r="30" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2"/>
-          <text x="50" y="66" text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-weight="800" font-size="50" fill="#fff" letter-spacing="-3">ab</text>
-          <path d="M76 18l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5z" fill="#fff"/>`,
+          <rect x="6" y="6" width="88" height="88" rx="4" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="1.5"/>
+          <g fill="#fff" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+            <text x="13" y="24" font-size="13" font-weight="700">42</text>
+            <text x="87" y="24" font-size="9" font-weight="600" text-anchor="end" opacity=".85">2026</text>
+            <text x="50" y="66" font-family="'Segoe Script', 'Snell Roundhand', 'Apple Chancery', 'Brush Script MT', cursive" font-size="40" font-weight="700" text-anchor="middle">aB</text>
+            <text x="50" y="86" font-size="10" font-weight="600" text-anchor="middle" letter-spacing="1">altbryson</text>
+          </g>`,
         googlevoicetray: `
           <defs><radialGradient id="g-gvt" cx="35%" cy="25%" r="80%"><stop offset="0" stop-color="#6af0a1"/><stop offset="1" stop-color="#00a844"/></radialGradient></defs>
           <rect width="100" height="100" fill="url(#g-gvt)"/>
@@ -1233,10 +1219,10 @@
         bluetooth: `
           <polyline points="33,35 65,63 50,77 50,23 65,37 33,65" fill="none" stroke="#fff" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round"/>`,
         battery: `
-          <rect x="14" y="34" width="64" height="32" rx="9" fill="none" stroke="#fff" stroke-width="4"/>
-          <path d="M82 44a4 4 0 0 1 0 12z" fill="#fff"/>
-          <rect class="bat-fill" x="20" y="40" width="52" height="20" rx="4.5" fill="#fff"/>
-          <path class="bat-bolt" d="M49 35l-10 17h9l-3 13 11-18h-9z" fill="#16a34a" stroke="#fff" stroke-width="1.5" style="display:none"/>`,
+          <rect x="33" y="17" width="34" height="70" rx="8" fill="none" stroke="#fff" stroke-width="4"/>
+          <rect x="42" y="10" width="16" height="6" rx="2.5" fill="#fff"/>
+          <rect class="bat-fill" x="39" y="23" width="22" height="58" rx="4" fill="#fff"/>
+          <path class="bat-bolt" d="M53 30l-12 22h9l-4 20 13-25h-9z" fill="#16a34a" stroke="#fff" stroke-width="1.5" style="display:none"/>`,
         wifi: `
           <g class="wifi-arcs" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round">
             <path d="M16 43a49 49 0 0 1 68 0"/><path d="M28 55a31 31 0 0 1 44 0"/><path d="M39.5 66.5a15 15 0 0 1 21 0"/>
@@ -1405,6 +1391,7 @@
       let cascade = 0;
 
       const dockItem = (id) => dock.querySelector(`.dock-item[data-id="${id}"]`);
+      const isDockCompact = () => matchMedia('(max-width: 1000px)').matches;
       const dockH = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dock-h'));
 
       function bounce(id) {
@@ -1803,8 +1790,23 @@
           { key: 'lock', label: 'Lock Screen', kbd: '⌃⌘Q', action: true },
           { label: 'Log Out Bryson…', kbd: '⇧⌘Q' },
         ];
-        const el = showPopover(anchor, `<div role="menu" aria-label="altbryson menu">${menuHTML(items)}</div>`, { className: 'menu', align: 'left' });
+        // On small screens the tray icons are hidden from the dock and live at the top of this menu instead.
+        const tray = isDockCompact()
+          ? `<div class="menu-tray">${DOCK.filter((d) => d.tray).map((d) => `
+              <button type="button" class="menu-tray-item" data-tray="${d.id}">
+                ${iconHTML(d.id)}<span>${d.name.replace('Google Voice - ', '').replace('Spotlight ', '').replace('System ', '')}</span>
+              </button>`).join('')}</div>`
+          : '';
+        const el = showPopover(anchor, `${tray}<div role="menu" aria-label="altbryson menu">${menuHTML(items)}</div>`, { className: 'menu', align: 'left' });
         if (!el) return;
+        el.querySelectorAll('[data-tray]').forEach((b) => {
+          const d = DOCK.find((x) => x.id === b.dataset.tray);
+          if (d.badge) {
+            b.dataset.unread = dockItem(d.id).dataset.unread;
+            b.insertAdjacentHTML('beforeend', `<span class="badge">${dockItem(d.id).querySelector('.badge').textContent}</span>`);
+          }
+          b.addEventListener('click', () => { closePopover(); d.run(anchor); });
+        });
         el.addEventListener('click', (e) => {
           const btn = e.target.closest('.menu-item');
           if (!btn || btn.getAttribute('aria-disabled') === 'true' || btn.classList.contains('has-sub')) return;
@@ -1884,7 +1886,10 @@
         if (!battery) return;
         const fill = document.querySelector('.icon-battery .bat-fill');
         const bolt = document.querySelector('.icon-battery .bat-bolt');
-        fill.setAttribute('width', Math.max(4, 52 * battery.level));
+        // Vertical battery: the fill grows up from the bottom of the 58-unit-tall well.
+        const h = Math.max(4, 58 * battery.level);
+        fill.setAttribute('height', h);
+        fill.setAttribute('y', 23 + 58 - h);
         fill.setAttribute('fill', battery.level < 0.2 && !battery.charging ? '#f87171' : '#fff');
         bolt.style.display = battery.charging ? '' : 'none';
         const label = dockItem('battery').querySelector('.label');
@@ -2390,7 +2395,7 @@
       let trash = [...TRASH_FILES];
 
       function paintTrashIcon() {
-        document.querySelector('#desk-trash .icon-trash')?.setAttribute('data-empty', trash.length === 0);
+        document.querySelector('.desk-icon[data-id="trash"] .icon-trash')?.setAttribute('data-empty', trash.length === 0);
       }
 
       function openTrash() {
@@ -2547,124 +2552,133 @@
         });
       }
 
-      // Desktop icons: touch opens on a single tap; a mouse selects first and opens on double-click, like Finder.
+      // ---------- Desktop grid ----------
+      // Documents and links sit in a grid that fills from the top-right, column by column, wrapping
+      // when the screen is short. Drag an item to move it; it snaps to the nearest cell (swapping with
+      // whatever is there), and the layout is remembered per browser.
       const DESK_DOCS = [
         { id: 'claude-doc', name: 'Built with Claude.doc', ext: 'doc', mark: 'claude', open: openClaudeDoc },
         { id: 'resume', name: "Bryson Faggart's Resume.pdf", ext: 'pdf', open: openResume },
         { id: 'menubar-doc', name: 'The Menu Bar Problem.doc', ext: 'doc', open: openMenubarDoc },
         { id: 'disclaimer', name: 'Legal Disclaimer.txt', ext: 'txt', open: openDisclaimer },
+        { id: 'link-linkedin', name: 'LinkedIn', icon: 'linkedin', url: 'https://www.linkedin.com/in/brysonwf/' },
+        { id: 'link-x', name: 'X', icon: 'x', url: 'https://x.com/brysonwf' },
+        { id: 'link-github', name: 'GitHub', icon: 'github', url: 'https://github.com/brysonwf' },
+        { id: 'trash', name: 'Trash', icon: 'trash', open: openTrash },
       ];
+      const CELL_W = 112, CELL_H = 118, GRID_PAD = 24;
       const deskIcons = $('desk-icons');
-      DESK_DOCS.forEach((d) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'desk-icon';
-        btn.setAttribute('aria-pressed', 'false');
-        const mark = d.mark ? `<svg class="mark" viewBox="0 0 100 100" aria-hidden="true">${CLAUDE_MARK}</svg>` : '';
-        btn.innerHTML = `<span class="file-ic" data-ext="${d.ext}">${mark}</span><span>${d.name}</span>`;
-        btn.addEventListener('click', () => {
-          if (matchMedia('(hover: none)').matches || btn.getAttribute('aria-pressed') === 'true') d.open();
-          deskIcons.querySelectorAll('.desk-icon').forEach((b) => b.setAttribute('aria-pressed', b === btn));
-        });
-        btn.addEventListener('dblclick', d.open);
-        btn.addEventListener('keydown', (e) => { if (e.key === 'Enter') d.open(); });
-        deskIcons.appendChild(btn);
-      });
-      document.addEventListener('pointerdown', (e) => {
-        if (!deskIcons.contains(e.target)) deskIcons.querySelectorAll('.desk-icon').forEach((b) => b.setAttribute('aria-pressed', 'false'));
-      });
+      let deskLayout = store.get('deskLayout', {}); // id -> { col, row }; col 0 is the rightmost column
 
-      // The Trash lives on the desktop (bottom-right, above the dock) instead of in the dock.
-      const deskTrash = $('desk-trash');
-      deskTrash.innerHTML = iconHTML('trash') + '<span>Trash</span>';
-      deskTrash.addEventListener('click', () => {
-        if (matchMedia('(hover: none)').matches || deskTrash.getAttribute('aria-pressed') === 'true') openTrash();
-        deskTrash.setAttribute('aria-pressed', 'true');
-      });
-      deskTrash.addEventListener('dblclick', openTrash);
-      deskTrash.addEventListener('keydown', (e) => { if (e.key === 'Enter') openTrash(); });
-      document.addEventListener('pointerdown', (e) => { if (!deskTrash.contains(e.target)) deskTrash.setAttribute('aria-pressed', 'false'); });
-
-      // ---------- Browser windows (LinkedIn, X, GitHub) ----------
-      // All three refuse to load inside another site's frame (X-Frame-Options), so GitHub is
-      // rebuilt from its public API and the other two explain why and link out.
-      const SOCIAL = {
-        github: { title: 'GitHub', url: 'https://github.com/brysonwf', host: 'github.com/brysonwf' },
-        linkedin: { title: 'LinkedIn', url: 'https://www.linkedin.com/in/brysonwf/', host: 'linkedin.com/in/brysonwf' },
-        x: { title: 'X', url: 'https://x.com/brysonwf', host: 'x.com/brysonwf' },
-      };
-
-      function openBrowser(id) {
-        const s = SOCIAL[id];
-        const el = openWindow({
-          id,
-          title: s.title,
-          body: `
-            <div class="browser">
-              <div class="addr">
-                <span class="url">🔒 ${s.host}</span>
-                <a class="btn secondary" href="${s.url}" target="_blank" rel="noreferrer">Open in new tab ↗</a>
-              </div>
-              <div class="page"></div>
-            </div>`,
-        });
-        if (!el) return;
-        const page = el.querySelector('.page');
-        if (id === 'github') return renderGitHub(page);
-        page.innerHTML = `
-          <div class="blocked">
-            ${iconHTML(id)}
-            <h3>${s.host.split('/')[0]} won't open inside another website</h3>
-            <p>${s.title} blocks other sites from showing its pages in a window, so this one opens in a new tab instead.</p>
-            <a class="btn" href="${s.url}" target="_blank" rel="noreferrer">View @brysonwf on ${s.title} ↗</a>
-          </div>`;
+      function gridRows() {
+        const usable = desktop.clientHeight - dockH() - GRID_PAD * 2;
+        return Math.max(1, Math.floor(usable / CELL_H));
       }
+      function gridCols() {
+        return Math.max(1, Math.floor((desktop.clientWidth - GRID_PAD * 2) / CELL_W));
+      }
+      const cellKey = (c) => `${c.col},${c.row}`;
 
-      let githubCache = null;
-      async function renderGitHub(page) {
-        page.innerHTML = '<div class="gh-loading">Loading github.com/brysonwf…</div>';
-        try {
-          if (!githubCache) {
-            const [user, repos] = await Promise.all([
-              fetch('https://api.github.com/users/brysonwf').then((r) => r.json()),
-              fetch('https://api.github.com/users/brysonwf/repos?sort=pushed&per_page=12').then((r) => r.json()),
-            ]);
-            if (!user.login || !Array.isArray(repos)) throw new Error('GitHub API unavailable');
-            githubCache = { user, repos };
-          }
-          const { user, repos } = githubCache;
-          const ago = (d) => new Date(d).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
-          page.innerHTML = `
-            <div class="gh">
-              <aside class="gh-profile">
-                <img src="${esc(user.avatar_url)}" alt="" width="120" height="120">
-                <h3>${esc(user.name || user.login)}</h3>
-                <div class="gh-login">${esc(user.login)}</div>
-                ${user.bio ? `<p>${esc(user.bio)}</p>` : ''}
-                <div class="gh-stats">${user.followers} followers · ${user.following} following · ${user.public_repos} public repos</div>
-              </aside>
-              <section class="gh-repos">
-                <h4>Recently updated repositories</h4>
-                <div class="gh-grid">
-                  ${repos.map((r) => `
-                    <a class="gh-repo" href="${esc(r.html_url)}" target="_blank" rel="noreferrer">
-                      <b>${esc(r.name)}</b>
-                      <span class="desc">${esc(r.description || 'No description')}</span>
-                      <span class="meta">${r.language ? `<i class="dot"></i>${esc(r.language)} · ` : ''}★ ${r.stargazers_count} · Updated ${ago(r.pushed_at)}</span>
-                    </a>`).join('')}
-                </div>
-              </section>
-            </div>`;
-        } catch {
-          page.innerHTML = `
-            <div class="blocked">
-              ${iconHTML('github')}
-              <h3>Couldn't load GitHub right now</h3>
-              <p>GitHub's public API may be rate-limiting this connection. Try again in a bit, or open the profile directly.</p>
-              <a class="btn" href="${SOCIAL.github.url}" target="_blank" rel="noreferrer">View @brysonwf on GitHub ↗</a>
-            </div>`;
+      // Keep saved positions that still fit; place everything else in the first free cells.
+      function layoutDesk() {
+        const rows = gridRows(), cols = gridCols();
+        const taken = new Set();
+        const pos = {};
+        for (const d of DESK_DOCS) {
+          const p = deskLayout[d.id];
+          if (p && p.row < rows && p.col < cols && !taken.has(cellKey(p))) { pos[d.id] = p; taken.add(cellKey(p)); }
         }
+        let next = 0;
+        for (const d of DESK_DOCS) {
+          if (pos[d.id]) continue;
+          let c;
+          do { c = { col: Math.floor(next / rows), row: next % rows }; next++; } while (taken.has(cellKey(c)));
+          pos[d.id] = c;
+          taken.add(cellKey(c));
+        }
+        for (const d of DESK_DOCS) placeIcon(deskIcons.querySelector(`[data-id="${d.id}"]`), pos[d.id]);
+        return pos;
       }
+      function placeIcon(el, { col, row }) {
+        el.style.left = desktop.clientWidth - GRID_PAD - (col + 1) * CELL_W + 'px';
+        el.style.top = GRID_PAD + row * CELL_H + 'px';
+      }
+
+      function makeDeskDraggable(el, id) {
+        el.addEventListener('pointerdown', (e) => {
+          if (e.button !== 0) return;
+          const startX = e.clientX, startY = e.clientY;
+          const origin = { left: el.offsetLeft, top: el.offsetTop };
+          let dragging = false;
+          const move = (ev) => {
+            const dx = ev.clientX - startX, dy = ev.clientY - startY;
+            if (!dragging && Math.hypot(dx, dy) < 5) return;
+            if (!dragging) { dragging = true; el.classList.add('dragging'); el.setPointerCapture(ev.pointerId); }
+            el.style.left = origin.left + dx + 'px';
+            el.style.top = origin.top + dy + 'px';
+          };
+          const up = () => {
+            el.removeEventListener('pointermove', move);
+            el.removeEventListener('pointerup', up);
+            el.removeEventListener('pointercancel', up);
+            if (!dragging) return;
+            el.classList.remove('dragging');
+            el.dataset.justDragged = '1'; // swallow the click that follows a drag
+            setTimeout(() => delete el.dataset.justDragged, 0);
+            // Snap to the nearest cell, swapping with whatever is there.
+            const col = Math.min(gridCols() - 1, Math.max(0, Math.round((desktop.clientWidth - GRID_PAD - el.offsetLeft) / CELL_W - 1)));
+            const row = Math.min(gridRows() - 1, Math.max(0, Math.round((el.offsetTop - GRID_PAD) / CELL_H)));
+            const current = layoutDesk();
+            const from = current[id];
+            const occupant = Object.keys(current).find((k) => k !== id && current[k].col === col && current[k].row === row);
+            const next = { ...current, [id]: { col, row } };
+            if (occupant) next[occupant] = from;
+            deskLayout = next;
+            store.set('deskLayout', deskLayout);
+            layoutDesk();
+          };
+          el.addEventListener('pointermove', move);
+          el.addEventListener('pointerup', up);
+          el.addEventListener('pointercancel', up);
+        });
+      }
+
+      DESK_DOCS.forEach((d) => {
+        const el = document.createElement(d.url ? 'a' : 'button');
+        el.className = `desk-icon${d.url ? ' desk-link' : ''}`;
+        el.dataset.id = d.id;
+        if (d.url) {
+          // Links open their site directly in a new tab on a single click, like a link.
+          el.href = d.url;
+          el.target = '_blank';
+          el.rel = 'noreferrer';
+          el.draggable = false;
+          el.innerHTML = `<span class="link-ic">${iconHTML(d.icon)}<span class="link-badge" aria-hidden="true">↗</span></span><span class="fname">${d.name}</span>`;
+          el.addEventListener('click', (e) => { if (el.dataset.justDragged) e.preventDefault(); });
+        } else {
+          // Documents: touch opens on a tap; a mouse selects first and opens on double-click, like Finder.
+          el.type = 'button';
+          el.setAttribute('aria-pressed', 'false');
+          const mark = d.mark ? `<svg class="mark" viewBox="0 0 100 100" aria-hidden="true">${CLAUDE_MARK}</svg>` : '';
+          const art = d.icon ? iconHTML(d.icon) : `<span class="file-ic" data-ext="${d.ext}">${mark}</span>`;
+          el.innerHTML = `${art}<span class="fname">${d.name}</span>`;
+          el.addEventListener('click', () => {
+            if (el.dataset.justDragged) return;
+            if (matchMedia('(hover: none)').matches || el.getAttribute('aria-pressed') === 'true') d.open();
+            deskIcons.querySelectorAll('button.desk-icon').forEach((b) => b.setAttribute('aria-pressed', b === el));
+          });
+          el.addEventListener('dblclick', d.open);
+          el.addEventListener('keydown', (e) => { if (e.key === 'Enter') d.open(); });
+        }
+        makeDeskDraggable(el, d.id);
+        deskIcons.appendChild(el);
+      });
+      layoutDesk();
+      window.addEventListener('resize', layoutDesk);
+      document.addEventListener('pointerdown', (e) => {
+        if (!deskIcons.contains(e.target)) deskIcons.querySelectorAll('button.desk-icon').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+      });
+
 
       // ---------- Built with Claude ----------
       function openClaudeDoc() {
@@ -2700,9 +2714,9 @@
           { name: 'Messages', kind: 'Google Voice Tray', icon: 'gv-messages', run: () => gvToggle('messages') },
           { name: 'Voicemail', kind: 'Google Voice Tray', icon: 'gv-voicemail', run: () => gvToggle('voicemail') },
           { name: 'Google Chat', kind: 'Google Voice Tray', icon: 'gv-chat', run: () => gvToggle('chat') },
-          { name: 'LinkedIn', kind: 'Link', icon: 'linkedin', run: () => openBrowser('linkedin') },
-          { name: 'X / Twitter', kind: 'Link', icon: 'x', run: () => openBrowser('x') },
-          { name: 'GitHub', kind: 'Link', icon: 'github', run: () => openBrowser('github') },
+          { name: 'LinkedIn', kind: 'Link', icon: 'linkedin', run: () => window.open('https://www.linkedin.com/in/brysonwf/', '_blank', 'noreferrer') },
+          { name: 'X / Twitter', kind: 'Link', icon: 'x', run: () => window.open('https://x.com/brysonwf', '_blank', 'noreferrer') },
+          { name: 'GitHub', kind: 'Link', icon: 'github', run: () => window.open('https://github.com/brysonwf', '_blank', 'noreferrer') },
         ];
         const back = document.createElement('div');
         back.className = 'spotlight-backdrop';
@@ -2746,19 +2760,15 @@
         '|',
         ...PROJECTS.filter((p) => p.device === 'phone').map((p) => ({ id: p.id, name: p.name, stage: p.stage, run: () => openProject(p.id) })),
         '|',
-        { id: 'linkedin', name: 'LinkedIn', run: () => openBrowser('linkedin') },
-        { id: 'x', name: 'X / Twitter', run: () => openBrowser('x') },
-        { id: 'github', name: 'GitHub', run: () => openBrowser('github') },
-        '|',
-        { id: 'gv-messages', name: 'Google Voice - Messages', run: () => gvToggle('messages'), menu: (el) => gvContextMenu(el, 'messages'), badge: true },
-        { id: 'gv-voicemail', name: 'Google Voice - Voicemail', run: () => gvToggle('voicemail'), menu: (el) => gvContextMenu(el, 'voicemail'), badge: true },
-        { id: 'gv-chat', name: 'Google Chat', run: () => gvToggle('chat'), menu: (el) => gvContextMenu(el, 'chat'), badge: true },
-        { id: 'weather', name: 'Weather', run: weatherPopover },
-        { id: 'bluetooth', name: 'Bluetooth', run: bluetoothPopover },
-        { id: 'battery', name: 'Battery', run: batteryPopover },
-        { id: 'wifi', name: 'Wi-Fi', run: wifiPopover },
-        { id: 'search', name: 'Spotlight Search', run: openSpotlight },
-        { id: 'settings', name: 'System Settings', run: openSettings },
+        { id: 'gv-messages', name: 'Google Voice - Messages', run: () => gvToggle('messages'), menu: (el) => gvContextMenu(el, 'messages'), badge: true, tray: true },
+        { id: 'gv-voicemail', name: 'Google Voice - Voicemail', run: () => gvToggle('voicemail'), menu: (el) => gvContextMenu(el, 'voicemail'), badge: true, tray: true },
+        { id: 'gv-chat', name: 'Google Chat', run: () => gvToggle('chat'), menu: (el) => gvContextMenu(el, 'chat'), badge: true, tray: true },
+        { id: 'weather', name: 'Weather', run: weatherPopover, tray: true },
+        { id: 'bluetooth', name: 'Bluetooth', run: bluetoothPopover, tray: true },
+        { id: 'battery', name: 'Battery', run: batteryPopover, tray: true },
+        { id: 'wifi', name: 'Wi-Fi', run: wifiPopover, tray: true },
+        { id: 'search', name: 'Spotlight Search', run: openSpotlight, tray: true },
+        { id: 'settings', name: 'System Settings', run: openSettings, tray: true },
         { id: 'clock', name: 'Clock', run: clockPopover },
       ];
 
@@ -2770,7 +2780,7 @@
           return;
         }
         const el = document.createElement(d.href ? 'a' : 'button');
-        el.className = 'dock-item';
+        el.className = d.tray ? 'dock-item tray-item' : 'dock-item';
         el.dataset.id = d.id;
         el.setAttribute('aria-label', d.name);
         if (d.href) {
