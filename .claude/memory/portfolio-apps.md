@@ -18,3 +18,5 @@ Where each project shown on the desktop lives (2026-10-12). Every repo has its o
 | Google Voice Tray | (Windows app) | github.com/brysonwf/googlevoicetray | Projects/googlevoicetray |
 
 GitLab has many stale projects; only clone the ones the user names.
+
+baseless.chat doubles as this site's web browser (opens on arrival), and its home page (about.html in that repo) lists every app above except Google Voice Tray, plus LinkedIn, X @brysonwf, X @brysonf and GitHub.
