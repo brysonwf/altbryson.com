@@ -27,8 +27,8 @@
         --glass-border: rgba(255, 255, 255, 0.55);
         --dock-h: 96px;
         /* Icons grow until the dock spans the screen, capped at macOS's 128px maximum.
-           360px covers gaps, dividers, padding and room for magnification; 22 = 20 icons plus the clock at 2x. */
-        --size: clamp(30px, calc((100vw - 360px) / 22), 128px);
+           360px covers gaps, dividers, padding and room for magnification; 21 = 21 icons. */
+        --size: clamp(30px, calc((100vw - 360px) / 21), 128px);
         --gv-green: #00c853;
         --gv-grey: #808080;
         font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -773,17 +773,21 @@
       .desk-icons { position: absolute; inset: 0; pointer-events: none; }
       .desk-icons .desk-icon { position: absolute; pointer-events: auto; touch-action: none; transition: left 180ms ease, top 180ms ease; }
       .desk-icons .desk-icon.dragging { transition: none; z-index: 5; opacity: 0.85; }
-      .desk-icon[data-id="trash"] .app-icon { width: 56px; margin-bottom: 2px; }
+      .desk-icon[data-id="trash"] .app-icon { width: 67px; margin-bottom: 2px; }
+      /* Desktop file icons are drawn 20% larger than the ones inside the Trash window. */
+      .desk-icon .file-ic { width: 55px; height: 70px; }
+      .desk-icon .file-ic::after { bottom: 10px; font-size: 11px; }
+      .desk-icon .file-ic .mark { top: 17px; width: 29px; height: 29px; }
       .desk-link { text-decoration: none; cursor: pointer; }
       .desk-link:hover .fname { text-decoration: underline; }
-      .link-ic { position: relative; display: block; width: 56px; margin: 1px 0 3px; }
-      .link-badge { position: absolute; left: -6px; bottom: -6px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: #fff; color: #2563eb; font-size: 14px; font-weight: 800; text-shadow: none; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.4); }
+      .link-ic { position: relative; display: block; width: 67px; margin: 1px 0 3px; }
+      .link-badge { position: absolute; left: -7px; bottom: -7px; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: #fff; color: #2563eb; font-size: 17px; font-weight: 800; text-shadow: none; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.4); }
       .desk-icon {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 6px;
-        width: 108px;
+        width: 128px;
         padding: 8px 4px;
         border: 0;
         border-radius: 8px;
@@ -892,9 +896,6 @@
         transition: width 140ms ease-out;
       }
       .dock:not(.magnifying) .dock-item { transition: width 260ms ease-out; }
-      /* The clock runs a little large so the time is easy to read at a glance. */
-      .dock-item[data-id="clock"] { width: calc(var(--size) * 2); }
-      .dock-item[data-id="clock"] .app-icon { aspect-ratio: 2 / 1; }
       .dock-item:focus-visible { outline: none; }
       .dock-item:focus-visible .app-icon { outline: 3px solid #fff; outline-offset: 2px; }
       .dock-item .label {
@@ -1223,10 +1224,10 @@
         bluetooth: `
           <polyline points="33,35 65,63 50,77 50,23 65,37 33,65" fill="none" stroke="#fff" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round"/>`,
         battery: `
-          <rect x="33" y="17" width="34" height="70" rx="8" fill="none" stroke="#fff" stroke-width="4"/>
-          <rect x="42" y="10" width="16" height="6" rx="2.5" fill="#fff"/>
-          <rect class="bat-fill" x="39" y="23" width="22" height="58" rx="4" fill="#fff"/>
-          <path class="bat-bolt" d="M53 30l-12 22h9l-4 20 13-25h-9z" fill="#16a34a" stroke="#fff" stroke-width="1.5" style="display:none"/>`,
+          <rect x="32" y="30" width="36" height="46" rx="8" fill="none" stroke="#fff" stroke-width="4"/>
+          <rect x="42" y="23" width="16" height="6" rx="2.5" fill="#fff"/>
+          <rect class="bat-fill" x="38" y="36" width="24" height="34" rx="4" fill="#fff"/>
+          <path class="bat-bolt" d="M53 38l-10 15h7l-3 13 11-17h-7z" fill="#16a34a" stroke="#fff" stroke-width="1.5" style="display:none"/>`,
         wifi: `
           <g class="wifi-arcs" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round">
             <path d="M16 43a49 49 0 0 1 68 0"/><path d="M28 55a31 31 0 0 1 44 0"/><path d="M39.5 66.5a15 15 0 0 1 21 0"/>
@@ -1249,7 +1250,8 @@
           <circle cx="50" cy="50" r="19" fill="none" stroke="#fff" stroke-width="10"/>`,
         clock: `
           <g fill="#fff" font-family="system-ui, -apple-system, Segoe UI, sans-serif" text-anchor="middle" style="font-variant-numeric: tabular-nums">
-            <text class="clk-time" x="100" y="79" font-size="78" font-weight="600" letter-spacing="-1"></text>
+            <text class="clk-h" x="50" y="47" font-size="40" font-weight="600" letter-spacing="1"></text>
+            <text class="clk-m" x="50" y="85" font-size="40" font-weight="600" letter-spacing="1"></text>
           </g>`,
         linkedin: `
           <rect width="100" height="100" fill="#0a66c2"/>
@@ -1302,8 +1304,8 @@
         road: { src: '/icons/road.png', bg: '#fff' },
         baseless: { src: '/icons/baseless.png', bg: '#fff' },
       };
-      // The clock is a 2:1 tile: digits as tall as the other glyphs, without standing taller than them.
-      const ICON_VIEWBOX = { clock: '0 0 200 100' };
+      // Icons with a non-square drawing area (none at the moment; the clock is square with stacked digits).
+      const ICON_VIEWBOX = {};
       const iconHTML = (id) => IMG_ICONS[id]
         ? `<span class="app-icon icon-${id}" style="background:${IMG_ICONS[id].bg}"><img src="${IMG_ICONS[id].src}" alt="" width="180" height="180"></span>`
         : `<span class="app-icon icon-${id}"><svg viewBox="${ICON_VIEWBOX[id] || '0 0 100 100'}" aria-hidden="true">${ICONS[id]}</svg></span>`;
@@ -1883,11 +1885,12 @@
       // ---------- Status items ----------
       function updateClock() {
         const d = new Date();
-        const time = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-        // The tile shows just h:mm; AM/PM and the date are in the hover label and popover.
-        // Split on any whitespace: some locales put a narrow no-break space before AM/PM.
-        const [hm] = time.split(/\s+/);
-        document.querySelectorAll('.clk-time').forEach((n) => (n.textContent = hm));
+        // The square tile stacks two-digit hours over minutes (08 / 10); AM/PM and the date are in the
+        // hover label and popover. formatToParts avoids guessing each locale's separator.
+        const parts = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit' }).formatToParts(d);
+        const part = (type) => parts.find((p) => p.type === type)?.value ?? '';
+        document.querySelectorAll('.clk-h').forEach((n) => (n.textContent = part('hour').padStart(2, '0')));
+        document.querySelectorAll('.clk-m').forEach((n) => (n.textContent = part('minute').padStart(2, '0')));
         const label = dockItem('clock')?.querySelector('.label');
         if (label) label.textContent = d.toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
       }
@@ -1906,10 +1909,10 @@
         if (!battery) return;
         const fill = document.querySelector('.icon-battery .bat-fill');
         const bolt = document.querySelector('.icon-battery .bat-bolt');
-        // Vertical battery: the fill grows up from the bottom of the 58-unit-tall well.
-        const h = Math.max(4, 58 * battery.level);
+        // Vertical battery: the fill grows up from the bottom of the 34-unit-tall well.
+        const h = Math.max(4, 34 * battery.level);
         fill.setAttribute('height', h);
-        fill.setAttribute('y', 23 + 58 - h);
+        fill.setAttribute('y', 36 + 34 - h);
         fill.setAttribute('fill', battery.level < 0.2 && !battery.charging ? '#f87171' : '#fff');
         bolt.style.display = battery.charging ? '' : 'none';
         const label = dockItem('battery').querySelector('.label');
@@ -2594,6 +2597,19 @@
         });
       }
 
+      function openSketchup() {
+        openWindow({
+          id: 'sketchup',
+          title: 'SketchUp Samples.skp',
+          body: `
+            <article class="doc" style="text-align:center;padding-top:64px;padding-bottom:64px">
+              <div class="kicker">SketchUp Samples</div>
+              <h1>Coming soon</h1>
+              <p class="byline">A collection of Bryson's SketchUp models is on the way.</p>
+            </article>`,
+        });
+      }
+
       // ---------- Desktop grid ----------
       // Documents and links sit in a grid that fills from the top-right, column by column, wrapping
       // when the screen is short. Drag an item to move it; it snaps to the nearest cell (swapping with
@@ -2603,13 +2619,14 @@
         { id: 'resume', name: "Bryson Faggart's Resume.pdf", ext: 'pdf', open: openResume },
         { id: 'menubar-doc', name: 'The Menu Bar Problem.doc', ext: 'doc', open: openMenubarDoc },
         { id: 'disclaimer', name: 'Legal Disclaimer.txt', ext: 'txt', open: openDisclaimer },
+        { id: 'sketchup', name: 'SketchUp Samples.skp', ext: 'skp', open: openSketchup },
         { id: 'link-linkedin', name: 'LinkedIn', icon: 'linkedin', url: 'https://www.linkedin.com/in/brysonwf/' },
         { id: 'link-x', name: 'X @brysonwf', icon: 'x', url: 'https://x.com/brysonwf' },
         { id: 'link-x-brysonf', name: 'X @brysonf', icon: 'x', url: 'https://x.com/brysonf' },
         { id: 'link-github', name: 'GitHub', icon: 'github', url: 'https://github.com/brysonwf' },
         { id: 'trash', name: 'Trash', icon: 'trash', open: openTrash },
       ];
-      const CELL_W = 112, CELL_H = 118, GRID_PAD = 24;
+      const CELL_W = 134, CELL_H = 140, GRID_PAD = 24;
       const deskIcons = $('desk-icons');
       let deskLayout = store.get('deskLayout', {}); // id -> { col, row }; col 0 is the rightmost column
 
@@ -2753,6 +2770,7 @@
           { name: 'The Menu Bar Problem.doc', kind: 'Document', icon: 'altbryson', run: openMenubarDoc },
           { name: 'Legal Disclaimer.txt', kind: 'Document', icon: 'altbryson', run: openDisclaimer },
           { name: "Bryson Faggart's Resume.pdf", kind: 'Document', icon: 'altbryson', run: openResume },
+          { name: 'SketchUp Samples.skp', kind: 'Document', icon: 'altbryson', run: openSketchup },
           { name: 'Built with Claude.doc', kind: 'Document', icon: 'claude', run: openClaudeDoc },
           { name: 'Messages', kind: 'Google Voice Tray', icon: 'gv-messages', run: () => gvToggle('messages') },
           { name: 'Voicemail', kind: 'Google Voice Tray', icon: 'gv-voicemail', run: () => gvToggle('voicemail') },
@@ -2855,8 +2873,7 @@
             const r = el.getBoundingClientRect();
             const dist = Math.abs(e.clientX - (r.left + r.width / 2));
             const scale = 1 + amp * Math.max(0, 1 - dist / 150);
-            const base = el.dataset.id === 'clock' ? 2 : 1;
-            el.style.width = `calc(var(--size) * ${(scale * base).toFixed(3)})`;
+            el.style.width = `calc(var(--size) * ${scale.toFixed(3)})`;
           });
         });
         dock.addEventListener('mouseleave', () => {
