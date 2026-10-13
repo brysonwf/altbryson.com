@@ -11,6 +11,7 @@ Bryson's feedback on this site (2026-10-12):
 - Phones render at real size (375px wide), never scaled down.
 - Mimic real macOS behaviour (minimize into the dock, dock max size 128px, Trash on the desktop, windows never under the dock) and real app UIs (the Google Chat demo should look like Google Chat on the web at phone width; browser tabs fill the titlebar to its top edge like Chrome on Windows and are always the same fixed width (200px); extra tabs scroll the strip instead of shrinking).
 - Menus list the standard items even when a website can't do them; those are greyed out rather than dropped.
+- Browser controls (tabs, the ⋮ menu) belong to the altbryson Baseless window, not inside baseless.chat. Bryson (2026-10-13): "the three dot menu for baseless chat should have been on the browser window as part of altbryson and not really part of baseless.chat".
 - Release stage uses Greek α/β in the count-badge style, not rubber stamps.
 - Joke features are welcome: the Calculator is confidently wrong on purpose; Terminal always replies "Have you tried turning it off and on again?"; Trash holds "IMPORTANT - DO NOT DELETE.txt" which restores itself.
 - Requests often arrive mid-task and get refined quickly ("actually add the icons back"); keep removals easy to undo (separate commits, so a git revert restores them cleanly).

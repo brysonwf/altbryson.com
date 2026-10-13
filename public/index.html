@@ -156,6 +156,18 @@
       .tab-close:hover { background: rgba(15, 23, 42, 0.1); }
       .tab-new { flex: none; align-self: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; background: none; color: #334155; font-size: 18px; line-height: 1; cursor: pointer; }
       .tab-new:hover { background: rgba(15, 23, 42, 0.08); }
+      /* ⋮ browser menu at the right end of the titlebar, like Chrome. */
+      .tab-menu { flex: none; align-self: center; display: grid; place-items: center; width: 28px; height: 28px; margin-left: 4px; padding: 0; border: 0; border-radius: 50%; background: none; color: #334155; cursor: pointer; }
+      .tab-menu:hover, .tab-menu[aria-expanded="true"] { background: rgba(15, 23, 42, 0.08); }
+      .tab-menu svg { width: 18px; height: 18px; fill: currentColor; }
+      .tab-menu-pop { min-width: 280px; }
+      .menu-zoom { display: flex; align-items: center; gap: 2px; padding: 2px 4px 2px 10px; font-size: 13.5px; }
+      .menu-zoom span { flex: 1; }
+      .menu-zoom output { min-width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
+      .menu-zoom button { width: 30px; height: 26px; padding: 0; border: 0; border-radius: 6px; background: none; font-size: 15px; line-height: 1; cursor: default; }
+      .menu-zoom button:not(:disabled):hover { background: #2563eb; color: #fff; }
+      .menu-zoom button:disabled { color: #a3a3a3; }
+      .menu-zoom button[data-zoom="full"] { margin-left: 8px; }
 
       /* ---------- Windows desktop frame ---------- */
       .monitor { flex: none; width: min(500px, 100%); }
@@ -1774,7 +1786,10 @@
           <div class="tabs" role="tablist" aria-label="${p.name} tabs">
             <div class="tab-list"></div>
             <button type="button" class="tab-new" aria-label="New tab">+</button>
-          </div>`);
+          </div>
+          <button type="button" class="tab-menu" aria-label="Customize and control ${p.name}" title="Customize and control ${p.name}" aria-haspopup="menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg>
+          </button>`);
         const list = bar.querySelector('.tab-list');
         const app = win.querySelector('.browser-app');
         let seq = 0;
@@ -1816,6 +1831,8 @@
           const title = String(e.data.title || 'baseless.chat').slice(0, 200);
           tab.querySelector('.tab-label').textContent = title;
           tab.title = title;
+          // Remembered for the ⋮ menu (reload, copy link, open in a real tab).
+          if (typeof e.data.url === 'string' && /^https?:\/\//.test(e.data.url)) frame.dataset.page = e.data.url;
         };
         window.addEventListener('message', onPage);
         // Stop listening once the window is gone.
@@ -1832,6 +1849,103 @@
         // Middle-click closes a tab, like a desktop browser.
         list.addEventListener('auxclick', (e) => { const tab = e.target.closest('.tab'); if (e.button === 1 && tab) closeTab(tab.dataset.tab); });
         win.addBrowserTab = addTab; // used by openInBaseless()
+
+        // ⋮ menu at the right end of the titlebar: the browser's own menu, like Chrome's. It belongs to
+        // this window, not to baseless.chat. Items a framed site can't support are listed but greyed out.
+        const activeFrame = () => app.querySelector('iframe:not([hidden])');
+        const activeTabId = () => activeFrame()?.dataset.tab;
+        // The baseless.chat link for whatever the active tab is showing.
+        const chatLink = (frame) => {
+          const page = frame?.dataset.page;
+          if (!page || new URL(page).origin === origin) return page || frame?.src || p.url;
+          return `${p.url}/?url=${page.replace(/^https:\/\//, '').replace(/\/$/, '')}`;
+        };
+        const ZOOMS = [0.5, 0.67, 0.75, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2];
+        const setZoom = (frame, z) => {
+          frame.dataset.zoom = z;
+          // Scale the frame and give it the inverse size, so the page reflows at the new zoom and still fills the window.
+          frame.style.transformOrigin = '0 0';
+          frame.style.transform = z === 1 ? '' : `scale(${z})`;
+          frame.style.width = frame.style.height = z === 1 ? '' : `${100 / z}%`;
+          frame.style.flex = z === 1 ? '' : 'none';
+        };
+        const stepZoom = (dir) => {
+          const frame = activeFrame();
+          const z = Number(frame.dataset.zoom || 1);
+          const i = ZOOMS.indexOf(z);
+          setZoom(frame, ZOOMS[Math.min(ZOOMS.length - 1, Math.max(0, i + dir))]);
+        };
+        const menuButton = bar.querySelector('.tab-menu');
+        const openTabMenu = () => {
+          const frame = activeFrame();
+          const zoom = Math.round(Number(frame?.dataset.zoom || 1) * 100);
+          const items = [
+            { key: 'newtab', label: 'New tab', kbd: '⌘T', action: true },
+            { label: 'New window', kbd: '⌘N' },
+            { label: 'New Incognito window', kbd: '⇧⌘N' },
+            '-',
+            { label: 'History', kbd: '⌘Y' },
+            { label: 'Downloads', kbd: '⇧⌘J' },
+            { label: 'Bookmarks and lists' },
+            '-',
+          ];
+          const items2 = [
+            '-',
+            { key: 'reload', label: 'Reload', kbd: '⌘R', action: true },
+            { key: 'copy', label: 'Copy link', action: Boolean(navigator.clipboard) },
+            { key: 'real', label: 'Open in a real browser tab', action: true },
+            { label: 'Print…', kbd: '⌘P' },
+            { label: 'Find…', kbd: '⌘F' },
+            '-',
+            { key: 'extension', label: 'Get the Chrome extension', action: true },
+            { key: 'privacy', label: 'Privacy policy', action: true },
+            { key: 'terms', label: 'Terms of service', action: true },
+            '-',
+            { key: 'closetab', label: 'Close tab', kbd: '⌘W', action: true },
+            { key: 'closewin', label: 'Close window', kbd: '⇧⌘W', action: true },
+          ];
+          const zoomRow = `
+            <div class="menu-zoom">
+              <span>Zoom</span>
+              <button type="button" data-zoom="-1" aria-label="Zoom out"${zoom <= 50 ? ' disabled' : ''}>−</button>
+              <output>${zoom}%</output>
+              <button type="button" data-zoom="1" aria-label="Zoom in"${zoom >= 200 ? ' disabled' : ''}>+</button>
+              <button type="button" data-zoom="full" aria-label="Full screen" title="Full screen">⛶</button>
+            </div>`;
+          const el = showPopover(menuButton, `<div role="menu" aria-label="${p.name} menu">${menuHTML(items)}${zoomRow}${menuHTML(items2)}</div>`, { className: 'menu tab-menu-pop', align: 'below' });
+          if (!el) return;
+          menuButton.setAttribute('aria-expanded', 'true');
+          new MutationObserver((_, obs) => { if (!el.isConnected) { menuButton.setAttribute('aria-expanded', 'false'); obs.disconnect(); } })
+            .observe(document.body, { childList: true });
+          el.addEventListener('click', (e) => {
+            const z = e.target.closest('[data-zoom]');
+            if (z) {
+              if (z.dataset.zoom === 'full') { closePopover(); toggleFullScreen(win); return; }
+              stepZoom(Number(z.dataset.zoom));
+              const now = Math.round(Number(activeFrame().dataset.zoom) * 100);
+              el.querySelector('.menu-zoom output').textContent = now + '%';
+              el.querySelector('[data-zoom="-1"]').disabled = now <= 50;
+              el.querySelector('[data-zoom="1"]').disabled = now >= 200;
+              return;
+            }
+            const btn = e.target.closest('.menu-item');
+            if (!btn || btn.getAttribute('aria-disabled') === 'true') return;
+            const act = btn.dataset.action;
+            const current = activeFrame();
+            closePopover();
+            if (act === 'newtab') addTab();
+            else if (act === 'reload') current.src = chatLink(current);
+            else if (act === 'copy') navigator.clipboard.writeText(chatLink(current)).then(() => note('Link copied'), () => note("Couldn't copy the link"));
+            else if (act === 'real') window.open(chatLink(current), '_blank', 'noopener');
+            else if (act === 'extension') window.open('https://chromewebstore.google.com/detail/baselesschat/gcjiajedpobdppmhemiimclaidncgepk', '_blank', 'noopener');
+            else if (act === 'privacy') addTab(`${p.url}/?url=baseless.chat/privacy_policy.html`);
+            else if (act === 'terms') addTab(`${p.url}/?url=baseless.chat/terms_of_service.html`);
+            else if (act === 'closetab') closeTab(activeTabId());
+            else if (act === 'closewin') closeWindow(p.id);
+          });
+        };
+        menuButton.addEventListener('click', openTabMenu);
+
         addTab(startUrl);
       }
 
@@ -1926,7 +2040,8 @@
         document.body.classList.remove('popover-open');
       }
 
-      // Shows `html` in a popover above `anchor`. Clicking the same anchor again toggles it.
+      // Shows `html` in a popover above `anchor` (or below it, right-aligned, with align: 'below').
+      // Clicking the same anchor again toggles it.
       function showPopover(anchor, html, { className = '', align = 'center' } = {}) {
         if (popoverOwner === anchor) return closePopover();
         closePopover();
@@ -1940,16 +2055,24 @@
         const a = anchor.getBoundingClientRect();
         const w = popover.offsetWidth;
         const dockTop = dock.getBoundingClientRect().top;
-        let left = align === 'left' ? a.left - 6 : a.left + a.width / 2 - w / 2;
+        let left = align === 'left' ? a.left - 6 : align === 'below' ? a.right - w : a.left + a.width / 2 - w / 2;
         left = Math.min(Math.max(8, left), window.innerWidth - w - 8);
         popover.style.left = left + 'px';
-        popover.style.bottom = window.innerHeight - dockTop + 10 + 'px';
+        if (align === 'below') {
+          popover.style.top = a.bottom + 4 + 'px';
+          popover.style.maxHeight = dockTop - a.bottom - 14 + 'px';
+          popover.style.overflowY = 'auto';
+        } else {
+          popover.style.bottom = window.innerHeight - dockTop + 10 + 'px';
+        }
         return popover;
       }
 
       document.addEventListener('pointerdown', (e) => {
         if (popover && !popover.contains(e.target) && !popoverOwner?.contains(e.target)) closePopover();
       });
+      // Clicks inside a site frame never reach this page, but they take focus from it: close popovers then too.
+      window.addEventListener('blur', () => { if (popover) closePopover(); });
 
       // ---------- altbryson menu (stands in for the Apple menu) ----------
       function menuHTML(items) {
