@@ -121,6 +121,36 @@
       /* Baseless Chat as a full browser window: its iframe fills everything below the titlebar. */
       .browser-app { flex: 1 1 auto; display: flex; min-height: 0; background: #fff; }
       .browser-app iframe { flex: 1; width: 100%; height: 100%; border: 0; }
+      /* Chrome-style tabs in the Baseless window's titlebar. */
+      .titlebar.has-tabs { padding-right: 8px; }
+      .tabs { flex: 1; min-width: 0; display: flex; align-items: flex-end; align-self: stretch; gap: 4px; margin-left: 14px; }
+      .tab-list { display: flex; align-items: flex-end; gap: 2px; min-width: 0; height: 100%; }
+      .tab {
+        flex: 0 1 210px;
+        min-width: 70px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0 6px 0 10px;
+        border-radius: 9px 9px 0 0;
+        color: #475569;
+        font-size: 12.5px;
+        font-weight: 500;
+        cursor: default;
+      }
+      .tab:hover { background: rgba(255, 255, 255, 0.4); }
+      /* The active tab matches baseless.chat's dark top bar so it reads as one piece, like Chrome. */
+      .tab[aria-selected="true"] { background: #18181b; color: #f4f4f5; }
+      .tab[aria-selected="true"] .tab-close { color: #a1a1aa; }
+      .tab[aria-selected="true"] .tab-close:hover { background: rgba(255, 255, 255, 0.12); }
+      .tab-ic .app-icon { width: 16px; border-radius: 4px; box-shadow: none; }
+      .tab-label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .tab-close { flex: none; width: 18px; height: 18px; padding: 0; border: 0; border-radius: 50%; background: none; color: #64748b; font-size: 14px; line-height: 1; cursor: pointer; opacity: 0; }
+      .tab:hover .tab-close, .tab[aria-selected="true"] .tab-close { opacity: 1; }
+      .tab-close:hover { background: rgba(15, 23, 42, 0.1); }
+      .tab-new { flex: none; align-self: center; width: 28px; height: 28px; margin-top: 4px; padding: 0; border: 0; border-radius: 50%; background: none; color: #334155; font-size: 18px; line-height: 1; cursor: pointer; }
+      .tab-new:hover { background: rgba(15, 23, 42, 0.08); }
 
       /* ---------- Windows desktop frame ---------- */
       .monitor { flex: none; width: min(500px, 100%); }
@@ -1192,10 +1222,23 @@
           <path d="M-5 25 Q50 35 105 18" stroke="#93c5fd" stroke-width="12" fill="none"/>
           <path d="M50 18c-12 0-21 9-21 21 0 15 21 39 21 39s21-24 21-39c0-12-9-21-21-21z" fill="#7c3aed"/>
           <path d="M55 30v14.5a5 5 0 1 1-3-4.6V30h9v5z" fill="#fff"/>`,
+        // Baseless Chat's parachute logo (from baseless.chat/favicon.svg), large, over a yellow sunset sky with distant ground.
         baseless: `
-          <rect width="100" height="100" fill="#0b0f19"/>
-          <path d="M22 26h56a8 8 0 0 1 8 8v26a8 8 0 0 1-8 8H46l-14 12v-12h-10a8 8 0 0 1-8-8V34a8 8 0 0 1 8-8z" fill="#facc15"/>
-          <circle cx="36" cy="47" r="4.5" fill="#0b0f19"/><circle cx="50" cy="47" r="4.5" fill="#0b0f19"/><circle cx="64" cy="47" r="4.5" fill="#0b0f19"/>`,
+          <defs>
+            <linearGradient id="g-bl-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffa64d"/><stop offset=".5" stop-color="#ffd35c"/><stop offset=".85" stop-color="#fff0b3"/></linearGradient>
+            <linearGradient id="g-bl-ground" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a6a4f"/><stop offset="1" stop-color="#5e4636"/></linearGradient>
+          </defs>
+          <rect width="100" height="100" fill="url(#g-bl-sky)"/>
+          <circle cx="76" cy="85" r="9" fill="#fff6d1"/>
+          <path d="M0 86 Q14 80 28 84 T56 82 T84 84 T100 81 V100 H0z" fill="#d4977a"/>
+          <path d="M0 91 Q20 87 42 90 T80 89 T100 88 V100 H0z" fill="url(#g-bl-ground)"/>
+          <g transform="translate(50 47) scale(4) translate(-12 -13.3)">
+            <path fill="#0A84FF" d="M3.4 11.8A3.3 3.3 0 0 1 4.3 6.4A3.6 3.6 0 0 1 9.2 3.6A3.9 3.9 0 0 1 14.8 3.6A3.6 3.6 0 0 1 19.7 6.4A3.3 3.3 0 0 1 20.6 11.8A3.4 3.4 0 0 1 16.7 11.3A2.4 2.4 0 0 1 13.5 11.3A2.4 2.4 0 0 1 10.5 11.3A2.4 2.4 0 0 1 7.3 11.3A2.8 2.8 0 0 1 3.4 11.8Z"/>
+            <circle fill="#0A84FF" cx="9.5" cy="19.6" r="0.5"/><circle fill="#0A84FF" cx="7.6" cy="17.8" r="0.75"/><circle fill="#0A84FF" cx="5.8" cy="15.4" r="1"/>
+            <path fill="none" stroke="#000" stroke-width="0.6" stroke-linecap="round" d="M4.3 6.4 11.2 19M9.2 3.6 11.7 18.9M14.8 3.6 12.3 18.9M19.7 6.4 12.8 19"/>
+            <circle fill="#000" cx="12" cy="19.9" r="1.3"/>
+            <path fill="none" stroke="#000" stroke-width="1" stroke-linecap="round" d="M12 21V23"/>
+          </g>`,
         altbrysonpool: `
           <defs><radialGradient id="g-pool" cx="50%" cy="45%" r="70%"><stop offset="0" stop-color="#6b8f4e"/><stop offset="1" stop-color="#2f4a22"/></radialGradient>
           <radialGradient id="g-ball" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#4b5563"/><stop offset="1" stop-color="#000"/></radialGradient></defs>
@@ -1309,7 +1352,6 @@
       const IMG_ICONS = {
         budgetforecast: { src: '/icons/budgetforecast.png', bg: '#121212' },
         road: { src: '/icons/road.png', bg: '#fff' },
-        baseless: { src: '/icons/baseless.png', bg: '#fff' },
       };
       // Icons with a non-square drawing area (none at the moment; the clock is square with stacked digits).
       const ICON_VIEWBOX = {};
@@ -1515,7 +1557,7 @@
 
       // Windows drag by the titlebar, plus any area marked data-drag (e.g. the whole calculator, like macOS).
       const DRAG_HANDLE = '.titlebar, [data-drag]';
-      const NOT_DRAGGABLE = 'button, input, a, textarea';
+      const NOT_DRAGGABLE = 'button, input, a, textarea, .tab';
       function makeDraggable(el) {
         el.addEventListener('pointerdown', (e) => {
           if (e.button !== 0 || !e.target.closest(DRAG_HANDLE) || e.target.closest(NOT_DRAGGABLE) || isCompact() || el.classList.contains('fullscreen')) return;
@@ -1542,7 +1584,7 @@
           el.addEventListener('pointercancel', up);
         });
         el.querySelector('.titlebar').addEventListener('dblclick', (e) => {
-          if (!e.target.closest('button') && el.querySelector('.rz')) toggleFullScreen(el);
+          if (!e.target.closest('button, .tab') && el.querySelector('.rz')) toggleFullScreen(el);
         });
       }
 
@@ -1667,12 +1709,11 @@
             id: p.id,
             title: p.name,
             device: p.device,
-            body: `
-              <div class="browser-app">
-                <iframe src="${p.url}" title="${p.name}" allow="clipboard-write; fullscreen; geolocation"></iframe>
-              </div>`,
+            body: '<div class="browser-app"></div>',
           });
-          if (el && !isCompact()) {
+          if (!el) return;
+          setupBrowserTabs(el, p);
+          if (!isCompact()) {
             const W = desktop.clientWidth, H = desktop.clientHeight - dockH();
             setRect(el, { left: 0, top: 0, width: Math.min(1280, W - 48), height: Math.min(860, H - 32) });
             center(el);
@@ -1697,6 +1738,60 @@
               </div>
             </div>`,
         });
+      }
+
+      // ---------- Browser tabs (Baseless Chat window) ----------
+      // Tabs sit in the titlebar like Chrome. Each tab is its own live baseless.chat iframe; only the
+      // active one is shown. baseless.chat is cross-origin, so tab labels can't read the page title.
+      function setupBrowserTabs(win, p) {
+        const bar = win.querySelector('.titlebar');
+        bar.classList.add('has-tabs');
+        bar.querySelector('.title').hidden = true;
+        bar.insertAdjacentHTML('beforeend', `
+          <div class="tabs" role="tablist" aria-label="${p.name} tabs">
+            <div class="tab-list"></div>
+            <button type="button" class="tab-new" aria-label="New tab">+</button>
+          </div>`);
+        const list = bar.querySelector('.tab-list');
+        const app = win.querySelector('.browser-app');
+        let seq = 0;
+
+        const activate = (tabId) => {
+          list.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', t.dataset.tab === tabId));
+          app.querySelectorAll('iframe').forEach((f) => (f.hidden = f.dataset.tab !== tabId));
+        };
+        const addTab = () => {
+          const tabId = 't' + ++seq;
+          list.insertAdjacentHTML('beforeend', `
+            <div class="tab" role="tab" data-tab="${tabId}" aria-selected="false">
+              <span class="tab-ic" aria-hidden="true">${iconHTML('baseless')}</span>
+              <span class="tab-label">baseless.chat</span>
+              <button type="button" class="tab-close" aria-label="Close tab">×</button>
+            </div>`);
+          app.insertAdjacentHTML('beforeend',
+            `<iframe data-tab="${tabId}" src="${p.url}" title="${p.name}" allow="clipboard-write; fullscreen; geolocation"></iframe>`);
+          activate(tabId);
+        };
+        const closeTab = (tabId) => {
+          const tab = list.querySelector(`[data-tab="${tabId}"]`);
+          const wasActive = tab.getAttribute('aria-selected') === 'true';
+          const neighbour = tab.nextElementSibling || tab.previousElementSibling;
+          tab.remove();
+          app.querySelector(`iframe[data-tab="${tabId}"]`).remove();
+          if (!neighbour) return closeWindow(p.id); // last tab closes the window
+          if (wasActive) activate(neighbour.dataset.tab);
+        };
+
+        bar.querySelector('.tab-new').addEventListener('click', addTab);
+        list.addEventListener('click', (e) => {
+          const tab = e.target.closest('.tab');
+          if (!tab) return;
+          if (e.target.closest('.tab-close')) closeTab(tab.dataset.tab);
+          else activate(tab.dataset.tab);
+        });
+        // Middle-click closes a tab, like a desktop browser.
+        list.addEventListener('auxclick', (e) => { const tab = e.target.closest('.tab'); if (e.button === 1 && tab) closeTab(tab.dataset.tab); });
+        addTab();
       }
 
       // ---------- Recent items ----------
