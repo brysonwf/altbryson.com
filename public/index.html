@@ -117,7 +117,10 @@
       }
       .phone iframe.loaded { opacity: 1; }
       .phone .screen.live { background: #fff; }
-      body.dragging .phone iframe { pointer-events: none; }
+      body.dragging .phone iframe, body.dragging .browser-app iframe { pointer-events: none; }
+      /* Baseless Chat as a full browser window: its iframe fills everything below the titlebar. */
+      .browser-app { flex: 1 1 auto; display: flex; min-height: 0; background: #fff; }
+      .browser-app iframe { flex: 1; width: 100%; height: 100%; border: 0; }
 
       /* ---------- Windows desktop frame ---------- */
       .monitor { flex: none; width: min(500px, 100%); }
@@ -1102,6 +1105,7 @@
           top: 8px !important;
         }
         .titlebar { cursor: default; }
+        .app-window[data-device="browser"] { height: calc(100dvh - var(--dock-h) - 16px); }
         .window-body { flex-direction: column; align-items: stretch; padding: 18px 16px 20px; }
         .window-body .phone, .window-body .monitor { align-self: center; }
         .info { width: auto; }
@@ -1345,7 +1349,7 @@
           url: 'https://road.dance', cta: 'Open in new tab',
         },
         {
-          id: 'baseless', name: 'Baseless Chat', device: 'phone', platform: 'Mobile web + Chrome extension', stage: 'beta',
+          id: 'baseless', name: 'Baseless Chat', device: 'browser', platform: 'Web browser + Chrome extension', stage: 'beta',
           desc: 'Google Chrome extension that adds a lightweight chat interface to every website, creating a seamless overlay experience across browsing sessions.',
           url: 'https://baseless.chat', cta: 'Open in new tab',
         },
@@ -1657,6 +1661,24 @@
         const p = projectById(id);
         if (!p) return;
         rememberRecent(id);
+        // Baseless Chat is the desktop's web browser: the live site fills a large, resizable window.
+        if (p.device === 'browser') {
+          const el = openWindow({
+            id: p.id,
+            title: p.name,
+            device: p.device,
+            body: `
+              <div class="browser-app">
+                <iframe src="${p.url}" title="${p.name}" allow="clipboard-write; fullscreen; geolocation"></iframe>
+              </div>`,
+          });
+          if (el && !isCompact()) {
+            const W = desktop.clientWidth, H = desktop.clientHeight - dockH();
+            setRect(el, { left: 0, top: 0, width: Math.min(1280, W - 48), height: Math.min(860, H - 32) });
+            center(el);
+          }
+          return;
+        }
         openWindow({
           id: p.id,
           title: p.name,
@@ -2837,7 +2859,7 @@
         { id: 'terminal', name: 'Terminal', run: openTerminal },
         { id: 'calculator', name: 'Calculator', run: openCalculator },
         '|',
-        ...PROJECTS.filter((p) => p.device === 'phone').map((p) => ({ id: p.id, name: p.name, stage: p.stage, run: () => openProject(p.id) })),
+        ...PROJECTS.filter((p) => p.device !== 'windows').map((p) => ({ id: p.id, name: p.name, stage: p.stage, run: () => openProject(p.id) })),
         '|',
         { id: 'gv-messages', name: 'Google Voice - Messages', run: () => gvToggle('messages'), menu: (el) => gvContextMenu(el, 'messages'), badge: true, tray: true },
         { id: 'gv-voicemail', name: 'Google Voice - Voicemail', run: () => gvToggle('voicemail'), menu: (el) => gvContextMenu(el, 'voicemail'), badge: true, tray: true },
