@@ -1782,6 +1782,22 @@
           if (wasActive) activate(neighbour.dataset.tab);
         };
 
+        // baseless.chat reports which site each tab is on (see reportPageToParent in its base.js).
+        const origin = new URL(p.url).origin;
+        const onPage = (e) => {
+          if (e.origin !== origin || e.data?.type !== 'baseless.chat.page') return;
+          const frame = [...app.querySelectorAll('iframe')].find((f) => f.contentWindow === e.source);
+          const tab = frame && list.querySelector(`.tab[data-tab="${frame.dataset.tab}"]`);
+          if (!tab) return;
+          const title = String(e.data.title || 'baseless.chat').slice(0, 200);
+          tab.querySelector('.tab-label').textContent = title;
+          tab.title = title;
+        };
+        window.addEventListener('message', onPage);
+        // Stop listening once the window is gone.
+        new MutationObserver((_, obs) => { if (!win.isConnected) { window.removeEventListener('message', onPage); obs.disconnect(); } })
+          .observe(desktop, { childList: true });
+
         bar.querySelector('.tab-new').addEventListener('click', addTab);
         list.addEventListener('click', (e) => {
           const tab = e.target.closest('.tab');
