@@ -1,6 +1,6 @@
 {
-  "name": "altbryson — Bryson's Portfolio",
-  "short_name": "altbryson",
+  "name": "altbryson.com",
+  "short_name": "altbryson.com",
   "description": "Bryson's portfolio desktop: every project running live on the device it was built for.",
   "start_url": "/?source=pwa",
   "scope": "/",
