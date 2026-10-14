@@ -28,8 +28,8 @@
         /* Space reserved above the dock: its height (icon size + padding) plus the 10px it floats above the edge. */
         --dock-h: calc(var(--size) + 40px);
         /* Icons grow until the dock spans the screen, capped at macOS's 128px maximum.
-           360px covers gaps, dividers, padding and room for magnification; 21 = 21 icons. */
-        --size: clamp(30px, calc((100vw - 360px) / 21), 128px);
+           360px covers gaps, dividers, padding and room for magnification; 20 = 20 icons. */
+        --size: clamp(30px, calc((100vw - 360px) / 20), 128px);
         --gv-green: #00c853;
         --gv-grey: #808080;
         font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -2193,7 +2193,7 @@
       function clockPopover(anchor) {
         const d = new Date();
         const tray = isDockCompact()
-          ? `<div class="menu-tray">${DOCK.filter((x) => x.tray && !x.compact && x.phone !== false).map((x) => `
+          ? `<div class="menu-tray">${DOCK.filter((x) => x.tray && !x.compact).map((x) => `
               <button type="button" class="menu-tray-item" data-tray="${x.id}">
                 ${iconHTML(x.id)}<span>${x.name.replace('Spotlight ', '').replace('System ', '')}</span>
               </button>`).join('')}</div>`
@@ -3149,7 +3149,6 @@
         { id: 'wifi', name: 'Wi-Fi', run: wifiPopover, tray: true },
         { id: 'sound', name: 'Sound', run: soundPopover, tray: true },
         { id: 'search', name: 'Spotlight Search', run: openSpotlight, tray: true },
-        { id: 'settings', name: 'System Settings', run: openSettings, tray: true, phone: false }, // phones reach it from the aB menu
         { id: 'clock', name: 'Clock', run: clockPopover },
       ];
 
