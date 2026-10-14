@@ -67,3 +67,6 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+# Firebase CLI logs can contain access tokens
+firebase-debug.log
