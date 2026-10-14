@@ -2355,7 +2355,7 @@
           { id: 's1', name: 'firERP dev', color: '#dc2626', time: 'Tue', unread: false, msgs: [{ from: 'Jordan Lee', text: 'Raw Data view is live' }] },
           { id: 's2', name: 'Weekend Plans', color: '#0284c7', time: 'Sun', unread: false, msgs: [{ from: 'Sam Carter', text: 'pool at 8 🎱' }] },
         ],
-        icons: { messages: true, voicemail: true, chat: true }, // the app's "Google ... icon" toggles
+        icons: { messages: false, voicemail: false, chat: true }, // the app's "Google ... icon" toggles; only Chat shows by default (Voice and Messages can be switched back on from its right-click menu)
         autoOpen: false,
         open: null,      // 'voice' | 'chat' | null
         tab: 'messages', // messages | calls | voicemail
@@ -2572,7 +2572,7 @@
       setTimeout(() => gvIncoming(gv.dms, 'c1', 'are you around? 👀', 'chat'), 45000);
       let gvPinged = false;
       setInterval(() => {
-        if (!gvPinged && gvCounts().messages === 0) {
+        if (!gvPinged && gv.icons.messages && gvCounts().messages === 0) {
           gvPinged = true;
           setTimeout(() => gvIncoming(gv.threads, 't4', 'pool later? 🎱', 'messages'), 15000);
         }
