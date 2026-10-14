@@ -1173,7 +1173,7 @@
       }
       @media (max-width: 1000px) {
         :root { --size: 44px; }
-        /* Tray icons move into the aB menu, except the ones kept on phones (compact: Google Chat, Weather, Settings) and the clock. */
+        /* Tray icons move into the aB menu, except the ones kept on phones (compact: the Google Voice Tray icons and Weather) and the clock. */
         .dock-item.tray-item:not(.compact-keep) { display: none; }
         /* Too many icons to fit: let the dock scroll sideways like a shelf. */
         .dock-wrap { justify-content: flex-start; }
@@ -2121,23 +2121,8 @@
           { key: 'lock', label: 'Lock Screen', kbd: '⌃⌘Q', action: true },
           { label: 'Log Out Bryson…', kbd: '⇧⌘Q' },
         ];
-        // On small screens the tray icons are hidden from the dock and live at the top of this menu instead.
-        const tray = isDockCompact()
-          ? `<div class="menu-tray">${DOCK.filter((d) => d.tray && !d.compact).map((d) => `
-              <button type="button" class="menu-tray-item" data-tray="${d.id}">
-                ${iconHTML(d.id)}<span>${d.name.replace('Google Voice - ', '').replace('Spotlight ', '').replace('System ', '')}</span>
-              </button>`).join('')}</div>`
-          : '';
-        const el = showPopover(anchor, `${tray}<div role="menu" aria-label="altbryson menu">${menuHTML(items)}</div>`, { className: 'menu', align: 'left' });
+        const el = showPopover(anchor, `<div role="menu" aria-label="altbryson menu">${menuHTML(items)}</div>`, { className: 'menu', align: 'left' });
         if (!el) return;
-        el.querySelectorAll('[data-tray]').forEach((b) => {
-          const d = DOCK.find((x) => x.id === b.dataset.tray);
-          if (d.badge) {
-            b.dataset.unread = dockItem(d.id).dataset.unread;
-            b.insertAdjacentHTML('beforeend', `<span class="badge">${dockItem(d.id).querySelector('.badge').textContent}</span>`);
-          }
-          b.addEventListener('click', () => { closePopover(); d.run(anchor); });
-        });
         el.addEventListener('click', (e) => {
           const btn = e.target.closest('.menu-item');
           if (!btn || btn.getAttribute('aria-disabled') === 'true' || btn.classList.contains('has-sub')) return;
@@ -2204,12 +2189,23 @@
         if (label) label.textContent = d.toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
       }
 
+      // On small screens the tray icons that don't fit the dock collapse into the clock: tapping it shows them above the time.
       function clockPopover(anchor) {
         const d = new Date();
-        showPopover(anchor, `
+        const tray = isDockCompact()
+          ? `<div class="menu-tray">${DOCK.filter((x) => x.tray && !x.compact && x.phone !== false).map((x) => `
+              <button type="button" class="menu-tray-item" data-tray="${x.id}">
+                ${iconHTML(x.id)}<span>${x.name.replace('Spotlight ', '').replace('System ', '')}</span>
+              </button>`).join('')}</div>`
+          : '';
+        const el = showPopover(anchor, `${tray}
           <div class="big">${d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', second: '2-digit' })}</div>
           <div class="sub">${d.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
           <div class="sub">${Intl.DateTimeFormat().resolvedOptions().timeZone.replace(/_/g, ' ')}</div>`);
+        el?.querySelectorAll('[data-tray]').forEach((b) => {
+          const item = DOCK.find((x) => x.id === b.dataset.tray);
+          b.addEventListener('click', () => { closePopover(); item.run(anchor); });
+        });
       }
 
       // The desktop shows a fixed 42% battery rather than the visitor's own.
@@ -3144,8 +3140,8 @@
         // Web apps open straight into a new Baseless tab; Baseless itself opens its window.
         ...PROJECTS.filter((p) => p.device !== 'windows').map((p) => ({ id: p.id, name: p.name, stage: p.stage, run: () => (p.device === 'phone' ? openInBaseless(p.url) : openProject(p.id)) })),
         '|',
-        { id: 'gv-messages', name: 'Google Voice - Messages', run: () => gvToggle('messages'), menu: (el) => gvContextMenu(el, 'messages'), badge: true, tray: true },
-        { id: 'gv-voicemail', name: 'Google Voice - Voicemail', run: () => gvToggle('voicemail'), menu: (el) => gvContextMenu(el, 'voicemail'), badge: true, tray: true },
+        { id: 'gv-messages', name: 'Google Voice - Messages', run: () => gvToggle('messages'), menu: (el) => gvContextMenu(el, 'messages'), badge: true, tray: true, compact: true },
+        { id: 'gv-voicemail', name: 'Google Voice - Voicemail', run: () => gvToggle('voicemail'), menu: (el) => gvContextMenu(el, 'voicemail'), badge: true, tray: true, compact: true },
         { id: 'gv-chat', name: 'Google Chat', run: () => gvToggle('chat'), menu: (el) => gvContextMenu(el, 'chat'), badge: true, tray: true, compact: true },
         { id: 'weather', name: 'Weather', run: weatherPopover, tray: true, compact: true },
         { id: 'bluetooth', name: 'Bluetooth', run: bluetoothPopover, tray: true },
@@ -3153,7 +3149,7 @@
         { id: 'wifi', name: 'Wi-Fi', run: wifiPopover, tray: true },
         { id: 'sound', name: 'Sound', run: soundPopover, tray: true },
         { id: 'search', name: 'Spotlight Search', run: openSpotlight, tray: true },
-        { id: 'settings', name: 'System Settings', run: openSettings, tray: true, compact: true },
+        { id: 'settings', name: 'System Settings', run: openSettings, tray: true, phone: false }, // phones reach it from the aB menu
         { id: 'clock', name: 'Clock', run: clockPopover },
       ];
 
