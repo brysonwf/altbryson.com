@@ -8,10 +8,10 @@ Where each project shown on the desktop lives (2026-10-12). Every repo has its o
 
 | App | Live URL | Repo | Local folder |
 |---|---|---|---|
-| budgetforecast.app | budgetforecast.app | gitlab.com/brysonwf/altbryson-check-please (Bryson calls it "check.please"; Firebase project altbryson-check-please) | Projects/altbryson-check-please |
-| Road Dance | road.dance | gitlab.com/brysonwf/road.dance (GitHub copy is empty) | Projects/road.dance |
+| budgetforecast.app | budgetforecast.app | github.com/brysonwf/budgetforecast.app (private; was GitLab altbryson-check-please, which Bryson calls "check.please"; Firebase project altbryson-check-please) | Projects/budgetforecast.app |
+| Road Dance | road.dance | gitlab.com/brysonwf/road.dance, also pushed to private github.com/brysonwf/road.dance (remote `github`) | Projects/road.dance |
 | Baseless Chat (β) | baseless.chat | github.com/brysonwf/baseless.chat | Projects/baseless.chat |
-| Altbryson Pool | altbrysonpool.web.app | gitlab.com/brysonwf/altbrysonpool (GitHub copy is empty) | Projects/altbrysonpool |
+| Altbryson Pool | altbrysonpool.web.app | gitlab.com/brysonwf/altbrysonpool, also pushed to private github.com/brysonwf/altbrysonpool (remote `github`) | Projects/altbrysonpool |
 | Snowball Fight | snowballfightapp.web.app | github.com/brysonwf/snowballfight | Projects/snowballfight |
 | iamlocal.online (α) | iamlocal.online | github.com/brysonwf/iamlocal.online | Projects/iamlocal.online |
 | Firerp (α) | firerp.app | github.com/brysonwf/firerp.app | Projects/firerp.app |
