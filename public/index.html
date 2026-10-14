@@ -2890,33 +2890,6 @@
         });
       }
 
-      function openResume() {
-        openWindow({
-          id: 'resume',
-          title: "Bryson Faggart's Resume.pdf",
-          body: `
-            <article class="doc" style="text-align:center;padding-top:64px;padding-bottom:64px">
-              <div class="kicker">Resume</div>
-              <h1>Coming soon</h1>
-              <p class="byline">Bryson's resume is being written. Until then, LinkedIn has the details.</p>
-              <a class="btn" href="https://www.linkedin.com/in/brysonwf/" target="_blank" rel="noreferrer">View LinkedIn ↗</a>
-            </article>`,
-        });
-      }
-
-      function openSketchup() {
-        openWindow({
-          id: 'sketchup',
-          title: 'SketchUp Samples.skp',
-          body: `
-            <article class="doc" style="text-align:center;padding-top:64px;padding-bottom:64px">
-              <div class="kicker">SketchUp Samples</div>
-              <h1>Coming soon</h1>
-              <p class="byline">A collection of Bryson's SketchUp models is on the way.</p>
-            </article>`,
-        });
-      }
-
       // ---------- Desktop grid ----------
       // Documents and links sit in a grid that fills from the top-right, column by column, wrapping
       // when the screen is short. Drag an item to move it; it snaps to the nearest cell (swapping with
@@ -2925,10 +2898,8 @@
         // Bryson's web apps: link shortcuts that open in a new Baseless tab (a modified click still opens a real tab).
         ...PROJECTS.filter((p) => p.device === 'phone').map((p) => ({ id: `app-${p.id}`, name: p.name, icon: p.id, url: p.url, stage: p.stage, inBaseless: true })),
         { id: 'claude-doc', name: 'Built with Claude.doc', ext: 'doc', mark: 'claude', open: openClaudeDoc },
-        { id: 'resume', name: "Bryson Faggart's Resume.pdf", ext: 'pdf', open: openResume },
         { id: 'menubar-doc', name: 'The Menu Bar Problem.doc', ext: 'doc', open: openMenubarDoc },
         { id: 'disclaimer', name: 'Legal Disclaimer.txt', ext: 'txt', open: openDisclaimer },
-        { id: 'sketchup', name: 'SketchUp Samples.skp', ext: 'skp', open: openSketchup },
         { id: 'link-linkedin', name: 'LinkedIn', icon: 'linkedin', url: 'https://www.linkedin.com/in/brysonwf/' },
         { id: 'link-x', name: 'X @brysonwf', icon: 'x', url: 'https://x.com/brysonwf' },
         { id: 'link-x-brysonf', name: 'X @brysonf', icon: 'x', url: 'https://x.com/brysonf' },
@@ -3094,8 +3065,6 @@
           { name: 'Trash', kind: 'System', icon: 'trash', run: openTrash },
           { name: 'The Menu Bar Problem.doc', kind: 'Document', icon: 'altbryson', run: openMenubarDoc },
           { name: 'Legal Disclaimer.txt', kind: 'Document', icon: 'altbryson', run: openDisclaimer },
-          { name: "Bryson Faggart's Resume.pdf", kind: 'Document', icon: 'altbryson', run: openResume },
-          { name: 'SketchUp Samples.skp', kind: 'Document', icon: 'altbryson', run: openSketchup },
           { name: 'Built with Claude.doc', kind: 'Document', icon: 'claude', run: openClaudeDoc },
           { name: 'Messages', kind: 'Google Voice Tray', icon: 'gv-messages', run: () => gvToggle('messages') },
           { name: 'Voicemail', kind: 'Google Voice Tray', icon: 'gv-voicemail', run: () => gvToggle('voicemail') },
@@ -3144,10 +3113,8 @@
         { id: 'altbryson', name: 'altbryson', run: (el) => openSystemMenu(el) },
         { id: 'terminal', name: 'Terminal', run: openTerminal },
         { id: 'calculator', name: 'Calculator', run: openCalculator },
-        '|',
         // Baseless (the desktop's browser) is the only project in the dock; the other apps are desktop shortcuts.
         ...PROJECTS.filter((p) => p.device === 'browser').map((p) => ({ id: p.id, name: p.name, stage: p.stage, run: () => openProject(p.id) })),
-        '|',
         { id: 'gv-messages', name: 'Google Voice - Messages', run: () => gvToggle('messages'), menu: (el) => gvContextMenu(el, 'messages'), badge: true, tray: true, compact: true },
         { id: 'gv-voicemail', name: 'Google Voice - Voicemail', run: () => gvToggle('voicemail'), menu: (el) => gvContextMenu(el, 'voicemail'), badge: true, tray: true, compact: true },
         { id: 'gv-chat', name: 'Google Chat', run: () => gvToggle('chat'), menu: (el) => gvContextMenu(el, 'chat'), badge: true, tray: true, compact: true },

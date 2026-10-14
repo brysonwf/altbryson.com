@@ -7,7 +7,7 @@ metadata:
 State at end of 2026-10-12 (last deploy/commit 1248f0a; everything is committed, pushed to GitLab and live):
 - The Google Chat demo was built from knowledge of Chat's design, not a side-by-side comparison; the user may send a screenshot to match exactly.
 - Google Voice Tray has no GitHub release, so download links go to the repo page. If a release with GoogleVoiceTray.exe is published, point the `GVT_REPO` links at it.
-- Resume is a "Coming soon" placeholder, as is "SketchUp Samples.skp".
+- The resume and "SketchUp Samples.skp" desktop placeholders were removed 2026-10-13. A merged resume now lives in a Claude Doc (claude.ai/code/artifact/6cc24c72-1554-4695-948b-01f2c813bd46, no personal contact details) and was exported to Downloads as a PDF; it is not on the site.
 - The legal disclaimer was written in plain language, not reviewed by a lawyer.
 - Phone-app install support (manifest + icons + iPhone tags) is shipped for baseless.chat only. It is still uncommitted and undeployed in road.dance, altbrysonpool, iamlocal.online, firerp.app and snowballfight (snowballfight's deploy setup is unknown).
 - The apps and the LinkedIn / X / GitHub links appear both here (dock + desktop) and on the baseless.chat home page. The user removed them from altbryson.com once, then asked for them back (b981bcc reverted by 38f8713), so keep both.
