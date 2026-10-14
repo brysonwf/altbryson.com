@@ -8,7 +8,7 @@ Where each project shown on the desktop lives (2026-10-12). Every repo has its o
 
 | App | Live URL | Repo | Local folder |
 |---|---|---|---|
-| Budget Forecast | budgetforecast.app | not found on GitHub/GitLab | none |
+| budgetforecast.app | budgetforecast.app | gitlab.com/brysonwf/altbryson-check-please (Bryson calls it "check.please"; Firebase project altbryson-check-please) | Projects/altbryson-check-please |
 | Road Dance | road.dance | gitlab.com/brysonwf/road.dance (GitHub copy is empty) | Projects/road.dance |
 | Baseless Chat (β) | baseless.chat | github.com/brysonwf/baseless.chat | Projects/baseless.chat |
 | Altbryson Pool | altbrysonpool.web.app | gitlab.com/brysonwf/altbrysonpool (GitHub copy is empty) | Projects/altbrysonpool |
