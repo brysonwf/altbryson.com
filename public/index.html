@@ -852,11 +852,11 @@
       .desk-icon .file-ic::after { color: #4f46e5; }
       .desk-icon[aria-pressed="true"] { background: rgba(15, 23, 42, 0.25); }
       .desk-icon[aria-pressed="true"] .fname { background: #2563eb; border-radius: 4px; padding: 0 4px; text-shadow: none; }
-      /* Phones: iPhone home-screen sizing. 60px icons, 4 per row (cell width set by sizeGrid), one-line labels. */
+      /* Phones: iPhone home-screen sizing. 60px icons, 4 per row (cell width set by sizeGrid), full names wrapped onto up to 3 lines. */
       @media (max-width: 600px) {
         .desk-icon { width: var(--cell-w); gap: 5px; padding: 4px 2px; font-size: 12px; }
-        .desk-icon .fname { max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-        .desk-icon[aria-pressed="true"] .fname { max-width: calc(100% - 8px); }
+        .desk-icon .fname { max-width: 100%; line-height: 1.25; overflow-wrap: anywhere; }
+        .desk-icon[aria-pressed="true"] .fname { max-width: calc(100% - 4px); }
         .desk-icon > .app-icon, .desk-icon[data-id="trash"] .app-icon, .link-ic { width: 60px; margin: 0; }
         .desk-icon .file-ic { width: 47px; height: 60px; }
         .desk-icon .file-ic::after { bottom: 8px; font-size: 9.5px; }
@@ -2935,7 +2935,7 @@
       const PHONE_GRID = matchMedia('(max-width: 600px)');
       let CELL_W, CELL_H, GRID_PAD;
       function sizeGrid() {
-        if (PHONE_GRID.matches) { GRID_PAD = 16; CELL_W = (desktop.clientWidth - GRID_PAD * 2) / 4; CELL_H = 96; }
+        if (PHONE_GRID.matches) { GRID_PAD = 20; CELL_W = (desktop.clientWidth - GRID_PAD * 2) / 4; CELL_H = 124; }
         else { GRID_PAD = 24; CELL_W = 134; CELL_H = 140; }
         deskIcons.style.setProperty('--cell-w', CELL_W + 'px');
       }
