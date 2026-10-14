@@ -27,8 +27,8 @@
         --glass-border: rgba(255, 255, 255, 0.55);
         /* Space reserved above the dock: its height (icon size + padding) plus the 10px it floats above the edge. */
         --dock-h: calc(var(--size) + 40px);
-        /* Icons grow until the dock spans the screen, capped at macOS's 128px maximum.
-           360px covers gaps, dividers, padding and room for magnification; 20 = 20 icons. */
+        /* Icon size scales with the screen width, capped at macOS's 128px maximum.
+           Sized as if the dock held 20 icons (as it did before the apps moved to the desktop) so it doesn't balloon. */
         --size: clamp(30px, calc((100vw - 360px) / 20), 128px);
         --gv-green: #00c853;
         --gv-grey: #808080;
@@ -506,7 +506,7 @@
       /* Solid shapes read as glowing with any shadow, so the Voice icons get none. */
       .app-icon.icon-gv-messages, .app-icon.icon-gv-voicemail, .app-icon.icon-gv-chat { filter: none; }
       .dock-item[hidden] { display: none; }
-      .dock-item .badge {
+      .dock-item .badge, .link-ic .badge {
         position: absolute;
         top: -4px;
         right: -4px;
@@ -831,7 +831,8 @@
       .desk-link { text-decoration: none; cursor: pointer; }
       .desk-link:hover .fname { text-decoration: underline; }
       .link-ic { position: relative; display: block; width: 67px; margin: 1px 0 3px; }
-      .link-badge { position: absolute; left: -7px; bottom: -7px; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: #fff; color: #2563eb; font-size: 17px; font-weight: 800; text-shadow: none; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.4); }
+      .link-badge { position: absolute; left: -4px; bottom: -4px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; background: rgba(255, 255, 255, 0.96); color: #0f172a; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.35); }
+      .link-badge svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
       .desk-icon {
         display: flex;
         flex-direction: column;
@@ -861,7 +862,8 @@
         .desk-icon .file-ic { width: 47px; height: 60px; }
         .desk-icon .file-ic::after { bottom: 8px; font-size: 9.5px; }
         .desk-icon .file-ic .mark { top: 14px; width: 25px; height: 25px; }
-        .link-badge { left: -5px; bottom: -5px; width: 22px; height: 22px; border-radius: 6px; font-size: 14px; }
+        .link-badge { left: -3px; bottom: -3px; width: 18px; height: 18px; border-radius: 5px; }
+        .link-badge svg { width: 11px; height: 11px; }
       }
 
       /* Document window */
@@ -2920,6 +2922,8 @@
       // when the screen is short. Drag an item to move it; it snaps to the nearest cell (swapping with
       // whatever is there), and the layout is remembered per browser.
       const DESK_DOCS = [
+        // Bryson's web apps: link shortcuts that open in a new Baseless tab (a modified click still opens a real tab).
+        ...PROJECTS.filter((p) => p.device === 'phone').map((p) => ({ id: `app-${p.id}`, name: p.name, icon: p.id, url: p.url, stage: p.stage, inBaseless: true })),
         { id: 'claude-doc', name: 'Built with Claude.doc', ext: 'doc', mark: 'claude', open: openClaudeDoc },
         { id: 'resume', name: "Bryson Faggart's Resume.pdf", ext: 'pdf', open: openResume },
         { id: 'menubar-doc', name: 'The Menu Bar Problem.doc', ext: 'doc', open: openMenubarDoc },
@@ -3030,8 +3034,12 @@
           el.target = '_blank';
           el.rel = 'noreferrer';
           el.draggable = false;
-          el.innerHTML = `<span class="link-ic">${iconHTML(d.icon)}<span class="link-badge" aria-hidden="true">↗</span></span><span class="fname">${d.name}</span>`;
-          el.addEventListener('click', (e) => { if (el.dataset.justDragged) e.preventDefault(); });
+          const stage = d.stage ? `<span class="badge stage" title="${d.stage}">${d.stage === 'alpha' ? 'α' : 'β'}</span>` : '';
+          el.innerHTML = `<span class="link-ic">${iconHTML(d.icon)}<span class="link-badge" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></span>${stage}</span><span class="fname">${d.name}</span>`;
+          el.addEventListener('click', (e) => {
+            if (el.dataset.justDragged) return e.preventDefault();
+            if (d.inBaseless && !(e.metaKey || e.ctrlKey || e.shiftKey)) { e.preventDefault(); openInBaseless(d.url); }
+          });
         } else {
           // Documents: touch opens on a tap; a mouse selects first and opens on double-click, like Finder.
           el.type = 'button';
@@ -3137,8 +3145,8 @@
         { id: 'terminal', name: 'Terminal', run: openTerminal },
         { id: 'calculator', name: 'Calculator', run: openCalculator },
         '|',
-        // Web apps open straight into a new Baseless tab; Baseless itself opens its window.
-        ...PROJECTS.filter((p) => p.device !== 'windows').map((p) => ({ id: p.id, name: p.name, stage: p.stage, run: () => (p.device === 'phone' ? openInBaseless(p.url) : openProject(p.id)) })),
+        // Baseless (the desktop's browser) is the only project in the dock; the other apps are desktop shortcuts.
+        ...PROJECTS.filter((p) => p.device === 'browser').map((p) => ({ id: p.id, name: p.name, stage: p.stage, run: () => openProject(p.id) })),
         '|',
         { id: 'gv-messages', name: 'Google Voice - Messages', run: () => gvToggle('messages'), menu: (el) => gvContextMenu(el, 'messages'), badge: true, tray: true, compact: true },
         { id: 'gv-voicemail', name: 'Google Voice - Voicemail', run: () => gvToggle('voicemail'), menu: (el) => gvContextMenu(el, 'voicemail'), badge: true, tray: true, compact: true },

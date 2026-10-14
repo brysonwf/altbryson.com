@@ -16,3 +16,4 @@ Bryson's feedback on this site (2026-10-12):
 - Joke features are welcome: the Calculator is confidently wrong on purpose; Terminal always replies "Have you tried turning it off and on again?"; Trash holds "IMPORTANT - DO NOT DELETE.txt" which restores itself.
 - Requests often arrive mid-task and get refined quickly ("actually add the icons back"); keep removals easy to undo (separate commits, so a git revert restores them cleanly).
 **How to apply:** check new icons/visuals in a headless render on light and dark wallpapers before calling them done.
+- Link shortcut badges are sleek (Bryson 2026-10-13: "make the link arrow sleeker"): a small white rounded square with a thin drawn SVG arrow in near-black, not a bold blue ↗ character.
