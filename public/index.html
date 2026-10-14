@@ -852,6 +852,17 @@
       .desk-icon .file-ic::after { color: #4f46e5; }
       .desk-icon[aria-pressed="true"] { background: rgba(15, 23, 42, 0.25); }
       .desk-icon[aria-pressed="true"] .fname { background: #2563eb; border-radius: 4px; padding: 0 4px; text-shadow: none; }
+      /* Phones: iPhone home-screen sizing. 60px icons, 4 per row (cell width set by sizeGrid), one-line labels. */
+      @media (max-width: 600px) {
+        .desk-icon { width: var(--cell-w); gap: 5px; padding: 4px 2px; font-size: 12px; }
+        .desk-icon .fname { max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .desk-icon[aria-pressed="true"] .fname { max-width: calc(100% - 8px); }
+        .desk-icon > .app-icon, .desk-icon[data-id="trash"] .app-icon, .link-ic { width: 60px; margin: 0; }
+        .desk-icon .file-ic { width: 47px; height: 60px; }
+        .desk-icon .file-ic::after { bottom: 8px; font-size: 9.5px; }
+        .desk-icon .file-ic .mark { top: 14px; width: 25px; height: 25px; }
+        .link-badge { left: -5px; bottom: -5px; width: 22px; height: 22px; border-radius: 6px; font-size: 14px; }
+      }
 
       /* Document window */
       .doc {
@@ -1162,8 +1173,8 @@
       }
       @media (max-width: 1000px) {
         :root { --size: 44px; }
-        /* Tray icons (all but the clock) move into the aB menu. */
-        .dock-item.tray-item, .dock .divider:has(+ .tray-item) { display: none; }
+        /* Tray icons move into the aB menu, except the ones kept on phones (compact: Google Chat, Weather, Settings) and the clock. */
+        .dock-item.tray-item:not(.compact-keep) { display: none; }
         /* Too many icons to fit: let the dock scroll sideways like a shelf. */
         .dock-wrap { justify-content: flex-start; }
         .dock {
@@ -2112,7 +2123,7 @@
         ];
         // On small screens the tray icons are hidden from the dock and live at the top of this menu instead.
         const tray = isDockCompact()
-          ? `<div class="menu-tray">${DOCK.filter((d) => d.tray).map((d) => `
+          ? `<div class="menu-tray">${DOCK.filter((d) => d.tray && !d.compact).map((d) => `
               <button type="button" class="menu-tray-item" data-tray="${d.id}">
                 ${iconHTML(d.id)}<span>${d.name.replace('Google Voice - ', '').replace('Spotlight ', '').replace('System ', '')}</span>
               </button>`).join('')}</div>`
@@ -2924,7 +2935,14 @@
         { id: 'link-github', name: 'GitHub', icon: 'github', url: 'https://github.com/brysonwf' },
         { id: 'trash', name: 'Trash', icon: 'trash', open: openTrash },
       ];
-      const CELL_W = 134, CELL_H = 140, GRID_PAD = 24;
+      // Mac-sized cells on a computer; on a phone, a 4-column grid of iPhone-sized (60px) icons like the home screen.
+      const PHONE_GRID = matchMedia('(max-width: 600px)');
+      let CELL_W, CELL_H, GRID_PAD;
+      function sizeGrid() {
+        if (PHONE_GRID.matches) { GRID_PAD = 16; CELL_W = (desktop.clientWidth - GRID_PAD * 2) / 4; CELL_H = 96; }
+        else { GRID_PAD = 24; CELL_W = 134; CELL_H = 140; }
+        deskIcons.style.setProperty('--cell-w', CELL_W + 'px');
+      }
       const deskIcons = $('desk-icons');
       let deskLayout = store.get('deskLayout', {}); // id -> { col, row }; col 0 is the rightmost column
 
@@ -2933,12 +2951,13 @@
         return Math.max(1, Math.floor(usable / CELL_H));
       }
       function gridCols() {
-        return Math.max(1, Math.floor((desktop.clientWidth - GRID_PAD * 2) / CELL_W));
+        return Math.max(1, Math.floor((desktop.clientWidth - GRID_PAD * 2) / CELL_W + 0.001));
       }
       const cellKey = (c) => `${c.col},${c.row}`;
 
       // Keep saved positions that still fit; place everything else in the first free cells.
       function layoutDesk() {
+        sizeGrid();
         const rows = gridRows(), cols = gridCols();
         const taken = new Set();
         const pos = {};
@@ -2950,7 +2969,11 @@
         for (const d of DESK_DOCS) {
           if (pos[d.id]) continue;
           let c;
-          do { c = { col: Math.floor(next / rows), row: next % rows }; next++; } while (taken.has(cellKey(c)));
+          // A Mac fills from the top right, column by column; an iPhone fills from the top left, row by row.
+          do {
+            c = PHONE_GRID.matches ? { col: cols - 1 - (next % cols), row: Math.floor(next / cols) } : { col: Math.floor(next / rows), row: next % rows };
+            next++;
+          } while (taken.has(cellKey(c)));
           pos[d.id] = c;
           taken.add(cellKey(c));
         }
@@ -3123,14 +3146,14 @@
         '|',
         { id: 'gv-messages', name: 'Google Voice - Messages', run: () => gvToggle('messages'), menu: (el) => gvContextMenu(el, 'messages'), badge: true, tray: true },
         { id: 'gv-voicemail', name: 'Google Voice - Voicemail', run: () => gvToggle('voicemail'), menu: (el) => gvContextMenu(el, 'voicemail'), badge: true, tray: true },
-        { id: 'gv-chat', name: 'Google Chat', run: () => gvToggle('chat'), menu: (el) => gvContextMenu(el, 'chat'), badge: true, tray: true },
-        { id: 'weather', name: 'Weather', run: weatherPopover, tray: true },
+        { id: 'gv-chat', name: 'Google Chat', run: () => gvToggle('chat'), menu: (el) => gvContextMenu(el, 'chat'), badge: true, tray: true, compact: true },
+        { id: 'weather', name: 'Weather', run: weatherPopover, tray: true, compact: true },
         { id: 'bluetooth', name: 'Bluetooth', run: bluetoothPopover, tray: true },
         { id: 'battery', name: 'Battery', run: batteryPopover, tray: true },
         { id: 'wifi', name: 'Wi-Fi', run: wifiPopover, tray: true },
         { id: 'sound', name: 'Sound', run: soundPopover, tray: true },
         { id: 'search', name: 'Spotlight Search', run: openSpotlight, tray: true },
-        { id: 'settings', name: 'System Settings', run: openSettings, tray: true },
+        { id: 'settings', name: 'System Settings', run: openSettings, tray: true, compact: true },
         { id: 'clock', name: 'Clock', run: clockPopover },
       ];
 
@@ -3142,7 +3165,7 @@
           return;
         }
         const el = document.createElement(d.href ? 'a' : 'button');
-        el.className = d.tray ? 'dock-item tray-item' : 'dock-item';
+        el.className = d.tray ? `dock-item tray-item${d.compact ? ' compact-keep' : ''}` : 'dock-item';
         el.dataset.id = d.id;
         el.setAttribute('aria-label', d.name);
         if (d.href) {
